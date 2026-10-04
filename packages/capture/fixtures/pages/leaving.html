@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaving</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      #dialog { position: absolute; left: 100px; top: 100px; width: 200px; height: 100px; background: #eeeeee; }
+    </style>
+  </head>
+  <body>
+    <div id="dialog"></div>
+    <script>
+      // the dialog leaves as soon as anything is appended to <html>, as the capture's freeze style is
+      new MutationObserver(() => document.getElementById('dialog')?.remove()).observe(
+        document.documentElement,
+        { childList: true }
+      )
+    </script>
+  </body>
+</html>

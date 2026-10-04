@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html data-scroll="0,300">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixed inside transformed parents</title>
+    <style>
+      body { margin: 0; background: #fff; height: 3000px; }
+      .at { position: absolute; width: 100px; height: 100px; background: #eeeeee; }
+      .m { position: fixed; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the page is scrolled by 300; a fixed child of a transform, filter or will-change parent scrolls with that parent -->
+    <div class="at" style="left: 100px; top: 400px; transform: translateX(0)">
+      <div id="fx-transform" class="m" style="left: 20px; top: 30px; background: #ff0000" data-color="ff0000" data-expect="120,130,40,40"></div>
+    </div>
+    <div class="at" style="left: 300px; top: 400px; filter: grayscale(0)">
+      <div id="fx-filter" class="m" style="left: 10px; top: 10px; background: #00ff00" data-color="00ff00" data-expect="310,110,40,40"></div>
+    </div>
+    <div class="at" style="left: 500px; top: 400px; will-change: transform">
+      <div id="fx-will-change" class="m" style="left: 10px; top: 20px; background: #0000ff" data-color="0000ff" data-expect="510,120,40,40"></div>
+    </div>
+    <div id="fx-plain" class="m" style="left: 700px; top: 50px; background: #ff00ff" data-color="ff00ff" data-expect="700,50,40,40"></div>
+    <!-- a transformed overflow:hidden parent contains its fixed child, so the child outside it is clipped -->
+    <div class="at" style="left: 100px; top: 700px; overflow: hidden; transform: scale(1)">
+      <div id="fx-clipped" class="m" style="left: 150px; top: 0; background: #ffff00" data-color="ffff00" data-expect-flag="clipped"></div>
+    </div>
+  </body>
+</html>

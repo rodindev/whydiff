@@ -1,0 +1,304 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/ui-upgrade"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 2,
+      "changed": 2,
+      "identical": 0
+    },
+    "causes": 2,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c1g6bij",
+        "c3hhw9m"
+      ],
+      "screenshots": 2,
+      "settled": 2,
+      "pixels": 36800,
+      "text": "2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the inner spacing of 2 `<div>` elements shrank by 12 px, on all 2 changed screenshots, 87% of changed pixels (`.ui-row`, c1g6bij)\n- the labels of 2 buttons are lighter (was #000000, now #090909), on all 2 changed screenshots, 13% of changed pixels (c3hhw9m)"
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "cart <ui-badge> > __totals__",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 18400,
+      "massChange": false,
+      "causes": [
+        "c1g6bij",
+        "c3hhw9m"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "checkout > __totals__",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 18400,
+      "massChange": false,
+      "causes": [
+        "c1g6bij",
+        "c3hhw9m"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "c1g6bij",
+      "headline": "the inner spacing of 2 `<div>` elements shrank by 12 px, on all 2 changed screenshots, 87% of changed pixels",
+      "text": "## the inner spacing of 2 `<div>` elements shrank by 12 px, on all 2 changed screenshots, 87% of changed pixels (`.ui-row`, c1g6bij)\n- for example, a `<div>`'s inner spacing shrank by 12 px, at `locator('div.\\\\!ui-p-0').locator('div.ui-row')` in `\"cart <ui-badge> > __totals__\"` (s4udgzc)\n- `.ui-row` from `vendor-ui-*.css` (layer `ui.components`) no longer sets padding-left (was 12px, now 0px)\n- it moved from unlayered into layer `ui.components`: its declarations now lose to any declaration of the same property outside a layer, whatever the selectors' specificity\n- to restore it: set padding-left back to 12px in your own stylesheet; do not edit `vendor-ui-*.css`, which reads as a dependency's (vendor in its name)\n- all occurrences: `npx whydiff explain c1g6bij`",
+      "key": "k1|rule|vendor-ui-*.css|.ui-row|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-row",
+        "sheet": "vendor-ui-*.css",
+        "layer": "ui.components",
+        "sets": [],
+        "changed": [],
+        "unsets": [
+          "padding-left"
+        ],
+        "values": [
+          {
+            "prop": "padding-left",
+            "from": "12px",
+            "to": "0px"
+          }
+        ],
+        "layerTo": "ui.components"
+      },
+      "scope": "global",
+      "match": "likely",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 32000,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "locator('div.\\\\!ui-p-0').locator('div.ui-row')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "locator('div.\\\\!ui-p-0').locator('div.ui-row')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "12px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 12,
+                "to": 0
+              }
+            ],
+            "text": "a `<div>`'s inner spacing shrank by 12 px"
+          },
+          "box": {
+            "before": [
+              0,
+              0,
+              400,
+              40
+            ],
+            "after": [
+              0,
+              0,
+              400,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "locator('div.\\\\!ui-p-0').locator('div.ui-row')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "12px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 12,
+                "to": 0
+              }
+            ],
+            "text": "a `<div>`'s inner spacing shrank by 12 px"
+          },
+          "box": {
+            "before": [
+              0,
+              0,
+              400,
+              40
+            ],
+            "after": [
+              0,
+              0,
+              400,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c3hhw9m",
+      "headline": "the labels of 2 buttons are lighter (was #000000, now #090909), on all 2 changed screenshots, 13% of changed pixels",
+      "text": "## the labels of 2 buttons are lighter (was #000000, now #090909), on all 2 changed screenshots, 13% of changed pixels (c3hhw9m)\n- for example, the `\"Total *\"` button's label is lighter (was #000000, now #090909), at `getByRole('button', { name: 'Total *' })` in `\"cart <ui-badge> > __totals__\"` (s4udgzc)\n- color: was #000000, now #090909\n- all occurrences: `npx whydiff explain c3hhw9m`",
+      "key": "k1|button|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "kind": "button",
+      "level": 1,
+      "summary": {
+        "kind": "style",
+        "changes": [
+          {
+            "prop": "color",
+            "from": "rgb(0, 0, 0)",
+            "to": "rgb(9, 9, 9)"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 4800,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByRole('button', { name: 'Total *' })"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByRole('button', { name: 'Total *' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "color",
+              "from": "rgb(0, 0, 0)",
+              "to": "rgb(9, 9, 9)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Total *",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "color",
+                "from": "#000000",
+                "to": "#090909"
+              }
+            ],
+            "text": "the `\"Total *\"` button's label is lighter (was #000000, now #090909)"
+          },
+          "box": {
+            "before": [
+              0,
+              50,
+              80,
+              30
+            ],
+            "after": [
+              0,
+              50,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByRole('button', { name: 'Total *' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "color",
+              "from": "rgb(0, 0, 0)",
+              "to": "rgb(9, 9, 9)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Total *",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "color",
+                "from": "#000000",
+                "to": "#090909"
+              }
+            ],
+            "text": "the `\"Total *\"` button's label is lighter (was #000000, now #090909)"
+          },
+          "box": {
+            "before": [
+              0,
+              50,
+              80,
+              30
+            ],
+            "after": [
+              0,
+              50,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

@@ -1,0 +1,46 @@
+name: Bug report
+description: whydiff failed, crashed, or explained a change wrongly.
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Security problems go through [private reporting](https://github.com/rodindev/whydiff/security/advisories/new), questions through [Discussions](https://github.com/rodindev/whydiff/discussions).
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where
+      options:
+        - Report content (a wrong, missing or misleading cause)
+        - Playwright integration (withWhydiff, whydiffCapture, the reporter)
+        - Command line (snap, diff, report, explain, init, doctor, schema)
+        - Install or setup
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: The command or test you ran, what you expected and what you got. Paste error lines as text.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Output of npx whydiff doctor
+      description: Run it where the Playwright config is. Its first line names the whydiff, Node and platform versions.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Report excerpt
+      description: For a wrong explanation, the part of report.md about it and what really changed in your source. Rename anything private.
+      render: markdown
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: A public repository, or two HTML files and the snap commands. A report depends only on the two .whydiff.json snapshots and their PNGs, so a zip of those reproduces it exactly, if they hold nothing private.

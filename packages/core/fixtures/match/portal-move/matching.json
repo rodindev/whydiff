@@ -1,0 +1,63 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "id"
+    },
+    {
+      "before": 3,
+      "after": 4,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "roleName",
+      "reparented": true
+    },
+    {
+      "before": 4,
+      "after": 5,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 5,
+      "after": 3,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "id"
+    }
+  ],
+  "removed": [],
+  "added": [],
+  "afterOf": [
+    0,
+    1,
+    2,
+    4,
+    5,
+    3
+  ],
+  "beforeOf": [
+    0,
+    1,
+    2,
+    5,
+    3,
+    4
+  ],
+  "lowConfidence": []
+}

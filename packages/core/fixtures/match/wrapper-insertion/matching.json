@@ -1,0 +1,52 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "id"
+    },
+    {
+      "before": 3,
+      "after": 4,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    }
+  ],
+  "removed": [],
+  "added": [
+    {
+      "node": 3,
+      "descendants": 0,
+      "absorbed": true
+    }
+  ],
+  "afterOf": [
+    0,
+    1,
+    2,
+    4
+  ],
+  "beforeOf": [
+    0,
+    1,
+    2,
+    -1,
+    3
+  ],
+  "lowConfidence": []
+}

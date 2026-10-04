@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ten nested single-child wrappers</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .w { border-left: 1px solid #cccccc; padding: 2px 0 0 3px; transform: translate(1px, 1px); }
+      .s { padding-left: 4px; }
+    </style>
+  </head>
+  <body>
+    <!-- each wrapper adds 1 (translate) + 1 (border) + 3 (padding) in x and 1 + 2 in y: 100 + 50, 100 + 30 -->
+    <div style="position: absolute; left: 100px; top: 100px; width: 300px">
+      <div class="w"><div class="w"><div class="w"><div class="w"><div class="w"><div class="w"><div class="w"><div class="w"><div class="w"><div class="w">
+        <div id="deep-block" style="width: 40px; height: 40px; background: #ff0000" data-color="ff0000" data-expect="150,130,40,40"></div>
+      </div></div></div></div></div></div></div></div></div></div>
+    </div>
+    <!-- ten inline spans with 4px start padding push an inline-block 40px along the line -->
+    <div style="position: absolute; left: 100px; top: 300px; width: 300px; font-size: 10px"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span class="s"><span id="deep-inline" style="display: inline-block; vertical-align: top; width: 40px; height: 40px; background: #00ff00" data-color="00ff00" data-expect="140,300,40,40"></span></span></span></span></span></span></span></span></span></span></span></div>
+  </body>
+</html>

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Layers</title>
+    <style>
+      @import url(/layers.css) layer;
+      /* each block without a name is a layer of its own */
+      @layer { .ui-a { padding-left: 1px; } }
+      @layer { .ui-a { padding-top: 2px; } }
+      @layer { @layer inner { .ui-b { padding-left: 3px; } } }
+      @layer outer { @layer { .ui-c { padding-left: 4px; } } }
+      /* the unlayered rule wins color despite its lower specificity; the layer wins the !important text-align */
+      @layer { #d.ui-d { color: rgb(1, 2, 3); text-align: right !important; } }
+      .ui-d { color: rgb(4, 5, 6); text-align: center !important; }
+    </style>
+  </head>
+  <body>
+    <div id="a" class="ui-a">a</div>
+    <div id="b" class="ui-b">b</div>
+    <div id="c" class="ui-c">c</div>
+    <div id="d" class="ui-d">d</div>
+    <div id="e" class="ui-e">e</div>
+  </body>
+</html>

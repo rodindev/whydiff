@@ -1,0 +1,516 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/form-reset"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 2,
+      "changed": 2,
+      "identical": 0
+    },
+    "causes": 2,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c16qjvd",
+        "c1xqq06"
+      ],
+      "screenshots": 2,
+      "settled": 2,
+      "pixels": 66240,
+      "text": "2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c16qjvd)\n- 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c1xqq06)"
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 33120,
+      "massChange": false,
+      "causes": [
+        "c16qjvd",
+        "c1xqq06"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "s2 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 33120,
+      "massChange": false,
+      "causes": [
+        "c16qjvd",
+        "c1xqq06"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "c16qjvd",
+      "headline": "the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels",
+      "text": "## the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c16qjvd)\n- for example, the \"Notes s1\" text field's inner spacing shrank by 8 px, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets padding (all sides, values differ per element: `npx whydiff explain c16qjvd`)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c16qjvd`",
+      "key": "k1|rule|reset.css|*|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": "*",
+        "sheet": "reset.css",
+        "sets": [
+          "padding-bottom",
+          "padding-left",
+          "padding-right",
+          "padding-top"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": []
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 4,
+      "pixels": 35520,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByRole('textbox', { name: 'Notes s1' })"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByRole('textbox', { name: 'Notes s1' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "opacity",
+              "from": "0",
+              "to": "1"
+            },
+            {
+              "prop": "padding-bottom",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "2px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "textbox",
+              "name": "Notes s1",
+              "tag": "textarea"
+            },
+            "facts": [
+              {
+                "kind": "visible"
+              },
+              {
+                "kind": "padding",
+                "from": 8,
+                "to": 0
+              }
+            ],
+            "text": "the \"Notes s1\" text field becomes visible and its inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              16,
+              16,
+              320,
+              96
+            ],
+            "after": [
+              16,
+              16,
+              320,
+              96
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('Send s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-bottom",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "6px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Send s1",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 24,
+                "to": 0
+              }
+            ],
+            "text": "the \"Send s1\" button's inner spacing shrank by 24 px"
+          },
+          "box": {
+            "before": [
+              16,
+              128,
+              80,
+              30
+            ],
+            "after": [
+              16,
+              128,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByRole('textbox', { name: 'Notes s2' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "opacity",
+              "from": "0",
+              "to": "1"
+            },
+            {
+              "prop": "padding-bottom",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "2px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "textbox",
+              "name": "Notes s2",
+              "tag": "textarea"
+            },
+            "facts": [
+              {
+                "kind": "visible"
+              },
+              {
+                "kind": "padding",
+                "from": 8,
+                "to": 0
+              }
+            ],
+            "text": "the \"Notes s2\" text field becomes visible and its inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              16,
+              16,
+              320,
+              96
+            ],
+            "after": [
+              16,
+              16,
+              320,
+              96
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('Send s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-bottom",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "6px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "6px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Send s2",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 24,
+                "to": 0
+              }
+            ],
+            "text": "the \"Send s2\" button's inner spacing shrank by 24 px"
+          },
+          "box": {
+            "before": [
+              16,
+              128,
+              80,
+              30
+            ],
+            "after": [
+              16,
+              128,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1xqq06",
+      "headline": "2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels",
+      "text": "## 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c1xqq06)\n- for example, the \"Notes s1\" text field becomes visible, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `.ui-field` from `app.css` (unlayered) no longer sets opacity (was 0, now 1)\n- to restore it: change the rule in `app.css`, or set opacity back to 0 in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1xqq06`",
+      "key": "k1|rule|app.css|.ui-field|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-field",
+        "sheet": "app.css",
+        "sets": [],
+        "changed": [],
+        "unsets": [
+          "opacity"
+        ],
+        "values": [
+          {
+            "prop": "opacity",
+            "from": "0",
+            "to": "1"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 30720,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByRole('textbox', { name: 'Notes s1' })"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByRole('textbox', { name: 'Notes s1' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "opacity",
+              "from": "0",
+              "to": "1"
+            },
+            {
+              "prop": "padding-bottom",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "2px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "textbox",
+              "name": "Notes s1",
+              "tag": "textarea"
+            },
+            "facts": [
+              {
+                "kind": "visible"
+              },
+              {
+                "kind": "padding",
+                "from": 8,
+                "to": 0
+              }
+            ],
+            "text": "the \"Notes s1\" text field becomes visible and its inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              16,
+              16,
+              320,
+              96
+            ],
+            "after": [
+              16,
+              16,
+              320,
+              96
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByRole('textbox', { name: 'Notes s2' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "opacity",
+              "from": "0",
+              "to": "1"
+            },
+            {
+              "prop": "padding-bottom",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "2px",
+              "to": "0px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "2px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "textbox",
+              "name": "Notes s2",
+              "tag": "textarea"
+            },
+            "facts": [
+              {
+                "kind": "visible"
+              },
+              {
+                "kind": "padding",
+                "from": 8,
+                "to": 0
+              }
+            ],
+            "text": "the \"Notes s2\" text field becomes visible and its inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              16,
+              16,
+              320,
+              96
+            ],
+            "after": [
+              16,
+              16,
+              320,
+              96
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

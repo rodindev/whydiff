@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>::marker</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      ul, ol { position: absolute; top: 100px; margin: 0; padding: 0 0 0 40px; }
+      li { width: 40px; height: 40px; font-size: 10px; }
+    </style>
+  </head>
+  <body>
+    <!-- outside markers take no room: the items start at the content edge, 40px in -->
+    <ul style="left: 100px">
+      <li id="li-disc" style="background: #ff0000" data-color="ff0000" data-expect="140,100,40,40" data-expect-flag="pseudo:marker" data-expect-text="a">a</li>
+      <li id="li-second" style="background: #00ff00" data-color="00ff00" data-expect="140,140,40,40" data-expect-flag="pseudo:marker"></li>
+    </ul>
+    <ol style="left: 300px; list-style-type: upper-roman">
+      <li id="li-roman" style="background: #0000ff" data-color="0000ff" data-expect="340,100,40,40" data-expect-flag="pseudo:marker"></li>
+    </ol>
+    <!-- display: list-item on an absolute box keeps its marker -->
+    <div id="li-display" style="display: list-item; position: absolute; left: 500px; top: 100px; width: 40px; height: 40px; margin-left: 20px; background: #ff00ff" data-color="ff00ff" data-expect="520,100,40,40" data-expect-flag="pseudo:marker"></div>
+  </body>
+</html>

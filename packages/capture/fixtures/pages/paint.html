@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Paint</title>
+    <style>
+      body { margin: 0; font-family: serif; font-size: 16px; }
+      .ui-box { width: 100px; height: 40px; margin: 8px; background: rgb(200, 200, 200); }
+      .ui-mask { mask: linear-gradient(to bottom, transparent 0, black 16px), linear-gradient(to right, transparent, black 16px); }
+      .ui-fade { -webkit-mask-image: linear-gradient(black, transparent); }
+      .ui-clip { clip-path: circle(40% at center); }
+      .ui-filter { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5)) blur(1px); }
+      .ui-backdrop { backdrop-filter: saturate(180%) blur(20px); }
+      .ui-shadow { text-shadow: 0 1px red; }
+      .ui-blend { mix-blend-mode: multiply; }
+      .ui-outline { outline: 2px dashed rgb(1, 2, 3); outline-offset: 0.25em; }
+    </style>
+  </head>
+  <body>
+    <div id="mask" class="ui-box ui-mask">Mask</div>
+    <div id="fade" class="ui-box ui-fade">Fade</div>
+    <div id="clip" class="ui-box ui-clip">Clip</div>
+    <div id="filter" class="ui-box ui-filter">Filter</div>
+    <div id="backdrop" class="ui-box ui-backdrop">Backdrop</div>
+    <div id="shadow" class="ui-box ui-shadow">Shadow</div>
+    <div id="blend" class="ui-box ui-blend">Blend</div>
+    <div id="outline" class="ui-box ui-outline">Outline</div>
+    <div id="plain" class="ui-box">Plain</div>
+  </body>
+</html>

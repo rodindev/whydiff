@@ -1,0 +1,33 @@
+{
+  "formatVersion": 1,
+  "tool": {"name":"whydiff","version":"0.0.1","source":"cdp","browser":"chromium 147.0.0"},
+  "page": {"url":"http://app.test/","title":"Fixture"},
+  "image": {"width":1000,"height":800,"k":1,"layoutFactor":1,"origin":[0,0],"fullPage":false},
+  "viewport": {"width":1000,"height":800,"scrollX":0,"scrollY":0},
+  "content": {"width":1000,"height":800},
+  "compare": {"threshold":0.2,"animations":"disabled","caret":"hide","scale":"css"},
+  "frames": [{"url":"http://app.test/","owner":null,"offset":[0,0],"scroll":[0,0],"status":"captured"}],
+  "masks": [],
+  "sheets": [],
+  "props": ["display"],
+  "styles": [
+    ["block"]
+  ],
+  "nodes": [
+    {"i":0,"p":-1,"tag":"html","box":[0,0,1000,800],"s":0},
+    {"i":1,"p":0,"tag":"body","box":[0,0,1000,800],"s":0},
+    {"i":2,"p":1,"tag":"table","box":[0,0,400,80],"s":0},
+    {"i":3,"p":2,"tag":"tr","cls":["row"],"box":[0,0,400,20],"s":0},
+    {"i":4,"p":3,"tag":"td","text":"Dave","box":[0,0,200,20],"s":0},
+    {"i":5,"p":3,"tag":"td","text":"$450.00","box":[200,0,200,20],"s":0},
+    {"i":6,"p":2,"tag":"tr","cls":["row"],"box":[0,20,400,20],"s":0},
+    {"i":7,"p":6,"tag":"td","text":"Alice","box":[0,20,200,20],"s":0},
+    {"i":8,"p":6,"tag":"td","text":"$120.00","box":[200,20,200,20],"s":0},
+    {"i":9,"p":2,"tag":"tr","cls":["row"],"box":[0,40,400,20],"s":0},
+    {"i":10,"p":9,"tag":"td","text":"Bob","box":[0,40,200,20],"s":0},
+    {"i":11,"p":9,"tag":"td","text":"$250.00","box":[200,40,200,20],"s":0},
+    {"i":12,"p":2,"tag":"tr","cls":["row"],"box":[0,60,400,20],"s":0},
+    {"i":13,"p":12,"tag":"td","text":"Erin","box":[0,60,200,20],"s":0},
+    {"i":14,"p":12,"tag":"td","text":"$510.00","box":[200,60,200,20],"s":0}
+  ]
+}

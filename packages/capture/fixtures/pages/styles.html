@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Styles</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <style>
+      @layer base, theme;
+      @layer base { .card { padding: 8px; } }
+      @layer theme { .card { color: rgb(10 20 30); } }
+    </style>
+    <style data-whydiff-harness>
+      .card { outline-width: 2px !important; }
+    </style>
+    <style>
+      body { margin: 0; font-family: serif; }
+      #scroller { overflow: auto; width: 100px; height: 50px; }
+      #scroller div { height: 400px; }
+      #clipper { overflow: hidden; width: 100px; height: 100px; position: relative; }
+      #clipped { position: absolute; left: 300px; top: 0; width: 20px; height: 20px; }
+      #ghost { visibility: hidden; }
+      #faded { opacity: 0; }
+      #wrap { width: 60px; }
+    </style>
+  </head>
+  <body>
+    <div class="card" id="card">Title <b>bold</b> tail</div>
+    <p id="wrap">one two three four five six</p>
+    <button id="save" data-testid="save-button">Save</button>
+    <input id="email" value="john@example.com" />
+    <input id="remember" type="checkbox" checked />
+    <textarea id="notes">note</textarea>
+    <div id="scroller"><div>tall</div></div>
+    <div id="clipper"><div id="clipped"></div></div>
+    <div id="ghost">ghost</div>
+    <div id="faded"><span id="faded-child">faded</span></div>
+    <img id="logo" alt="Logo" width="10" height="10" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />
+    <script>document.getElementById('scroller').scrollTop = 30</script>
+  </body>
+</html>

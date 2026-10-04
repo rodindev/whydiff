@@ -1,0 +1,68 @@
+{
+  "name": "@whydiff/core",
+  "version": "0.0.1",
+  "description": "Matches two render-tree snapshots, finds the cause of each changed pixel region and groups causes by CSS rule. No browser, no model, no I/O.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "schema"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "whydiff-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./schema/*": "./schema/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "tsdown": {
+    "platform": "neutral"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/whydiff.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/rodindev/whydiff#readme",
+  "bugs": {
+    "url": "https://github.com/rodindev/whydiff/issues"
+  },
+  "keywords": [
+    "visual-diff",
+    "render-tree",
+    "dom-diff",
+    "css-diff",
+    "style-diff",
+    "layout-diff",
+    "tree-matching",
+    "root-cause",
+    "clustering",
+    "cascade-layers",
+    "deterministic",
+    "whydiff"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "devDependencies": {
+    "@types/commonmark": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pixelmatch": "catalog:",
+    "ajv": "catalog:",
+    "commonmark": "catalog:",
+    "fast-check": "catalog:",
+    "pixelmatch": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

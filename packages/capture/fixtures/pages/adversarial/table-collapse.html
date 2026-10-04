@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>visibility: collapse in tables</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      table { position: absolute; left: 100px; top: 100px; border-spacing: 0; }
+      td { padding: 0; width: 40px; height: 40px; }
+      .m { width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the second row and the second column collapse: the remaining cells close up into a 2x2 square at 100,100 -->
+    <table>
+      <colgroup><col /><col style="visibility: collapse" /><col /></colgroup>
+      <tr>
+        <td><div id="t11" class="m" style="background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></div></td>
+        <td><div id="t12" class="m" style="background: #00ff00" data-color="00ff00" data-expect-flag="hidden"></div></td>
+        <td><div id="t13" class="m" style="background: #0000ff" data-color="0000ff" data-expect="140,100,40,40"></div></td>
+      </tr>
+      <tr style="visibility: collapse">
+        <td><div id="t21" class="m" style="background: #ff00ff" data-color="ff00ff" data-expect-flag="hidden"></div></td>
+        <td></td>
+        <td><div id="t23" class="m" style="visibility: visible; background: #ffff00" data-color="ffff00" data-expect-flag="hidden"></div></td>
+      </tr>
+      <tr>
+        <td><div id="t31" class="m" style="background: #00ffff" data-color="00ffff" data-expect="100,140,40,40"></div></td>
+        <td></td>
+        <td><div id="t33" class="m" style="background: #ff8000" data-color="ff8000" data-expect="140,140,40,40"></div></td>
+      </tr>
+    </table>
+  </body>
+</html>

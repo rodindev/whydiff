@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Defaults</title>
+    <style>
+      .ui-btn { border-style: solid; border-color: rgb(0, 0, 0); border-radius: 8px; }
+      /* reads as a no-op and is not: initial is medium, 3px, where the browser's button rule gave 2px */
+      .ui-reset .ui-btn { border-width: initial; }
+    </style>
+  </head>
+  <body>
+    <button id="button" class="ui-btn">Queue</button>
+  </body>
+</html>

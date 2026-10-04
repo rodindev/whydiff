@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CSS Modules</title>
+    <style>
+      body { margin: 0; background: #fff; font: 14px sans-serif; }
+      .Card_root__k3Jd9 { margin: 8px; padding: 8px; border: 1px solid #cccccc; }
+      .Card_wide__m4N5o { width: 400px; }
+      .Card_title__x7Y8z { margin: 0; font-size: 16px; }
+      .List_item__u7I8o { height: 20px; }
+    </style>
+  </head>
+  <body>
+    <!-- class names hashed the way CSS Modules emits them: the same component three times, a list of twins -->
+    <header class="Header_root__p0Q1r"><span class="Header_logo__a1B2c">Shop</span></header>
+    <main class="Page_main__Zz9Yy">
+      <article class="Card_root__k3Jd9 Card_wide__m4N5o">
+        <h2 class="Card_title__x7Y8z">First</h2>
+        <p class="Card_body__q1W2e">Same words</p>
+      </article>
+      <article class="Card_root__k3Jd9">
+        <h2 class="Card_title__x7Y8z">Second</h2>
+        <p class="Card_body__q1W2e">Same words</p>
+      </article>
+      <article class="Card_root__k3Jd9">
+        <h2 class="Card_title__x7Y8z">Third</h2>
+        <p class="Card_body__q1W2e"></p>
+      </article>
+      <ul class="List_root__r5T6y">
+        <li class="List_item__u7I8o"></li>
+        <li class="List_item__u7I8o"></li>
+        <li class="List_item__u7I8o List_last__o9P0a"></li>
+      </ul>
+    </main>
+  </body>
+</html>

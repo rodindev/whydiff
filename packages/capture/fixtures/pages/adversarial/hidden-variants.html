@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ways to paint nothing</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .m { position: absolute; top: 100px; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- controls the capture recognises -->
+    <div id="hv-opacity" class="m" style="left: 100px; opacity: 0; background: #ff0000" data-color="ff0000" data-expect-flag="hidden"></div>
+    <div id="hv-visibility" class="m" style="left: 200px; visibility: hidden; background: #00ff00" data-color="00ff00" data-expect-flag="hidden"></div>
+    <div style="visibility: hidden">
+      <div id="hv-visible-child" class="m" style="left: 300px; visibility: visible; background: #0000ff" data-color="0000ff" data-expect="300,100,40,40"></div>
+    </div>
+    <!-- the same result through filter and mask -->
+    <div id="hv-filter" class="m" style="left: 400px; filter: opacity(0); background: #ff00ff" data-color="ff00ff" data-expect-flag="hidden"></div>
+    <div style="filter: opacity(0)">
+      <div id="hv-filter-child" class="m" style="left: 500px; background: #ffff00" data-color="ffff00" data-expect-flag="hidden"></div>
+    </div>
+    <div id="hv-mask" class="m" style="left: 600px; mask-image: linear-gradient(transparent, transparent); background: #00ffff" data-color="00ffff" data-expect-flag="hidden"></div>
+    <div id="hv-zero-alpha" class="m" style="left: 700px; opacity: 0.0001; background: #ff8000" data-color="ff8000" data-expect-flag="hidden"></div>
+  </body>
+</html>

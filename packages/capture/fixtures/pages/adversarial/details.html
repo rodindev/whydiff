@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Details, until-found and content-visibility</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      details { position: absolute; top: 100px; }
+      summary.m { display: block; }
+      .m { width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <details open style="left: 100px">
+      <summary id="sum-open" class="m" style="background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></summary>
+      <div id="d-open" class="m" style="background: #00ff00" data-color="00ff00" data-expect="100,140,40,40"></div>
+    </details>
+    <details style="left: 300px">
+      <summary id="sum-closed" class="m" style="background: #0000ff" data-color="0000ff" data-expect="300,100,40,40"></summary>
+      <div id="d-closed" class="m" style="background: #ff00ff" data-color="ff00ff" data-expect-flag="hidden"></div>
+    </details>
+    <!-- a summary that keeps its list-item display gets a disclosure marker -->
+    <details style="left: 500px">
+      <summary id="sum-marker" data-expect-flag="pseudo:marker">More</summary>
+    </details>
+    <div hidden="until-found" style="position: absolute; left: 700px; top: 100px">
+      <div id="until-found" class="m" style="background: #ffff00" data-color="ffff00" data-expect-flag="hidden"></div>
+    </div>
+    <div style="position: absolute; left: 800px; top: 100px; content-visibility: hidden">
+      <div id="cv-hidden" class="m" style="background: #00ffff" data-color="00ffff" data-expect-flag="hidden"></div>
+    </div>
+  </body>
+</html>

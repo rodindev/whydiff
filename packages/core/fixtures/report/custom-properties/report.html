@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>whydiff: 2 of 2 screenshots changed</title>
+<style>
+:root{color-scheme:light dark;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#eff2f5;--accent:#0969da;--bg:#ffffff}
+@media (prefers-color-scheme:dark){:root{--fg:#e6edf3;--muted:#9198a1;--line:#3d444d;--code:#212830;--accent:#4493f8;--bg:#0d1117}}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:64rem;padding:2rem 1.25rem 4rem;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--bg)}
+h1{font-size:1.75rem;line-height:1.25;margin:.25rem 0}
+h2{font-size:1.125rem;line-height:1.4;margin:0 0 .5rem}
+a{color:var(--accent)}
+code{font:.875em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);padding:.1em .3em;border-radius:4px;overflow-wrap:anywhere}
+ul,ol{margin:.25rem 0 .75rem;padding-left:1.5rem}
+li{margin:.2rem 0}
+.tool,.meta,.impact,.id,.where,.handle,footer{color:var(--muted)}
+.impact{font-weight:400}
+.tool{margin:0;font-weight:600;letter-spacing:.04em}
+.meta{margin:0 0 2rem}
+.summary{border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem;margin-bottom:2.5rem}
+.summary p{margin:0}
+.summary ol{margin:.5rem 0}
+.cause{border-top:1px solid var(--line);padding:1.25rem 0 .75rem}
+.id{font-weight:400;font-size:.875rem;margin-left:.5rem}
+.example{margin:.25rem 0 .5rem}
+.fix{margin:.5rem 0}
+.handle{font-size:.875rem;margin:.5rem 0 0}
+details{margin:.5rem 0}
+summary{cursor:pointer;color:var(--accent)}
+.more>summary,.tail>summary{font-size:1.125rem;font-weight:600;color:var(--fg);margin:1.5rem 0 .5rem}
+footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-size:.875rem}
+</style>
+</head>
+<body>
+<header>
+<p class="tool">whydiff</p>
+<h1>2 of 2 screenshots changed</h1>
+<p class="meta">whydiff compared main with feat/tokens and found 7 causes and 0 unexplained regions.</p>
+</header>
+<main>
+<section class="summary">
+<p>1 cause appears on all 2 changed screenshots, 14% of changed pixels; every one of those screenshots has other changes too:</p>
+<ol>
+<li><a href="#c2azv0u">the shadows of 2 <code>&lt;div&gt;</code> elements appear, on all 2 changed screenshots, 14% of changed pixels</a></li>
+</ol>
+<p>The other 6 causes hold 86% of changed pixels.</p>
+</section>
+<section class="causes">
+<article class="cause" id="c2azv0u">
+<h2>the shadows of 2 <code>&lt;div&gt;</code> elements appear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>*</code> and 2 more, c2azv0u</span></h2>
+<p class="example">for example, the &quot;ring s1&quot; element&#x27;s shadow appears, at <code>getByText(&#x27;ring s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>*</code> and 2 more from <code>app.css</code> (layer <code>base</code>) now sets --ui-glow, --ui-ring</li>
+<li>--ui-glow, --ui-ring are read by box-shadow, which was invalid without them</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set the old values in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c2azv0u</code></p>
+</article>
+<article class="cause" id="c1rjqha">
+<h2>2 buttons are 2 px wider<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-reset .ui-btn</code>, c1rjqha</span></h2>
+<p class="example">for example, the &quot;btn s1&quot; button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42), at <code>getByText(&#x27;btn s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>.ui-reset .ui-btn</code> from <code>app.css</code> (unlayered) now sets border-width (all sides, was 2px, now 3px) in place of the browser&#x27;s default <code>button { border-width: 2px }</code></li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set border-width (all sides) back to 2px in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c1rjqha</code></p>
+</article>
+<article class="cause" id="c1i00el">
+<h2>the borders of 2 <code>&lt;div&gt;</code> elements disappear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>@property --ui-border-style</code>, c1i00el</span></h2>
+<p class="example">for example, the &quot;frame s1&quot; element&#x27;s border disappears, at <code>getByText(&#x27;frame s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>@property --ui-border-style</code> from <code>app.css</code> no longer registers it (initial value solid)</li>
+<li>--ui-border-style is read by border-style (all sides), which is invalid without it</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set --ui-border-style back to solid in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c1i00el</code></p>
+</article>
+<article class="cause" id="c232xsm">
+<h2>the backgrounds of 2 <code>&lt;div&gt;</code> elements are lighter (was #353535, now #ffffff)<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id">style attribute of an ancestor, c232xsm</span></h2>
+<p class="example">for example, the &quot;surface s1&quot; element&#x27;s background is lighter (was #353535, now #ffffff) and its border changes colour, at <code>getByText(&#x27;surface s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li>the style attribute of an ancestor changed its declaration of --ui-surface (was #353535, now #ffffff)</li>
+<li>--ui-surface is read by background-color, border-color (all sides)</li>
+</ul>
+<p class="fix">to restore it: change the style attribute where the markup or a script sets it</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c232xsm</code></p>
+</article>
+<article class="cause" id="c4acdp1">
+<h2>the shadows of 2 <code>&lt;div&gt;</code> elements change<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-card</code>, c4acdp1</span></h2>
+<p class="example">for example, the &quot;card s1&quot; element&#x27;s shadow changes, at <code>getByText(&#x27;card s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>.ui-card</code> from <code>app.css</code> (unlayered) now sets box-shadow (was <code>rgba(0, 0, 0, 0.2) 0px 1px 2px 0px</code>, now <code>rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px</code>) in place of <code>.ui-elevated</code> from <code>app.css</code> (unlayered)</li>
+<li>box-shadow reads --ui-shadow, set by <code>.ui-elevated</code> from <code>app.css</code> (unlayered)</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set box-shadow back to <code>rgba(0, 0, 0, 0.2) 0px 1px 2px 0px</code> in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c4acdp1</code></p>
+</article>
+<article class="cause" id="c32ihgf">
+<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements grew by 4 px<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code> and 1 more, c32ihgf</span></h2>
+<p class="example">for example, the &quot;panel s1&quot; element&#x27;s inner spacing grew by 4 px, at <code>getByText(&#x27;panel s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>:root</code> and 1 more from <code>app.css</code> (layer <code>theme</code>) changed its declaration of --ui-space (was 4px, now 5px)</li>
+<li>--ui-space is read by padding (all sides), row-gap</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set --ui-space back to 4px in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c32ihgf</code></p>
+</article>
+<article class="cause" id="c2jd0t3">
+<h2>the column-gap property of 2 elements changed<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code>, c2jd0t3</span></h2>
+<p class="example">for example, column-gap (was 4px, now 6px) changed, at <code>getByText(&#x27;row s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>:root</code> from <code>app.css</code> (layer <code>theme</code>) no longer sets --ui-gap</li>
+<li>--ui-gap is read by column-gap, which now uses its var() fallback</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set --ui-gap back to 4px in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c2jd0t3</code></p>
+</article>
+</section>
+</main>
+<footer>Every field of this run is in <code>report.json</code> next to this page; a cause, a screenshot or a region by its id: <code>npx whydiff explain &lt;id&gt;</code>.</footer>
+</body>
+</html>

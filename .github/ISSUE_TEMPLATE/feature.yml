@@ -1,0 +1,21 @@
+name: Feature request
+description: Something whydiff should explain, support or do.
+labels: ['enhancement']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What you were trying to do
+      description: The situation, the command or test, and what whydiff said or did not say.
+    validations:
+      required: true
+  - type: textarea
+    id: wanted
+    attributes:
+      label: What would have helped
+      description: For the report, the lines you wish it had shown. Rough is fine.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: What you do today instead, related tools, links.

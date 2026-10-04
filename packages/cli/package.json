@@ -1,0 +1,90 @@
+{
+  "name": "whydiff",
+  "version": "0.0.1",
+  "description": "Explains why a screenshot changed: which element, which CSS rule, which tests. The command line for Playwright projects.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "whydiff": "./dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "tsdown": {
+    "entry": [
+      "src/main.ts"
+    ],
+    "dts": false,
+    "clean": [
+      "dist",
+      "README.md"
+    ],
+    "copy": [
+      {
+        "from": "../../README.md",
+        "to": "."
+      }
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/whydiff.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/rodindev/whydiff#readme",
+  "bugs": {
+    "url": "https://github.com/rodindev/whydiff/issues"
+  },
+  "keywords": [
+    "visual-regression",
+    "visual-diff",
+    "visual-testing",
+    "screenshot-testing",
+    "screenshot",
+    "toHaveScreenshot",
+    "playwright",
+    "css",
+    "cascade-layers",
+    "computed-style",
+    "root-cause",
+    "coding-agent",
+    "cli",
+    "whydiff"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "@clack/prompts": "catalog:",
+    "@whydiff/capture": "workspace:*",
+    "@whydiff/core": "workspace:*",
+    "pngjs": "catalog:"
+  },
+  "peerDependencies": {
+    "@whydiff/playwright": "workspace:^",
+    "playwright-core": ">=1.53.0"
+  },
+  "peerDependenciesMeta": {
+    "@whydiff/playwright": {
+      "optional": true
+    },
+    "playwright-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pngjs": "catalog:",
+    "@whydiff/playwright": "workspace:*",
+    "playwright-core": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

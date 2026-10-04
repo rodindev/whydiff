@@ -1,0 +1,23 @@
+{
+  "formatVersion": 1,
+  "tool": {"name":"whydiff","version":"0.0.1","source":"cdp","browser":"chromium 147.0.0"},
+  "page": {"url":"http://app.test/","title":"Fixture"},
+  "image": {"width":1000,"height":800,"k":1,"layoutFactor":1,"origin":[0,0],"fullPage":false},
+  "viewport": {"width":1000,"height":800,"scrollX":0,"scrollY":0},
+  "content": {"width":1000,"height":800},
+  "compare": {"threshold":0.2,"animations":"disabled","caret":"hide","scale":"css"},
+  "frames": [{"url":"http://app.test/","owner":null,"offset":[0,0],"scroll":[0,0],"status":"captured"}],
+  "masks": [],
+  "sheets": [],
+  "props": ["display"],
+  "styles": [
+    ["block"]
+  ],
+  "nodes": [
+    {"i":0,"p":-1,"tag":"html","box":[0,0,1000,800],"s":0},
+    {"i":1,"p":0,"tag":"body","box":[0,0,1000,800],"s":0},
+    {"i":2,"p":1,"tag":"input","id":"email","box":[0,0,200,32],"s":0},
+    {"i":3,"p":1,"tag":"div","cls":["field"],"box":[0,40,100,32],"s":0},
+    {"i":4,"p":3,"tag":"button","text":"Submit","box":[0,40,100,32],"s":0}
+  ]
+}

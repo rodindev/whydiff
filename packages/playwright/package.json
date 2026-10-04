@@ -1,0 +1,80 @@
+{
+  "name": "@whydiff/playwright",
+  "version": "0.0.1",
+  "description": "Explains failed toHaveScreenshot assertions as text, for Playwright: the element, the CSS rule, every test with the same cause.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "whydiff-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./reporter": {
+      "whydiff-source": "./src/reporter.ts",
+      "types": "./dist/reporter.d.ts",
+      "default": "./dist/reporter.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json && tsc -p tests/tsconfig.json",
+    "matrix": "node tests/matrix/run.ts"
+  },
+  "tsdown": {
+    "entry": [
+      "src/index.ts",
+      "src/reporter.ts"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/whydiff.git",
+    "directory": "packages/playwright"
+  },
+  "homepage": "https://github.com/rodindev/whydiff#readme",
+  "bugs": {
+    "url": "https://github.com/rodindev/whydiff/issues"
+  },
+  "keywords": [
+    "playwright",
+    "toHaveScreenshot",
+    "playwright-test",
+    "playwright-reporter",
+    "playwright-plugin",
+    "screenshot-testing",
+    "visual-regression",
+    "visual-testing",
+    "visual-diff",
+    "test-reporter",
+    "reporter",
+    "coding-agent",
+    "whydiff"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "@whydiff/capture": "workspace:*",
+    "@whydiff/core": "workspace:*",
+    "pngjs": "catalog:"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.53.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "@types/pngjs": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

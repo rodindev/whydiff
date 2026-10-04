@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Card</title>
+    <style>
+      body { margin: 0 }
+      #card { width: 200px; height: 80px; padding-left: 16px; background: #dddddd }
+      .dot { width: 40px; height: 40px; background: #ff0000 }
+      canvas { display: block }
+    </style>
+  </head>
+  <body>
+    <div id="card"><div class="dot"></div></div>
+    <canvas id="chart" width="60" height="30"></canvas>
+    <script>
+      const context = document.getElementById('chart').getContext('2d')
+      context.fillStyle = '#00ff00'
+      context.fillRect(0, 0, 60, 30)
+    </script>
+  </body>
+</html>

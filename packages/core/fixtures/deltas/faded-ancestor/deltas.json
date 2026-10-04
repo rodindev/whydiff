@@ -1,0 +1,96 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "kind": "own",
+      "style": [
+        {
+          "prop": "opacity",
+          "from": "1",
+          "to": "0.4"
+        }
+      ],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 3,
+      "after": 3,
+      "kind": "painted-by-ancestor",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    }
+  ],
+  "added": [],
+  "removed": []
+}

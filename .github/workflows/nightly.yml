@@ -1,0 +1,82 @@
+name: Nightly
+
+on:
+  schedule:
+    - cron: '23 3 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  releases:
+    name: Playwright releases
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    outputs:
+      releases: ${{ steps.list.outputs.releases }}
+    steps:
+      - id: list
+        run: |
+          npm view @playwright/test versions dist-tags --json > "$RUNNER_TEMP/playwright.json"
+          node >> "$GITHUB_OUTPUT" <<'EOF'
+          const { readFileSync } = require('node:fs')
+          const data = JSON.parse(readFileSync(`${process.env.RUNNER_TEMP}/playwright.json`, 'utf8'))
+          const refused = ['1.60.0', '1.61.0']
+          const last = new Map()
+          for (const version of data.versions) {
+            const minor = /^1\.(\d+)\.\d+$/.exec(version)?.[1]
+            if (minor !== undefined && Number(minor) >= 53 && !refused.includes(version)) last.set(minor, version)
+          }
+          const next = data['dist-tags'].next
+          console.log(`releases=${JSON.stringify([...last.values(), ...(next === undefined ? [] : [next])])}`)
+          EOF
+
+  playwright:
+    name: Playwright ${{ matrix.playwright }}
+    needs: releases
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        playwright: ${{ fromJSON(needs.releases.outputs.releases) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: $/.github/actions/setup
+
+      - run: pnpm build
+
+      - name: Install the release's Chromium headless shell
+        env:
+          PLAYWRIGHT: ${{ matrix.playwright }}
+        run: npx --yes "playwright-core@$PLAYWRIGHT" install --with-deps chromium-headless-shell
+
+      - name: Run the fixture project against the release
+        env:
+          PLAYWRIGHT: ${{ matrix.playwright }}
+        run: pnpm --filter @whydiff/playwright matrix "$PLAYWRIGHT"
+
+  report:
+    name: Report failure
+    needs: playwright
+    if: failure() && github.event_name == 'schedule'
+    runs-on: ubuntu-slim
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          issue=$(gh issue list --repo "$GITHUB_REPOSITORY" --label nightly --state open --json number --jq '.[0].number')
+          if [ -n "$issue" ]; then
+            gh issue comment "$issue" --repo "$GITHUB_REPOSITORY" --body "Failed again: $RUN"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --label nightly --title "Nightly Playwright matrix fails" --body "First failure: $RUN"
+          fi

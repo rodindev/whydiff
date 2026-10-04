@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Tag soup</title>
+    <style>
+      body { margin: 0; background: #fff; font: 14px sans-serif; }
+      div { min-height: 4px; }
+      p::before { content: '-'; }
+      iframe { width: 300px; height: 120px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- no classes and no ids: twins by tag alone, an open shadow root between light twins, list markers, a frame -->
+    <div>
+      <div><span>One</span></div>
+      <div><span>One</span></div>
+      <div></div>
+    </div>
+    <div>
+      <template shadowrootmode="open">
+        <div></div>
+        <slot></slot>
+        <div><p>Inside</p></div>
+      </template>
+      <div></div>
+    </div>
+    <ol>
+      <li>Step</li>
+      <li>Step</li>
+      <li></li>
+    </ol>
+    <table>
+      <tr><td>Cell</td><td>Cell</td><td></td></tr>
+      <tr><td>Cell</td><td></td><td></td></tr>
+    </table>
+    <p>Note</p>
+    <p></p>
+    <iframe src="/locators/frame.html"></iframe>
+  </body>
+</html>

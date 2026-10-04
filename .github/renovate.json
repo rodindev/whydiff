@@ -1,0 +1,23 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:best-practices", "group:allNonMajor", "schedule:weekly"],
+  "labels": ["dependencies"],
+  "packageRules": [
+    {
+      "matchDepTypes": ["engines", "peerDependencies"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["pixelmatch", "@types/pixelmatch"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "<25"
+    },
+    {
+      "matchPackageNames": ["@playwright/test", "playwright-core"],
+      "groupName": "playwright"
+    }
+  ]
+}

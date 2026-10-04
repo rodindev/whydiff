@@ -1,0 +1,70 @@
+{
+  "name": "@whydiff/capture",
+  "version": "0.0.1",
+  "description": "Captures a whydiff render-tree snapshot from Chromium, for Playwright: DOM, layout, computed styles, roles, winning CSS rules.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "whydiff-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodindev/whydiff.git",
+    "directory": "packages/capture"
+  },
+  "homepage": "https://github.com/rodindev/whydiff#readme",
+  "bugs": {
+    "url": "https://github.com/rodindev/whydiff/issues"
+  },
+  "keywords": [
+    "dom-snapshot",
+    "render-tree",
+    "computed-style",
+    "cascade-layers",
+    "accessibility-tree",
+    "chrome-devtools-protocol",
+    "cdp",
+    "chromium",
+    "playwright",
+    "visual-diff",
+    "whydiff"
+  ],
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "dependencies": {
+    "@whydiff/core": "workspace:*"
+  },
+  "peerDependencies": {
+    "playwright-core": ">=1.53.0"
+  },
+  "peerDependenciesMeta": {
+    "playwright-core": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/pngjs": "catalog:",
+    "playwright-core": "catalog:",
+    "pngjs": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

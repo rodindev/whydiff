@@ -1,0 +1,113 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 3,
+      "after": 9,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 4,
+      "after": 10,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    },
+    {
+      "before": 5,
+      "after": 11,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    },
+    {
+      "before": 6,
+      "after": 6,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 7,
+      "after": 7,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    },
+    {
+      "before": 8,
+      "after": 8,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    },
+    {
+      "before": 9,
+      "after": 3,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 10,
+      "after": 4,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    },
+    {
+      "before": 11,
+      "after": 5,
+      "confidence": 1000,
+      "pass": 1,
+      "anchor": "tagText"
+    }
+  ],
+  "removed": [],
+  "added": [],
+  "afterOf": [
+    0,
+    1,
+    2,
+    9,
+    10,
+    11,
+    6,
+    7,
+    8,
+    3,
+    4,
+    5
+  ],
+  "beforeOf": [
+    0,
+    1,
+    2,
+    9,
+    10,
+    11,
+    6,
+    7,
+    8,
+    3,
+    4,
+    5
+  ],
+  "lowConfidence": []
+}

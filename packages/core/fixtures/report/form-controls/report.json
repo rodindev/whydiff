@@ -1,0 +1,184 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/form-reset"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 1,
+      "changed": 1,
+      "identical": 0
+    },
+    "causes": 1,
+    "unexplained": 2,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c1ur4wc"
+      ],
+      "screenshots": 1,
+      "settled": 0,
+      "pixels": 912,
+      "text": "1 cause appears on the changed screenshot, 60% of changed pixels; that screenshot has other changes too:\n- the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels (c1ur4wc)\n\n2 unexplained regions on 1 screenshot hold 40% of changed pixels."
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "file": "tests/forms.spec.ts",
+      "project": "chromium",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 3,
+      "pixels": 1519,
+      "massChange": false,
+      "causes": [
+        "c1ur4wc"
+      ],
+      "unexplained": [
+        "uaq6iqj",
+        "utg09n6"
+      ]
+    }
+  ],
+  "causes": [
+    {
+      "id": "c1ur4wc",
+      "headline": "the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels",
+      "text": "## the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels, only in tests/forms.spec.ts (c1ur4wc)\n- at `getByRole('textbox', { name: 'Notes' })` in \"s1 >> renders\" (s4udgzc)\n- color: was #000000, now #090909",
+      "key": "k1|ui-field|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "kind": "ui-field",
+      "level": 1,
+      "summary": {
+        "kind": "style",
+        "changes": [
+          {
+            "prop": "color",
+            "from": "rgb(0, 0, 0)",
+            "to": "rgb(9, 9, 9)"
+          }
+        ]
+      },
+      "scope": "local",
+      "file": "tests/forms.spec.ts",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 1,
+      "elements": 1,
+      "pixels": 912,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByRole('textbox', { name: 'Notes' })"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByRole('textbox', { name: 'Notes' })",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "color",
+              "from": "rgb(0, 0, 0)",
+              "to": "rgb(9, 9, 9)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "textbox",
+              "name": "Notes",
+              "tag": "textarea"
+            },
+            "facts": [
+              {
+                "kind": "color",
+                "from": "#000000",
+                "to": "#090909"
+              }
+            ],
+            "text": "the \"Notes\" text field's text is lighter (was #000000, now #090909)"
+          },
+          "box": {
+            "before": [
+              16,
+              44,
+              320,
+              96
+            ],
+            "after": [
+              16,
+              44,
+              320,
+              96
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": [
+    {
+      "id": "uaq6iqj",
+      "screenshot": "s4udgzc",
+      "region": [
+        326,
+        130,
+        7,
+        7
+      ],
+      "pixels": 49,
+      "candidates": [
+        {
+          "locator": "getByRole('textbox', { name: 'Notes' })",
+          "share": 31
+        },
+        {
+          "locator": "locator('body')",
+          "share": 1
+        },
+        {
+          "locator": "locator('html')",
+          "share": 1
+        }
+      ],
+      "note": "inside the resize corner of `getByRole('textbox', { name: 'Notes' })`"
+    },
+    {
+      "id": "utg09n6",
+      "screenshot": "s4udgzc",
+      "region": [
+        28,
+        170,
+        62,
+        9
+      ],
+      "pixels": 558,
+      "candidates": [
+        {
+          "locator": "getByRole('textbox', { name: 'Title' })",
+          "share": 58
+        },
+        {
+          "locator": "locator('body')",
+          "share": 1
+        },
+        {
+          "locator": "locator('html')",
+          "share": 1
+        }
+      ],
+      "note": "inside `<input>`: placeholder, value text or control internals, which whydiff does not capture"
+    }
+  ]
+}

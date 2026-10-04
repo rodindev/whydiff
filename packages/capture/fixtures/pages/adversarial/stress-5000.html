@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html data-scroll="0,18000">
+  <head>
+    <meta charset="utf-8" />
+    <title>5000 elements</title>
+    <style>
+      body { margin: 0; background: #fff; font: 12px sans-serif; }
+      .row { height: 20px; overflow: hidden; white-space: nowrap; }
+      .row > * { margin-right: 8px; }
+      .m { position: absolute; z-index: 1; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- rows of a checkbox, an id, a link and a button, 20px each, until the document holds exactly 5000 elements; scrolled to 18000 -->
+    <div id="s-left" class="m" style="left: 600px; top: 18100px; background: #ff0000" data-color="ff0000" data-expect="600,100,40,40"></div>
+    <div id="s-right" class="m" style="left: 900px; top: 18500px; background: #00ff00" data-color="00ff00" data-expect="900,500,40,40"></div>
+    <div id="rows"></div>
+    <script>
+      const total = 5000
+      const rows = document.getElementById('rows')
+      let count = document.getElementsByTagName('*').length
+      let row = null
+      for (let i = 0; count < total; i++) {
+        if (total - count < 5) {
+          row.append(document.createElement('span'))
+          count += 1
+          continue
+        }
+        row = document.createElement('div')
+        row.className = 'row'
+        row.innerHTML = '<input type="checkbox"' + (i % 3 === 0 ? ' checked' : '') + '><span>#' + i + '</span><a href="#r' + i + '">Item ' + i + '</a><button>Edit</button>'
+        rows.append(row)
+        count += 5
+      }
+    </script>
+  </body>
+</html>

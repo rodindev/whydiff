@@ -1,0 +1,58 @@
+{
+  "causes": [
+    {
+      "id": 0,
+      "node": {
+        "before": 2,
+        "after": 2
+      },
+      "kind": "container",
+      "effects": [
+        {
+          "kind": "resized",
+          "nodes": [
+            3,
+            4
+          ]
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "region": {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 60,
+        "pixels": 24000
+      },
+      "causes": [
+        0
+      ],
+      "candidates": [
+        {
+          "before": 3,
+          "after": 3,
+          "share": 1000
+        },
+        {
+          "before": 4,
+          "after": 4,
+          "share": 1000
+        },
+        {
+          "before": 2,
+          "after": 2,
+          "share": 300
+        }
+      ]
+    }
+  ],
+  "unexplained": [],
+  "suppressed": {
+    "movedWithAncestor": 0,
+    "inherited": 0,
+    "derivedOnly": 0
+  }
+}

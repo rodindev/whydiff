@@ -1,0 +1,6 @@
+export type { ReportedAttachment, TestIdentity } from './attachments.js'
+export { EXCLUDED_PLAYWRIGHT } from './constants.js'
+export { whydiffCapture } from './explicit.js'
+export type { ScreenshotArgs, WhydiffUseOptions } from './options.js'
+export type { ManifestLine } from './output.js'
+export { withWhydiff } from './with.js'

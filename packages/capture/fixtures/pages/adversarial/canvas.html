@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Canvas</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      canvas { position: absolute; display: block; }
+    </style>
+  </head>
+  <body>
+    <canvas id="cv-plain" width="40" height="40" style="left: 100px; top: 100px" data-color="ff0000" data-expect="100,100,40,40"></canvas>
+    <!-- a 20px bitmap stretched to 40px by CSS -->
+    <canvas id="cv-stretched" width="20" height="20" style="left: 200px; top: 100px; width: 40px; height: 40px" data-color="00ff00" data-expect="200,100,40,40"></canvas>
+    <!-- a 20px canvas inside a scale(2) parent -->
+    <div style="position: absolute; left: 300px; top: 100px; transform: scale(2); transform-origin: 0 0">
+      <canvas id="cv-scaled" width="20" height="20" style="position: static" data-color="0000ff" data-expect="300,100,40,40"></canvas>
+    </div>
+    <!-- a canvas drawn after load, inside an overflow:auto scroller scrolled by 60 -->
+    <div id="cv-scroller" style="position: absolute; left: 500px; top: 100px; width: 100px; height: 100px; overflow: auto">
+      <div style="position: relative; height: 300px">
+        <canvas id="cv-scrolled" width="40" height="40" style="left: 30px; top: 100px" data-color="ff00ff" data-expect="530,140,40,40"></canvas>
+      </div>
+    </div>
+    <script>
+      for (const [id, color] of [['cv-plain', '#ff0000'], ['cv-stretched', '#00ff00'], ['cv-scaled', '#0000ff']]) {
+        const canvas = document.getElementById(id)
+        const context = canvas.getContext('2d')
+        context.fillStyle = color
+        context.fillRect(0, 0, canvas.width, canvas.height)
+      }
+      document.getElementById('cv-scroller').scrollTop = 60
+      requestAnimationFrame(() => {
+        const context = document.getElementById('cv-scrolled').getContext('2d')
+        context.fillStyle = '#ff00ff'
+        context.fillRect(0, 0, 40, 40)
+      })
+    </script>
+  </body>
+</html>

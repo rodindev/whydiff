@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Tokens</title>
+    <link rel="stylesheet" href="/tokens.css" />
+    <script>
+      CSS.registerProperty({ name: '--ui-line', syntax: '<length>', inherits: true, initialValue: '2px' })
+    </script>
+  </head>
+  <body>
+    <section id="themed" style="--ui-accent: rgb(0, 128, 0)">
+      <div id="card" class="ui-card">card</div>
+      <div id="dark" class="ui-dark"><div id="dark-card" class="ui-card">dark card</div></div>
+    </section>
+    <div id="cycle" class="ui-cycle">cycle</div>
+    <div id="gap" class="ui-gap">gap</div>
+    <div id="scope" class="ui-scope"><div id="tinted" class="ui-tinted">tinted</div></div>
+    <div id="keywords" class="ui-keywords">keywords</div>
+    <div id="outlined" class="ui-outlined">outlined</div>
+    <div class="ui-warm"><span class="ui-marked">warm</span></div>
+    <div class="ui-cool"><span class="ui-marked">cool</span></div>
+    <div id="host"></div>
+    <script>
+      // an @property inside a shadow root registers nothing: the inner element takes its fallback
+      document.getElementById('host').attachShadow({ mode: 'open' }).innerHTML =
+        '<style>@property --ui-shade { syntax: "*"; inherits: false; initial-value: rgb(1, 1, 1); }' +
+        ' .ui-inner { background-color: var(--ui-shade, rgb(2, 2, 2)); }</style>' +
+        '<div id="inner" class="ui-inner">inner</div>'
+    </script>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { margin: 0; background: #fff; }
+      div { position: absolute; width: 40px; height: 40px; }
+      @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes slide { from { left: 100px; } to { left: 400px; } }
+      #spinner { left: 100px; top: 100px; background: #ff0000; animation: spin 1s linear infinite; }
+      #slider { top: 200px; background: #00ff00; animation: slide 30s linear forwards; }
+      #fader { left: 100px; top: 300px; background: #0000ff; transition: left 20s linear; }
+      #hidden { left: 100px; top: 400px; background: #ff00ff; }
+      #host { left: 500px; top: 500px; }
+    </style>
+  </head>
+  <body>
+    <div id="spinner"></div>
+    <div id="slider"></div>
+    <div id="fader"></div>
+    <div id="hidden"></div>
+    <input id="field" style="position: absolute; left: 100px; top: 500px" autofocus />
+    <div id="host"></div>
+    <script>
+      requestAnimationFrame(() => { document.getElementById('fader').style.left = '400px' })
+      document.getElementById('host').attachShadow({ mode: 'open' }).innerHTML =
+        '<style>@keyframes spin { to { transform: rotate(360deg); } } div { width: 40px; height: 40px; background: #00ffff; animation: spin 1s linear infinite; }</style><div id="shadow-spinner"></div>'
+    </script>
+  </body>
+</html>

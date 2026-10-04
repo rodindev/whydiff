@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html data-scroll="0,50">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sticky inside scrollers</title>
+    <style>
+      body { margin: 0; background: #fff; height: 2000px; }
+      .scroller { position: absolute; top: 100px; width: 300px; height: 200px; overflow: auto; background: #eeeeee; }
+      .m { width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the page is scrolled by 50, so both scrollers start at screen y 50 -->
+    <div id="sticky-page" class="m" style="position: sticky; top: 0; margin-left: 800px; background: #0000ff" data-color="0000ff" data-expect="800,0,40,40"></div>
+    <!-- vertical: sticky top 10 at content y 100, scroller scrolled by 300, stuck at scroller top + 10 -->
+    <div id="v-scroller" class="scroller" style="left: 100px" data-expect-scroll="0,300,300,1140">
+      <div style="height: 100px"></div>
+      <div id="sticky-v" class="m" style="position: sticky; top: 10px; background: #ff0000" data-color="ff0000" data-expect="100,60,40,40"></div>
+      <div style="height: 1000px"></div>
+    </div>
+    <!-- horizontal: sticky left 20 at content x 100, scroller scrolled by 250, stuck at scroller left + 20 -->
+    <div id="h-scroller" class="scroller" style="left: 500px" data-expect-scroll="250,0,1000,200">
+      <div style="display: flex; width: 1000px">
+        <div style="flex: none; width: 100px"></div>
+        <div id="sticky-h" class="m" style="flex: none; position: sticky; left: 20px; background: #00ff00" data-color="00ff00" data-expect="520,50,40,40"></div>
+      </div>
+    </div>
+    <script>
+      document.getElementById('v-scroller').scrollTop = 300
+      document.getElementById('h-scroller').scrollLeft = 250
+    </script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+:root { --ui-radius: 4px }
+.ui-button { padding: 6px 12px; border: 1px solid #0969da; border-radius: 6px; background: #0969da; color: #ffffff; font: inherit }
+.ui-button.ui-secondary { background: #ffffff; color: #0969da }
+.ui-input { padding: 4px 8px; border: 1px solid #d0d7de; border-radius: 6px; font: inherit }
+.ui-card { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; border: 1px solid #d0d7de; border-radius: var(--ui-radius) }

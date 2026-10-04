@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html data-scroll="0,900" style="scroll-snap-type: y mandatory">
+  <head>
+    <meta charset="utf-8" />
+    <title>Scroll snapping on the root</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      section { position: relative; height: 700px; scroll-snap-align: start; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- snap positions are the section tops 0, 700, 1400, 2100; a request for 900 snaps to 700 -->
+    <section></section>
+    <section>
+      <div id="snap-top" class="m" style="left: 100px; top: 20px; background: #ff0000" data-color="ff0000" data-expect="100,20,40,40"></div>
+      <div id="snap-bottom" class="m" style="left: 200px; top: 600px; background: #00ff00" data-color="00ff00" data-expect="200,600,40,40"></div>
+    </section>
+    <section></section>
+    <section></section>
+    <div id="snap-fixed" style="position: fixed; left: 500px; top: 300px; width: 40px; height: 40px; background: #0000ff" data-color="0000ff" data-expect="500,300,40,40"></div>
+  </body>
+</html>

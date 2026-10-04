@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Rules</title>
+    <link rel="stylesheet" href="/rules.css" />
+    <style>
+      @layer base, components;
+      /* a layered rule of higher specificity loses padding-left to the later unlayered .card */
+      @layer components { #card.card { padding-left: 24px; color: rgb(1, 2, 3); font-weight: 700; } }
+      .card { padding-left: 8px; }
+      /* !important in the lower layer wins color over the normal declaration in components */
+      @layer base { .card { color: rgb(9, 9, 9) !important; text-align: right !important; } }
+      /* a later source position in an earlier layer still loses font-weight to components */
+      @layer base { .card { font-weight: 400; } }
+      /* among !important declarations the layer order is reversed: base beats unlayered */
+      .card { text-align: center !important; }
+      #card { border: 0 solid red; }
+      .card::before { content: ''; display: block; padding-left: 3px; }
+    </style>
+  </head>
+  <body>
+    <div id="card" class="card" style="margin-left: 5px"><span id="child">text</span></div>
+    <script>
+      const sheet = new CSSStyleSheet()
+      sheet.replaceSync('#card { font-size: 20px; }')
+      document.adoptedStyleSheets = [sheet]
+    </script>
+  </body>
+</html>

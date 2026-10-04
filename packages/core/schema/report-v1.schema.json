@@ -1,0 +1,966 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/rodindev/whydiff/main/packages/core/schema/report-v1.schema.json",
+  "title": "whydiff report v1",
+  "description": "One whydiff run: the screenshots compared, the causes of their changed pixels clustered across the run, and the regions no cause explains. Every field is derived from the inputs, with no timestamps or absolute paths, so the same inputs give the same bytes. The structured fields are the contract. The fields written for people to read (causes[].headline, causes[].text, summary.lead.text and the text of an observation) may change their wording between versions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "tool",
+    "compared",
+    "summary",
+    "screenshots",
+    "causes",
+    "unexplained"
+  ],
+  "properties": {
+    "formatVersion": {
+      "description": "Version of the report format.",
+      "const": 1
+    },
+    "tool": {
+      "description": "The tool that wrote the report.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "rules"],
+      "properties": {
+        "name": {
+          "description": "Always whydiff.",
+          "const": "whydiff"
+        },
+        "version": {
+          "description": "Version of whydiff that wrote the report.",
+          "type": "string"
+        },
+        "rules": {
+          "description": "Versions of the rules the report was written with.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cluster"],
+          "properties": {
+            "cluster": {
+              "description": "Version of the clustering rules (CLUSTER_RULES_VERSION). Every cause id depends on it: the same input under the same version gives the same ids, a new version may change them, so cause ids compare only between reports with the same value.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "compared": {
+      "description": "The labels of the two sides (the Playwright reporter writes expected and actual), plus the browser and the viewport when every pair agreed on them.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["before", "after"],
+      "properties": {
+        "before": {
+          "description": "Label of the before side: expected under Playwright.",
+          "type": "string"
+        },
+        "after": {
+          "description": "Label of the after side: actual under Playwright.",
+          "type": "string"
+        },
+        "browser": {
+          "description": "Browser of every pair's after side, when they all agree.",
+          "type": "string"
+        },
+        "viewport": {
+          "description": "Viewport of every pair's after side as <width>x<height>, when they all agree.",
+          "type": "string"
+        }
+      }
+    },
+    "summary": {
+      "description": "The run in numbers, and the run summary it leads with.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screenshots", "causes", "unexplained", "massChange", "lead"],
+      "properties": {
+        "screenshots": {
+          "description": "The compared screenshots, changed or identical.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["compared", "changed", "identical"],
+          "properties": {
+            "compared": {
+              "description": "Pairs compared.",
+              "$ref": "#/$defs/count"
+            },
+            "changed": {
+              "description": "Pairs with a region of differing pixels.",
+              "$ref": "#/$defs/count"
+            },
+            "identical": {
+              "description": "Pairs without one.",
+              "$ref": "#/$defs/count"
+            }
+          }
+        },
+        "causes": {
+          "description": "Causes of the run.",
+          "$ref": "#/$defs/count"
+        },
+        "unexplained": {
+          "description": "Unexplained regions of the run.",
+          "$ref": "#/$defs/count"
+        },
+        "massChange": {
+          "description": "Changed screenshots with too many regions or too large a share of differing pixels to explain one by one.",
+          "$ref": "#/$defs/count"
+        },
+        "lead": {
+          "description": "The run summary the report leads with. causes: ids of the causes it lists, the first in report order (by changed pixels) up to the last of the first five that adds a changed screenshot they appear on or one they settle; screenshots: the changed screenshots they appear on; settled: those on which they account for every changed pixel (no other cause and no unexplained region there), which fixing or accepting them would leave unchanged; pixels: their changed pixels; text: the summary as report.md prints it.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["causes", "screenshots", "settled", "pixels", "text"],
+          "properties": {
+            "causes": {
+              "description": "Ids of the causes it lists: the first in report order, up to the last of the first five that adds a changed screenshot they appear on or one they settle.",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "screenshots": {
+              "description": "Changed screenshots the listed causes appear on.",
+              "$ref": "#/$defs/count"
+            },
+            "settled": {
+              "description": "Changed screenshots on which the listed causes account for every changed pixel: no other cause and no unexplained region there, so fixing or accepting them leaves these unchanged.",
+              "$ref": "#/$defs/count"
+            },
+            "pixels": {
+              "description": "Changed pixels of the listed causes.",
+              "$ref": "#/$defs/count"
+            },
+            "text": {
+              "description": "The run summary as report.md prints it. Wording may change between versions; causes, screenshots, settled and pixels hold the facts.",
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "screenshots": {
+      "description": "One entry per compared pair, in run order.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "status",
+          "width",
+          "height",
+          "regions",
+          "pixels",
+          "massChange",
+          "causes",
+          "unexplained"
+        ],
+        "properties": {
+          "id": {
+            "description": "s plus six base36 digits of a hash of the pair's key (under Playwright: project, test id and screenshot name), the same in every report over the same screenshot.",
+            "type": "string"
+          },
+          "title": {
+            "description": "The describe blocks, the test title and the screenshot name, joined by ' > '; the two names for two snaps or files.",
+            "type": "string"
+          },
+          "file": {
+            "description": "The test's spec file, relative to Playwright's rootDir; absent for a pair outside a test.",
+            "type": "string"
+          },
+          "line": {
+            "description": "Line of the test in its file; absent for a pair outside a test.",
+            "type": "integer",
+            "minimum": 1
+          },
+          "project": {
+            "description": "Playwright project of the test; absent for a pair outside a test.",
+            "type": "string"
+          },
+          "status": {
+            "description": "changed when a pair has a region of differing pixels, else identical.",
+            "enum": ["changed", "identical"]
+          },
+          "width": {
+            "description": "Width of the before side's PNG in pixels.",
+            "$ref": "#/$defs/count"
+          },
+          "height": {
+            "description": "Height of the before side's PNG in pixels.",
+            "$ref": "#/$defs/count"
+          },
+          "regions": {
+            "description": "Regions of differing pixels.",
+            "$ref": "#/$defs/count"
+          },
+          "pixels": {
+            "description": "Differing pixels as Playwright counts them, anti-aliasing left out.",
+            "$ref": "#/$defs/count"
+          },
+          "massChange": {
+            "description": "Too many regions or too large a share of differing pixels to explain one by one; usually the two sides show different page states.",
+            "type": "boolean"
+          },
+          "sizeMismatch": {
+            "description": "The [width, height] of the two PNGs when they differ.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["before", "after"],
+            "properties": {
+              "before": {
+                "description": "Width and height of the before side's PNG.",
+                "$ref": "#/$defs/point"
+              },
+              "after": {
+                "description": "Width and height of the after side's PNG.",
+                "$ref": "#/$defs/point"
+              }
+            }
+          },
+          "causes": {
+            "description": "Ids of the causes with a member on this screenshot.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "unexplained": {
+            "description": "Ids of the unexplained regions on this screenshot.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "causes": {
+      "description": "One entry per cluster of like changes across the run, ordered by pixels, resized causes last.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "headline",
+          "text",
+          "key",
+          "kind",
+          "level",
+          "summary",
+          "scope",
+          "match",
+          "ambiguous",
+          "screenshots",
+          "elements",
+          "pixels",
+          "effects",
+          "example",
+          "members"
+        ],
+        "properties": {
+          "id": {
+            "description": "c plus six base36 digits of a hash of key: the same for the same input under the same tool.rules.cluster. A new version of the cluster rules may change it, and the report names the version it was written with. An id holds between runs only while the cause is keyed the same way: a rule cause by its rule while at least two elements of the run changed under it, any other cause by the most specific of its values, deltas or properties that two causes of the run share, so a run over fewer or other screenshots, a test's own page among them, can give the same sentence another id.",
+            "type": "string"
+          },
+          "headline": {
+            "description": "One sentence about the whole run that stands alone, written by whydiff from the data below: what at least half of the members show that the cause's own properties can produce (only the facts of members[].observation count), with how many show it, then the screenshots it is on and its share of the changed pixels; when no fact holds for half the members, which properties changed on how many elements; a cause of one element reads as that element's observation. Identifiers in Markdown code spans. Wording may change between versions; the fields hold the facts.",
+            "type": "string"
+          },
+          "text": {
+            "description": "The cause's block as report.md prints it: Markdown, the heading (the headline, then the rule of a rule cause as its rule line names it and the id, in parentheses) first, then one line each for the example, the rule and what it did, the consequences, the doubt, where a fix goes and the command that lists every member. What whydiff explain <id> prints first. Wording may change between versions.",
+            "type": "string"
+          },
+          "key": {
+            "description": "The cluster key: rules version, kind, family and the change, as k1|ui-btn|style|padding-left=0>8px. A rule cause's key is k1|rule|<sheet>|<selector>|<! when important>, ending in |layer <name> or |unlayered when that selector sits in more than one layer of the sheet.",
+            "type": "string"
+          },
+          "kind": {
+            "description": "What the members are grouped by, not a name to read: the test id stem, else the class that names their component, cut to its BEM block (ui-card for ui-card__title), else the tag with some of its classes (td.ui-cell), the role or the tag; rule at level 0.",
+            "type": "string"
+          },
+          "level": {
+            "description": "0: the members share a stylesheet rule behind some of their changed longhands; 1: the same values; 2: the same delta; 3: only the property names. An element whose changes come from several rules is a member of the cause of each rule.",
+            "enum": [0, 1, 2, 3]
+          },
+          "summary": {
+            "description": "What a cluster's key says, structured for the report.",
+            "$ref": "#/$defs/summary"
+          },
+          "scope": {
+            "description": "global when the cause has members on more than one screenshot, else local.",
+            "enum": ["global", "local"]
+          },
+          "file": {
+            "description": "For a local cause, the spec file every member comes from.",
+            "type": "string"
+          },
+          "match": {
+            "description": "How surely the same element was found on both sides, not whether it explains the pixels.",
+            "enum": ["exact", "likely", "ambiguous"]
+          },
+          "ambiguous": {
+            "description": "Members with two candidates within the matching margin.",
+            "$ref": "#/$defs/count"
+          },
+          "screenshots": {
+            "description": "Screenshots with a member of the cause.",
+            "type": "integer",
+            "minimum": 1
+          },
+          "elements": {
+            "description": "Elements of the members; a member counts in each cause it belongs to.",
+            "type": "integer",
+            "minimum": 1
+          },
+          "pixels": {
+            "description": "Differing pixels of the members: each region shared evenly among the members that touch it, each member's among the causes it belongs to, in whole pixels, so the causes' pixels add up to the pixels of the regions with a cause.",
+            "$ref": "#/$defs/count"
+          },
+          "effects": {
+            "description": "Totals per effect kind over the members; a shift carries the vector most of its nodes share.",
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/effect"
+            }
+          },
+          "example": {
+            "description": "The member with the most elements, the first on a tie: one place to look. src is the source hint the page carried for it, such as src/components/Button.ts:12.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["screenshot", "locator"],
+            "properties": {
+              "screenshot": {
+                "description": "Id of its screenshot.",
+                "type": "string"
+              },
+              "locator": {
+                "description": "Playwright code that finds its element, as its member's locator.",
+                "type": "string"
+              },
+              "src": {
+                "description": "The source hint the page carried for its element.",
+                "type": "string"
+              }
+            }
+          },
+          "members": {
+            "description": "One per element of the cause on a screenshot; an element under several rules is a member of each rule's cause, so it can appear in more than one cause.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["screenshot", "locator", "elements", "effects"],
+              "properties": {
+                "screenshot": {
+                  "description": "Id of its screenshot.",
+                  "type": "string"
+                },
+                "locator": {
+                  "description": "Playwright code to put after page. that finds the element on the after side for an element that appears, else on the before side: its test id, role and name, id or own text where that finds it alone, else its tag and class inside the nearest ancestor found alone, with .nth() among twins; .contentFrame() enters an iframe.",
+                  "type": "string"
+                },
+                "elements": {
+                  "description": "The element plus the nodes of its effects.",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "effects": {
+                  "description": "What its change did to other nodes, totalled per kind.",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/effect"
+                  }
+                },
+                "changes": {
+                  "description": "The element's own changed longhands with the computed values as captured, whichever rule set them; set for style, container, paint-order and rule causes. A longhand that only restates another change is left out: a border or outline colour that follows color, a side that paints on neither side, line-height that kept its ratio to font-size, em lengths that followed font-size, translate, rotate, scale and transform that compose to the same matrix as before.",
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["prop", "from", "to"],
+                    "properties": {
+                      "prop": {
+                        "description": "The longhand.",
+                        "type": "string"
+                      },
+                      "from": {
+                        "description": "Its computed value before.",
+                        "type": "string"
+                      },
+                      "to": {
+                        "description": "Its computed value after.",
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "observation": {
+                  "description": "What changed on the element as a person would see it; absent when nothing on it passed a threshold.",
+                  "$ref": "#/$defs/observation"
+                },
+                "box": {
+                  "description": "The element's box in whole pixels of each side's PNG, [x, y, width, height]: before on the expected image and after on the actual one, each present on the sides the element exists on. For drawing it on the screenshots.",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "before": {
+                      "description": "On the before side's PNG; absent when the element is not on that side.",
+                      "$ref": "#/$defs/rect"
+                    },
+                    "after": {
+                      "description": "On the after side's PNG; absent when the element is not on that side.",
+                      "$ref": "#/$defs/rect"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "unexplained": {
+      "description": "Regions of differing pixels with no DOM, style or geometry change found under them.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "screenshot", "region", "pixels", "candidates"],
+        "properties": {
+          "id": {
+            "description": "u plus six base36 digits of a hash of the screenshot key and the region.",
+            "type": "string"
+          },
+          "screenshot": {
+            "description": "Id of its screenshot.",
+            "type": "string"
+          },
+          "region": {
+            "description": "[x, y, width, height] in PNG pixels.",
+            "$ref": "#/$defs/rect"
+          },
+          "pixels": {
+            "description": "Differing pixels in the region.",
+            "$ref": "#/$defs/count"
+          },
+          "candidates": {
+            "description": "Elements under the region; share is the part of the region's differing pixels inside the element's box, per mille.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["locator", "share"],
+              "properties": {
+                "locator": {
+                  "description": "Playwright code that finds the element.",
+                  "type": "string"
+                },
+                "share": {
+                  "description": "The region's differing pixels inside the element's box, per mille.",
+                  "$ref": "#/$defs/count"
+                }
+              }
+            }
+          },
+          "note": {
+            "description": "A likely reason, one of four: anti-aliasing for a tiny region; under a picture (<img>, <canvas>, <video>, <svg>, <picture>) when the top candidate is one; inside the resize corner of an element, by its locator; inside a form control (<input>, <textarea>, <select>) when the region lies in its content box, whose placeholder, value text and internals whydiff does not capture.",
+            "anyOf": [
+              {
+                "const": "anti-aliasing"
+              },
+              {
+                "type": "string",
+                "pattern": "^under `<(?:img|canvas|video|svg|picture)>`$"
+              },
+              {
+                "type": "string",
+                "pattern": "^inside the resize corner of `.+`$"
+              },
+              {
+                "type": "string",
+                "pattern": "^inside `<(?:input|textarea|select)>`: placeholder, value text or control internals, which whydiff does not capture$"
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "observation": {
+      "description": "What changed on the member's element as a person would see it; absent when nothing passed a threshold.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["element", "facts", "text"],
+      "properties": {
+        "element": {
+          "description": "Names the element: role (or the role HTML gives its tag) with name (the accessible name, else its own short text), class when it has neither (the class that names its component, build hash removed), and tag.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tag"],
+          "properties": {
+            "role": {
+              "description": "Its role, or the role HTML gives its tag, when whydiff names elements by that role.",
+              "type": "string"
+            },
+            "name": {
+              "description": "The accessible name next to a role, else its own short text.",
+              "type": "string"
+            },
+            "class": {
+              "description": "The class that names its component, build hash removed, when it has no name.",
+              "type": "string"
+            },
+            "tag": {
+              "description": "Its tag.",
+              "type": "string"
+            }
+          }
+        },
+        "facts": {
+          "description": "At most three, in this order: presence (appears, gone, visible, invisible; no values), size (width, height), position when the size stayed (x, y), text, then box. from and to are CSS px (sizes, positions and paddings rounded to whole px), font weights, colours as #rrggbb, #rrggbbaa or transparent, texts, fonts or computed values.",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind"],
+            "properties": {
+              "kind": {
+                "description": "What changed.",
+                "enum": [
+                  "appears",
+                  "gone",
+                  "visible",
+                  "invisible",
+                  "width",
+                  "height",
+                  "text",
+                  "font-size",
+                  "font-weight",
+                  "letter-spacing",
+                  "line-height",
+                  "font",
+                  "color",
+                  "uppercase",
+                  "background",
+                  "border",
+                  "corners",
+                  "shadow",
+                  "padding",
+                  "x",
+                  "y"
+                ]
+              },
+              "from": {
+                "description": "The value before; absent for appears, gone, visible and invisible.",
+                "$ref": "#/$defs/factValue"
+              },
+              "to": {
+                "description": "The value after; absent for appears, gone, visible and invisible.",
+                "$ref": "#/$defs/factValue"
+              }
+            }
+          }
+        },
+        "text": {
+          "description": "The facts as the line the Markdown prints for the element. Wording may change between versions; element and facts are the contract.",
+          "type": "string"
+        }
+      }
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "effect": {
+      "description": "A consequence of a change on other nodes, which needs no fix of its own: shifted (moved by vector, [x, y] in px), resized, reflowed (laid out again), painted (repainted) or inherited, with how many nodes.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "nodes"],
+      "properties": {
+        "kind": {
+          "description": "shifted (moved), resized, reflowed (laid out again), painted (repainted) or inherited.",
+          "enum": ["shifted", "resized", "reflowed", "painted", "inherited"]
+        },
+        "nodes": {
+          "description": "How many nodes it reached.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "vector": {
+          "description": "The most common move of shifted nodes, in CSS px.",
+          "$ref": "#/$defs/point"
+        },
+        "vectorNodes": {
+          "description": "How many of nodes moved by vector; absent when all of them did.",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "factValue": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number"
+      }
+    },
+    "rect": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "number",
+          "minimum": 0
+        },
+        {
+          "type": "number",
+          "minimum": 0
+        }
+      ],
+      "items": false
+    },
+    "summary": {
+      "description": "What the members share. style, container and paint-order carry changes (prop with from and to, or delta); content carries detail (text, wrap or font-metrics) and the two fonts for font-metrics; added, removed, scrolled and resized carry nothing more; rule names the rule.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "changes"],
+          "properties": {
+            "kind": {
+              "description": "style: the node's own change; container: it re-laid its children out; paint-order: its stacking changed.",
+              "enum": ["style", "container", "paint-order"]
+            },
+            "changes": {
+              "description": "What the members share per longhand: both values at level 1, how it changed at level 2, its name alone at level 3.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["prop"],
+                "properties": {
+                  "prop": {
+                    "description": "The longhand.",
+                    "type": "string"
+                  },
+                  "from": {
+                    "description": "Its computed value before, at level 1.",
+                    "type": "string"
+                  },
+                  "to": {
+                    "description": "Its computed value after, at level 1.",
+                    "type": "string"
+                  },
+                  "delta": {
+                    "description": "How it changed at level 2, without the values: <len +4px>, <num -1>, <color> or <kw from>to>.",
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "detail"],
+          "properties": {
+            "kind": {
+              "description": "content: the element's text, or how it is drawn, changed.",
+              "const": "content"
+            },
+            "detail": {
+              "description": "text: the text itself; wrap: where its lines break; font-metrics: the platform font that draws it.",
+              "enum": ["text", "wrap", "font-metrics"]
+            },
+            "from": {
+              "description": "The platform font before, for font-metrics, when the capture recorded it.",
+              "type": "string"
+            },
+            "to": {
+              "description": "The platform font after, for font-metrics, when the capture recorded it.",
+              "type": "string"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind"],
+          "properties": {
+            "kind": {
+              "description": "added or removed: the element is on one side only; scrolled: its content scrolled; resized: its size changed and no change of its own says why.",
+              "enum": ["added", "removed", "scrolled", "resized"]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "selector", "sheet", "sets", "changed", "unsets"],
+          "anyOf": [
+            {
+              "properties": {
+                "sets": {
+                  "description": "At least one of sets, changed and unsets holds an entry.",
+                  "type": "array",
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "changed": {
+                  "description": "At least one of sets, changed and unsets holds an entry.",
+                  "type": "array",
+                  "minItems": 1
+                }
+              }
+            },
+            {
+              "properties": {
+                "unsets": {
+                  "description": "At least one of sets, changed and unsets holds an entry.",
+                  "type": "array",
+                  "minItems": 1
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": {
+              "description": "rule: a stylesheet rule behind the members' changed longhands.",
+              "const": "rule"
+            },
+            "selector": {
+              "description": "The whole selector list; the Markdown names a list of several by its shortest selector and how many more. @property --name for the registration of a custom property.",
+              "type": "string"
+            },
+            "sheet": {
+              "description": "The stylesheet's file name with a bundler's content hash read as * (vendor-D79WzvNx.css is vendor-*.css) unless another sheet of the capture reads the same; <style> #n and constructed #n count inline and constructed sheets; style attribute, with an empty selector, is the element's own style, and style attribute of an ancestor the style attribute of an ancestor that a custom property came from.",
+              "type": "string"
+            },
+            "layer": {
+              "description": "The cascade layer, dotted, absent when unlayered; a layer without a name reads <anonymous #n>, the n-th the sheet declares.",
+              "type": "string"
+            },
+            "important": {
+              "description": "Set for the rule's !important declarations.",
+              "const": true
+            },
+            "sets": {
+              "description": "Longhands where the rule now wins over another rule, the browser's own or none, and custom properties a changed longhand reads that the rule now declares where another rule or none did.",
+              "$ref": "#/$defs/longhands"
+            },
+            "changed": {
+              "description": "Longhands where the rule won before too, with another value, and custom properties a changed longhand reads that the rule declares with another value or registers with another initial value.",
+              "$ref": "#/$defs/longhands"
+            },
+            "unsets": {
+              "description": "Longhands where the rule won before and no author rule does now, and custom properties a changed longhand reads that no rule declares now.",
+              "$ref": "#/$defs/longhands"
+            },
+            "values": {
+              "description": "Computed values before and after (prop with from and to, as captured: 1rem reads 16px, colours as rgb()) of each longhand of sets, changed and unsets on which every member agrees, sorted by prop; a longhand left out had other values on some members, which whydiff explain <id> lists.",
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/valuePair"
+              }
+            },
+            "mixed": {
+              "description": "Entries the rule sets on some members, changed on others or no longer sets on others, with how many members each (a :hover rule that now applies to one button and no longer to another).",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["prop", "sets", "changed", "unsets"],
+                "properties": {
+                  "prop": {
+                    "description": "The longhand.",
+                    "type": "string"
+                  },
+                  "sets": {
+                    "description": "Members on which the rule now sets it.",
+                    "$ref": "#/$defs/count"
+                  },
+                  "changed": {
+                    "description": "Members on which it set it before too, with another value.",
+                    "$ref": "#/$defs/count"
+                  },
+                  "unsets": {
+                    "description": "Members on which it no longer sets it.",
+                    "$ref": "#/$defs/count"
+                  }
+                }
+              }
+            },
+            "layerFrom": {
+              "description": "With layerTo, a move between layers that every member saw: the layer before, absent when that side is unlayered; both absent when the rule did not move.",
+              "type": "string"
+            },
+            "layerTo": {
+              "description": "The layer after that move, absent when that side is unlayered.",
+              "type": "string"
+            },
+            "over": {
+              "description": "The rule that won the sets longhands before on every member, the browser's own included (userAgent); absent when they were different rules or none.",
+              "$ref": "#/$defs/ruleRef"
+            },
+            "defaults": {
+              "description": "When over is the browser's own rule: its declarations of the sets longhands (prop and the value as declared) that every member had, sorted by prop.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["prop", "value"],
+                "properties": {
+                  "prop": {
+                    "description": "The longhand.",
+                    "type": "string"
+                  },
+                  "value": {
+                    "description": "The browser's value, as declared.",
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "vars": {
+              "description": "The custom properties of sets, changed and unsets: name, the declared (or registered initial) value before and after when every member saw the same, readBy, the longhands that changed through it, and missing, what the declarations reading it did on the side where it had no value (fallback: used their var() fallback; invalid: had none). Sorted by name.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "readBy"],
+                "properties": {
+                  "name": {
+                    "description": "The custom property.",
+                    "type": "string"
+                  },
+                  "from": {
+                    "description": "Declared or registered value before, kept only when every member saw the same.",
+                    "type": "string"
+                  },
+                  "to": {
+                    "description": "Declared or registered value after, kept only when every member saw the same.",
+                    "type": "string"
+                  },
+                  "readBy": {
+                    "description": "Longhands that changed through it, sorted.",
+                    "$ref": "#/$defs/longhands"
+                  },
+                  "missing": {
+                    "description": "What the declarations reading it did on the side where it had no value: used their var() fallback, or had none and were invalid; absent when it had a value on both sides or the members differ.",
+                    "enum": ["fallback", "invalid"]
+                  }
+                }
+              }
+            },
+            "via": {
+              "description": "Custom properties that the rule's own changed longhands (readBy) read from another author rule, as their declarations read now. Sorted by name.",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["name", "rule", "readBy"],
+                "properties": {
+                  "name": {
+                    "description": "The custom property.",
+                    "type": "string"
+                  },
+                  "rule": {
+                    "description": "The author rule its value comes from.",
+                    "$ref": "#/$defs/ruleRef"
+                  },
+                  "readBy": {
+                    "description": "Longhands of the rule that read it, sorted.",
+                    "$ref": "#/$defs/longhands"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "longhands": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "ruleRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selector", "sheet"],
+      "properties": {
+        "selector": {
+          "description": "The whole selector list; empty for a style attribute.",
+          "type": "string"
+        },
+        "sheet": {
+          "description": "The stylesheet, named as the sheet of a rule cause is; user agent stylesheet for the browser's own rule.",
+          "type": "string"
+        },
+        "layer": {
+          "description": "The cascade layer, dotted; absent when unlayered.",
+          "type": "string"
+        },
+        "important": {
+          "description": "Set for the rule's !important declarations.",
+          "const": true
+        },
+        "userAgent": {
+          "description": "Set for a rule of the browser's own stylesheet; its sheet reads user agent stylesheet and its selector is the one that matched.",
+          "const": true
+        }
+      }
+    },
+    "valuePair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prop", "from", "to"],
+      "properties": {
+        "prop": {
+          "description": "The longhand.",
+          "type": "string"
+        },
+        "from": {
+          "description": "Its computed value before.",
+          "type": "string"
+        },
+        "to": {
+          "description": "Its computed value after.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

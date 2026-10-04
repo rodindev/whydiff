@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Writing modes</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .area { position: absolute; width: 300px; height: 200px; background: #eeeeee; }
+      .m { width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- vertical-rl stacks blocks from the right edge (400) leftwards; block-start margin 20 is on the right -->
+    <div class="area" style="left: 100px; top: 100px; writing-mode: vertical-rl">
+      <div id="rl-1" class="m" style="background: #ff0000" data-color="ff0000" data-expect="360,100,40,40"></div>
+      <div id="rl-2" class="m" style="margin-block-start: 20px; background: #00ff00" data-color="00ff00" data-expect="300,100,40,40"></div>
+    </div>
+    <!-- vertical-lr stacks from the left; inline-start margin 30 is on the top -->
+    <div class="area" style="left: 500px; top: 100px; writing-mode: vertical-lr">
+      <div id="lr-1" class="m" style="background: #0000ff" data-color="0000ff" data-expect="500,100,40,40"></div>
+      <div id="lr-2" class="m" style="margin-inline-start: 30px; background: #ff00ff" data-color="ff00ff" data-expect="540,130,40,40"></div>
+    </div>
+    <!-- a vertical-rl scroller: its 1000px wide content starts at the right edge (400) and spans -600..400; scrollLeft -200 shifts it to -400..600 -->
+    <div id="rl-scroller" class="area" style="left: 100px; top: 400px; overflow: auto; writing-mode: vertical-rl" data-expect-scroll="-200,0,1000,200">
+      <div style="position: relative; width: 1000px; height: 200px">
+        <div id="rl-in" style="position: absolute; right: 220px; top: 50px; width: 40px; height: 40px; background: #ffff00" data-color="ffff00" data-expect="340,450,40,40"></div>
+      </div>
+    </div>
+    <script>
+      document.getElementById('rl-scroller').scrollLeft = -200
+    </script>
+  </body>
+</html>

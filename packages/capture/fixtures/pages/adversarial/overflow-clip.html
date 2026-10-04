@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>overflow: clip and overflow-clip-margin</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .box { position: absolute; top: 100px; width: 100px; height: 100px; background: #eeeeee; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- overflow-clip-margin 50px moves the clip edge out to 250, so a child at 205..245 paints in full -->
+    <div class="box" style="left: 100px; overflow: clip; overflow-clip-margin: 50px">
+      <div id="ocm-in-margin" class="m" style="left: 105px; top: 0; background: #ff0000" data-color="ff0000" data-expect="205,100,40,40"></div>
+    </div>
+    <!-- overflow-x: clip leaves the y axis visible -->
+    <div class="box" style="left: 400px; overflow-x: clip">
+      <div id="ocx-below" class="m" style="left: 10px; top: 120px; background: #00ff00" data-color="00ff00" data-expect="410,220,40,40"></div>
+      <div id="ocx-right" class="m" style="left: 120px; top: 0; background: #0000ff" data-color="0000ff" data-expect-flag="clipped"></div>
+    </div>
+    <!-- control: plain overflow: clip -->
+    <div class="box" style="left: 700px; overflow: clip">
+      <div id="oc-out" class="m" style="left: 120px; top: 0; background: #ff00ff" data-color="ff00ff" data-expect-flag="clipped"></div>
+    </div>
+  </body>
+</html>

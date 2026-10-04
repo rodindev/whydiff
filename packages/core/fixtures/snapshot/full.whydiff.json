@@ -1,0 +1,54 @@
+{
+  "formatVersion": 1,
+  "tool": {"name":"whydiff","version":"0.1.0","source":"cdp","browser":"chromium 147.0.7","capturedAfterMs":12},
+  "page": {"url":"http://localhost:5173/settings","title":"Settings"},
+  "image": {"width":1512,"height":982,"k":1,"layoutFactor":1,"origin":[0,400],"fullPage":false,"root":1},
+  "viewport": {"width":1512,"height":982,"scrollX":0,"scrollY":400},
+  "content": {"width":1512,"height":3322.5},
+  "compare": {"threshold":0.35,"maxDiffPixels":0,"animations":"disabled","caret":"hide","scale":"css"},
+  "frames": [{"url":"http://localhost:5173/settings","owner":null,"offset":[0,0],"scroll":[0,400],"status":"captured"},{"url":"http://localhost:5173/widget","owner":4,"offset":[300,650],"scroll":[0,0],"status":"approximate"}],
+  "masks": [[24,96,64,64]],
+  "sheets": [
+    {"href":"http://localhost:5173/assets/index-4f2a.css","hash":"9c1d2e3f4a5b6c7d"},
+    {"inline":true,"hash":"0f1e2d3c4b5a6978","harness":true}
+  ],
+  "props": ["display","position","font-size","color","background-color"],
+  "styles": [
+    ["block","static","16px","rgb(0, 0, 0)","rgba(0, 0, 0, 0)"],
+    ["flex","sticky","14px","rgb(255, 255, 255)","oklch(0.7 0.2 30)"],
+    ["inline","static","16px","rgb(0, 0, 0)","rgba(0, 0, 0, 0)"]
+  ],
+  "rules": [
+    {"sheet":0,"selector":".ui-btn","layer":"framework-components"},
+    {"inline":true,"selector":""},
+    {"sheet":1,"selector":".ui-btn","important":true},
+    {"userAgent":true,"selector":"html"},
+    {"sheet":0,"selector":":root","layer":"framework-core"},
+    {"sheet":0,"selector":"@property --ui-surface"}
+  ],
+  "attributions": [
+    [-1,-1,-1,-1,-1],
+    [0,-1,2,1,0]
+  ],
+  "declarations": [
+    {"prop":"display","rule":3,"value":"block"},
+    {"prop":"--ui-ink","rule":4,"value":"rgb(0, 0, 0)","inherited":true},
+    {"prop":"color","rule":1,"value":"var(--ui-ink)","reads":[1]},
+    {"prop":"--ui-surface","rule":5,"value":"oklch(0.7 0.2 30)","initial":true},
+    {"prop":"background-color","rule":0,"value":"var(--ui-surface, white)","reads":[3]}
+  ],
+  "uses": [
+    [0],
+    [2,4]
+  ],
+  "nodes": [
+    {"i":0,"p":-1,"tag":"html","box":[0,0,1512,3322.5],"s":0,"a":0,"layer":0},
+    {"i":1,"p":0,"tag":"body","box":[0,0,1512,3322.5],"s":0},
+    {"i":2,"p":1,"tag":"button","role":"button","name":"Save","id":"save","testId":"save-button","cls":["ui-btn","ui-btn--large"],"text":"Save","box":[24.015625,500,88,36],"s":1,"a":1,"stacking":true,"font":"Inter","src":"src/components/FormActions.ts:18"},
+    {"i":3,"p":1,"tag":"h2","role":"heading","name":"Notifications","text":"Notifications","box":[24,560,320,48],"lineBoxes":[[24,560,310,24],[24,584,120,24]],"s":2,"flags":["clipped"]},
+    {"i":4,"p":1,"tag":"iframe","box":[300,650,400,300],"s":0},
+    {"i":5,"p":-1,"f":1,"tag":"html","box":[300,650,400,300],"s":0},
+    {"i":6,"p":5,"f":1,"tag":"input","value":"john@example.com","checked":false,"box":[310,660,200,32],"scroll":[0,0,200,32],"img":"a1b2c3","s":2},
+    {"i":7,"p":1,"tag":"::before","box":[0,0,0,0],"s":2,"flags":["pseudo:before","hidden"]}
+  ]
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Nested shadow roots</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .m { width: 40px; height: 40px; }
+      #outer-host { position: absolute; left: 100px; top: 100px; width: 600px; height: 400px; }
+    </style>
+  </head>
+  <body>
+    <!-- open root > closed root > open root; slotted children of a scrolled shadow scroller and of a transparent shadow wrapper -->
+    <div id="outer-host">
+      <template shadowrootmode="open">
+        <style>
+          .pad { padding: 20px 0 0 30px; }
+          .m { width: 40px; height: 40px; }
+          #inner-host { margin-left: 60px; width: 100px; height: 100px; }
+          #scroller { position: absolute; left: 300px; top: 0; width: 200px; height: 100px; overflow: auto; }
+          #veil { position: absolute; left: 0; top: 300px; opacity: 0; }
+        </style>
+        <div class="pad">
+          <div id="s-open" class="m" style="background: #ff0000" data-color="ff0000" data-expect="130,120,40,40" data-expect-flag="shadow:open"></div>
+          <div id="inner-host">
+            <template shadowrootmode="closed">
+              <style>
+                div { width: 40px; height: 40px; margin: 10px 0 0 20px; }
+              </style>
+              <div id="s-closed" style="background: #00ff00" data-color="00ff00" data-expect="210,170,40,40" data-expect-flag="shadow:closed"></div>
+              <span id="deep-host" style="display: block">
+                <template shadowrootmode="open">
+                  <div id="s-deep" style="width: 40px; height: 40px; margin-left: 20px; background: #ffff00" data-color="ffff00" data-expect="210,210,40,40" data-expect-flag="shadow:open"></div>
+                </template>
+              </span>
+            </template>
+          </div>
+        </div>
+        <div id="scroller" data-expect-scroll="0,150,200,400">
+          <div style="height: 400px"><slot name="scrolled"></slot></div>
+        </div>
+        <div id="veil"><slot name="veiled"></slot></div>
+      </template>
+      <div slot="scrolled" id="slot-top" class="m" style="background: #0000ff" data-color="0000ff" data-expect-flag="clipped"></div>
+      <div slot="scrolled" style="height: 140px"></div>
+      <div slot="scrolled" id="slot-in" class="m" style="margin-left: 20px; background: #ff00ff" data-color="ff00ff" data-expect="420,130,40,40"></div>
+      <div slot="veiled" id="veiled" class="m" style="background: #00ffff" data-color="00ffff" data-expect-flag="hidden"></div>
+    </div>
+    <script>
+      document.getElementById('outer-host').shadowRoot.getElementById('scroller').scrollTop = 150
+    </script>
+  </body>
+</html>

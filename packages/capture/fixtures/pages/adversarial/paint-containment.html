@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Paint containment</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .box { position: absolute; top: 100px; width: 100px; height: 100px; background: #eeeeee; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- contain: paint clips descendants to the padding box although overflow stays visible -->
+    <div class="box" style="left: 100px; contain: paint">
+      <div id="pc-in" class="m" style="left: 10px; top: 10px; background: #ff0000" data-color="ff0000" data-expect="110,110,40,40"></div>
+      <div id="pc-out" class="m" style="left: 150px; top: 0; background: #00ff00" data-color="00ff00" data-expect-flag="clipped"></div>
+    </div>
+    <!-- content-visibility: auto implies paint containment for a box on screen -->
+    <div class="box" style="left: 400px; content-visibility: auto">
+      <div id="cva-in" class="m" style="left: 10px; top: 10px; background: #0000ff" data-color="0000ff" data-expect="410,110,40,40"></div>
+      <div id="cva-out" class="m" style="left: 150px; top: 0; background: #ff00ff" data-color="ff00ff" data-expect-flag="clipped"></div>
+    </div>
+    <!-- contain: strict as well -->
+    <div class="box" style="left: 700px; contain: strict">
+      <div id="cs-out" class="m" style="left: 0; top: 150px; background: #ffff00" data-color="ffff00" data-expect-flag="clipped"></div>
+    </div>
+  </body>
+</html>

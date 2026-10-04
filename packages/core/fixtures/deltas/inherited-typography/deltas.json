@@ -1,0 +1,179 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "kind": "own",
+      "style": [
+        {
+          "prop": "font-weight",
+          "from": "400",
+          "to": "500"
+        },
+        {
+          "prop": "letter-spacing",
+          "from": "normal",
+          "to": "0.5px"
+        }
+      ],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 3,
+      "after": 3,
+      "kind": "inherited",
+      "style": [
+        {
+          "prop": "font-weight",
+          "from": "400",
+          "to": "500"
+        },
+        {
+          "prop": "letter-spacing",
+          "from": "normal",
+          "to": "1px"
+        }
+      ],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true,
+      "inheritedFrom": 2
+    },
+    {
+      "before": 4,
+      "after": 4,
+      "kind": "inherited",
+      "style": [
+        {
+          "prop": "font-weight",
+          "from": "400",
+          "to": "500"
+        },
+        {
+          "prop": "letter-spacing",
+          "from": "normal",
+          "to": "0.5px"
+        }
+      ],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true,
+      "inheritedFrom": 2
+    },
+    {
+      "before": 5,
+      "after": 5,
+      "kind": "inherited",
+      "style": [
+        {
+          "prop": "font-weight",
+          "from": "400",
+          "to": "500"
+        },
+        {
+          "prop": "letter-spacing",
+          "from": "normal",
+          "to": "0.5px"
+        }
+      ],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true,
+      "inheritedFrom": 2
+    }
+  ],
+  "added": [],
+  "removed": []
+}

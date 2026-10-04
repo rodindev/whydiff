@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Inline SVG with text</title>
+    <style>
+      body { margin: 0; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <!-- viewBox 200x100 shown at 400x200: every user unit is 2 px, origin at 100,100 -->
+    <svg style="position: absolute; left: 100px; top: 100px" width="400" height="200" viewBox="0 0 200 100">
+      <defs>
+        <symbol id="sym" viewBox="0 0 20 20"><rect width="20" height="20" fill="#0000ff" /></symbol>
+      </defs>
+      <rect id="svg-rect" x="10" y="10" width="20" height="20" fill="#ff0000" data-color="ff0000" data-expect="120,120,40,40" />
+      <!-- a 16 unit square with a 4 unit stroke paints 58..78 -->
+      <rect id="svg-stroke" x="60" y="10" width="16" height="16" fill="#00ff00" stroke="#00ff00" stroke-width="4" data-color="00ff00" data-expect="216,116,40,40" />
+      <use id="svg-use" href="#sym" x="100" y="10" width="20" height="20" data-color="0000ff" data-expect="300,120,40,40" />
+      <foreignObject x="140" y="10" width="40" height="40">
+        <div xmlns="http://www.w3.org/1999/xhtml" id="svg-html" style="width: 20px; height: 20px; background: #ff00ff" data-color="ff00ff" data-expect="380,120,40,40"></div>
+      </foreignObject>
+      <!-- rotate(90) maps the square 0..20 to -20..0 x 0..20, then translate(150,60) -->
+      <g transform="translate(150, 60) rotate(90)">
+        <rect id="svg-rotated" width="20" height="20" fill="#ffff00" data-color="ffff00" data-expect="360,220,40,40" />
+      </g>
+      <!-- a nested svg clips to its own 30 unit viewport -->
+      <svg x="10" y="50" width="30" height="30">
+        <rect id="svg-outside" x="40" y="0" width="20" height="20" fill="#00ffff" data-color="00ffff" data-expect-flag="clipped" />
+      </svg>
+      <text id="svg-text" x="60" y="80" font-size="10" data-expect-text="Label">Label</text>
+    </svg>
+  </body>
+</html>

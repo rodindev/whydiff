@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      iframe { position: absolute; border: 0; width: 200px; height: 200px; }
+    </style>
+  </head>
+  <body style="margin: 0; background: #fff">
+    <iframe id="same" src="/frame-inner.html?c=ff0000" style="left: 20px; top: 20px"></iframe>
+    <iframe id="cross" src="http://localhost:__PORT__/frame-inner.html?c=00ff00" style="left: 300px; top: 20px"></iframe>
+    <iframe id="nested" src="/frame-inner.html?c=0000ff&nest=ff00ff" style="left: 580px; top: 20px; width: 300px; height: 300px"></iframe>
+    <iframe id="styled" src="/frame-inner.html?c=ffff00" style="left: 20px; top: 400px; border: 5px solid #000; padding: 7px"></iframe>
+    <iframe id="transformed" src="/frame-inner.html?c=00ffff" style="left: 300px; top: 400px; transform: scale(0.5); transform-origin: 0 0"></iframe>
+    <iframe id="scrolled" src="/frame-inner.html?c=ff8800&scroll=100" style="left: 580px; top: 400px"></iframe>
+  </body>
+</html>

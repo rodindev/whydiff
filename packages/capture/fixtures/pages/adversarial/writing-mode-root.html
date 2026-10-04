@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html data-scroll="-300,0" style="writing-mode: vertical-rl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Vertical writing mode on the root</title>
+    <style>
+      body { margin: 0; background: #fff; width: 2000px; height: 600px; position: relative; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the body spans document x -1000..1000; scrolled to -300 the viewport shows -300..700, so screen x = 1300 - right - width -->
+    <div id="vr-a" class="m" style="right: 500px; top: 100px; background: #ff0000" data-color="ff0000" data-expect="760,100,40,40"></div>
+    <div id="vr-b" class="m" style="right: 1100px; top: 200px; background: #00ff00" data-color="00ff00" data-expect="160,200,40,40"></div>
+  </body>
+</html>

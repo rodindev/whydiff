@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Frame marker</title>
+    <style>
+      body { margin: 0; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <!-- a frame document for the pages next to this folder: ?id=&c=&x=&y=&expect= place one 40px marker, expect is optional -->
+    <div id="marker" style="position: absolute; width: 40px; height: 40px"></div>
+    <script>
+      const params = new URLSearchParams(location.search)
+      const marker = document.getElementById('marker')
+      marker.id = params.get('id')
+      marker.style.left = params.get('x') + 'px'
+      marker.style.top = params.get('y') + 'px'
+      marker.style.background = '#' + params.get('c')
+      marker.dataset.color = params.get('c')
+      if (params.has('expect')) marker.dataset.expect = params.get('expect')
+    </script>
+  </body>
+</html>

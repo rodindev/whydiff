@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>aspect-ratio</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .at { position: absolute; top: 100px; }
+    </style>
+  </head>
+  <body>
+    <div id="ar-width" class="at" style="left: 100px; width: 40px; aspect-ratio: 1; background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></div>
+    <div id="ar-height" class="at" style="left: 200px; height: 40px; aspect-ratio: 1 / 1; background: #00ff00" data-color="00ff00" data-expect="200,100,40,40"></div>
+    <!-- content taller than the ratio allows grows the box: the second child sits below the first -->
+    <div class="at" style="left: 300px; width: 40px; aspect-ratio: 1; background: #eeeeee">
+      <div style="height: 40px"></div>
+      <div id="ar-overflow" style="height: 40px; background: #0000ff" data-color="0000ff" data-expect="300,140,40,40"></div>
+    </div>
+    <!-- grid tracks sized by ratio items -->
+    <div class="at" style="left: 400px; display: grid; grid-template-columns: 40px 40px; gap: 10px">
+      <div id="ar-grid-1" style="aspect-ratio: 1; background: #ff00ff" data-color="ff00ff" data-expect="400,100,40,40"></div>
+      <div id="ar-grid-2" style="aspect-ratio: 1; background: #ffff00" data-color="ffff00" data-expect="450,100,40,40"></div>
+    </div>
+    <!-- a flex row whose height comes from a 2:1 item 80px wide -->
+    <div class="at" style="left: 600px; display: flex; align-items: flex-end">
+      <div style="width: 80px; aspect-ratio: 2; background: #eeeeee"></div>
+      <div id="ar-flex" style="width: 40px; aspect-ratio: 2 / 1; background: #00ffff" data-color="00ffff" data-expect="680,120,40,20"></div>
+    </div>
+  </body>
+</html>

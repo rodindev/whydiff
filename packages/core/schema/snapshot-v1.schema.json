@@ -1,0 +1,458 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/rodindev/whydiff/main/packages/core/schema/snapshot-v1.schema.json",
+  "title": "whydiff snapshot v1",
+  "description": "Snapshot format v1: header, style table and the visible nodes of one screenshot, kept next to its PNG as .whydiff.json. Boxes and points are CSS px of the top-level document unless a field says otherwise.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "tool",
+    "page",
+    "image",
+    "viewport",
+    "content",
+    "compare",
+    "frames",
+    "masks",
+    "sheets",
+    "props",
+    "styles",
+    "nodes"
+  ],
+  "properties": {
+    "formatVersion": { "const": 1, "description": "Version of the snapshot format." },
+    "tool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "source", "browser"],
+      "description": "Tool that produced the snapshot and the browser it ran in.",
+      "properties": {
+        "name": { "const": "whydiff", "description": "Always whydiff." },
+        "version": {
+          "type": "string",
+          "description": "Version of @whydiff/capture that wrote the snapshot."
+        },
+        "source": {
+          "const": "cdp",
+          "description": "How the snapshot was read: cdp, through the Chrome DevTools Protocol."
+        },
+        "browser": { "type": "string", "description": "Browser name and version the page ran in." },
+        "capturedAfterMs": {
+          "type": "number",
+          "description": "Milliseconds from Playwright's screenshot to this capture, on the actual side of a failed assertion; absent on baselines, two-run snapshots and snaps."
+        }
+      }
+    },
+    "page": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "title"],
+      "description": "Page identity at capture time.",
+      "properties": {
+        "url": { "type": "string", "description": "URL of the page." },
+        "title": { "type": "string", "description": "Title of the page's document." }
+      }
+    },
+    "image": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "k", "layoutFactor", "origin", "fullPage"],
+      "description": "How snapshot coordinates map onto the PNG taken next to it.",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Width of the PNG in its pixels."
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Height of the PNG in its pixels."
+        },
+        "k": { "type": "number", "description": "PNG pixels per CSS px." },
+        "layoutFactor": {
+          "type": "number",
+          "description": "Divisor that turned protocol layout units into CSS px; diagnostics only."
+        },
+        "origin": {
+          "$ref": "#/$defs/point",
+          "description": "Document point that the PNG's top-left pixel shows."
+        },
+        "fullPage": {
+          "type": "boolean",
+          "description": "Whether the screenshot shows the whole scrollable page."
+        },
+        "root": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Index of the node a locator screenshot was taken of; absent for a page screenshot."
+        }
+      }
+    },
+    "viewport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height", "scrollX", "scrollY"],
+      "description": "Visual viewport at capture time, in CSS px.",
+      "properties": {
+        "width": { "type": "number", "description": "Width of the viewport." },
+        "height": { "type": "number", "description": "Height of the viewport." },
+        "scrollX": { "type": "number", "description": "Horizontal scroll offset of the page." },
+        "scrollY": { "type": "number", "description": "Vertical scroll offset of the page." }
+      }
+    },
+    "content": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["width", "height"],
+      "description": "Size of the whole document, in CSS px.",
+      "properties": {
+        "width": { "type": "number", "description": "Width of the document." },
+        "height": { "type": "number", "description": "Height of the document." }
+      }
+    },
+    "compare": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["threshold", "animations", "caret", "scale"],
+      "description": "The screenshot comparison settings in force, so the differ never reads a Playwright config.",
+      "properties": {
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Playwright's threshold: the perceived colour difference, from 0 (strict) to 1 (lax), up to which two pixels match."
+        },
+        "maxDiffPixels": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Playwright's maxDiffPixels: the differing pixels the assertion tolerates; absent when not set."
+        },
+        "maxDiffPixelRatio": {
+          "type": "number",
+          "description": "Playwright's maxDiffPixelRatio: the share of differing pixels the assertion tolerates; absent when not set."
+        },
+        "animations": {
+          "type": "string",
+          "description": "Playwright's animations option: disabled or allow."
+        },
+        "caret": { "type": "string", "description": "Playwright's caret option: hide or initial." },
+        "scale": {
+          "enum": ["css", "device"],
+          "description": "Playwright's scale option: css keeps one PNG pixel per CSS px, device multiplies by the device scale factor."
+        }
+      }
+    },
+    "frames": {
+      "type": "array",
+      "description": "The documents of the page; index 0 is the main frame.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["url", "owner", "offset", "scroll", "status"],
+        "properties": {
+          "url": { "type": "string", "description": "URL of the document." },
+          "owner": {
+            "type": ["integer", "null"],
+            "minimum": 0,
+            "description": "Index of the iframe node in the parent frame; null for the main frame."
+          },
+          "offset": {
+            "$ref": "#/$defs/point",
+            "description": "Offset added to child coordinates to reach the top-level document."
+          },
+          "scroll": { "$ref": "#/$defs/point", "description": "Scroll position of the document." },
+          "status": {
+            "enum": ["captured", "skipped", "approximate"],
+            "description": "How a frame was captured; approximate means its offset ignores a CSS transform on the iframe."
+          }
+        }
+      }
+    },
+    "masks": {
+      "type": "array",
+      "description": "Boxes of the elements Playwright's mask option covered.",
+      "items": { "$ref": "#/$defs/rect" }
+    },
+    "sheets": {
+      "type": "array",
+      "description": "The author stylesheets of the page, each identified by its text hash.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["hash"],
+        "properties": {
+          "href": {
+            "type": "string",
+            "description": "URL of a linked sheet; absent for inline and constructed sheets."
+          },
+          "inline": {
+            "const": true,
+            "description": "Set for a <style> element's sheet; absent for linked and constructed sheets."
+          },
+          "hash": {
+            "type": "string",
+            "description": "Empty when the browser could not read the text back: a sheet that failed to load, or a linked sheet served by page.route or routeFromHAR."
+          },
+          "harness": {
+            "const": true,
+            "description": "Set when the owner node carries data-whydiff-harness: the sheet belongs to the test, not the app."
+          }
+        }
+      }
+    },
+    "props": {
+      "type": "array",
+      "description": "Property names; values in styles follow this order.",
+      "items": { "type": "string" }
+    },
+    "styles": {
+      "type": "array",
+      "description": "Unique value tuples; nodes point into this table.",
+      "items": { "type": "array", "items": { "type": "string" } }
+    },
+    "rules": {
+      "type": "array",
+      "description": "Winning declaration sources in first-use order; absent when the capture did not record them. One source of declarations is a rule of an author sheet, the element's style attribute, an @property rule or a rule of the browser's own sheet.",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["sheet", "selector"],
+            "properties": {
+              "sheet": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Index into sheets; absent for the style attribute and the browser's rules."
+              },
+              "selector": {
+                "type": "string",
+                "description": "Selector text as the browser reports it; @property --name for a registration."
+              },
+              "layer": {
+                "type": "string",
+                "description": "Cascade layer path, outermost first, joined with dots; an anonymous segment reads <anonymous #n>, n counting the @layer { blocks and bare @import ... layer rules of the sheet that declares it in source order, or <anonymous> when the browser did not say where it is. Absent when unlayered."
+              },
+              "important": {
+                "const": true,
+                "description": "Set for the entry of the rule's !important declarations."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["inline", "selector"],
+            "properties": {
+              "inline": { "const": true, "description": "Set for the element's style attribute." },
+              "selector": { "type": "string", "description": "Empty for the style attribute." },
+              "layer": {
+                "type": "string",
+                "description": "Cascade layer path, as for a rule of a sheet; absent when unlayered."
+              },
+              "important": {
+                "const": true,
+                "description": "Set for the entry of the rule's !important declarations."
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["userAgent", "selector"],
+            "description": "A rule of the browser's own sheet; only declarations point at one, never attributions.",
+            "properties": {
+              "userAgent": {
+                "const": true,
+                "description": "Set for a rule of the browser's own sheet."
+              },
+              "selector": {
+                "type": "string",
+                "description": "Only the selectors of the rule that matched, joined with commas."
+              },
+              "layer": {
+                "type": "string",
+                "description": "Cascade layer path, as for a rule of a sheet; absent when unlayered."
+              },
+              "important": {
+                "const": true,
+                "description": "Set for the entry of the rule's !important declarations."
+              }
+            }
+          }
+        ]
+      }
+    },
+    "attributions": {
+      "type": "array",
+      "description": "Per row one entry per props entry: the index into rules that set it, or -1 for no author declaration.",
+      "items": { "type": "array", "items": { "type": "integer", "minimum": -1 } }
+    },
+    "declarations": {
+      "type": "array",
+      "description": "Declarations the uses rows point at and the custom properties they read, deduplicated in first-use order; present exactly when uses is.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prop"],
+        "properties": {
+          "prop": {
+            "type": "string",
+            "description": "A name of props, or a custom property name."
+          },
+          "rule": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Index into rules of the rule that declared it, or of the @property rule that registered it when it took the registration's initial value; absent when no rule did. An @property rule has the selector @property --name."
+          },
+          "value": {
+            "type": "string",
+            "description": "Declared value without !important, or the registered initial value; absent when nothing gave one."
+          },
+          "initial": {
+            "const": true,
+            "description": "Set when value is the registered initial value."
+          },
+          "inherited": {
+            "const": true,
+            "description": "Set for a custom property declared on an ancestor."
+          },
+          "reads": {
+            "type": "array",
+            "items": { "type": "integer", "minimum": 0 },
+            "description": "Indices into declarations of the custom properties the value reads, in order of first appearance, each below this entry's index; a name already on the path from the longhand, or past the depth capture follows, is left out."
+          }
+        }
+      }
+    },
+    "uses": {
+      "type": "array",
+      "description": "Per attributions row, the indices into declarations of the winning declarations of its longhands that read custom properties or, where no author declaration won, come from the browser's own sheet; in props order.",
+      "items": { "type": "array", "items": { "type": "integer", "minimum": 0 } }
+    },
+    "nodes": {
+      "type": "array",
+      "description": "The visible nodes of the render tree, in document order. Field names are short because files hold thousands of them.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["i", "p", "tag", "box", "s"],
+        "properties": {
+          "i": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Index in nodes; dense, in document order."
+          },
+          "p": {
+            "type": "integer",
+            "minimum": -1,
+            "description": "Index of the nearest emitted ancestor, -1 for a root."
+          },
+          "f": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Index in frames; absent for the main frame."
+          },
+          "tag": {
+            "type": "string",
+            "description": "Tag name in lower case; a pseudo-element's is its element's."
+          },
+          "role": {
+            "type": "string",
+            "description": "Role from the browser's accessibility tree."
+          },
+          "name": {
+            "type": "string",
+            "description": "Accessible name from the browser's accessibility tree."
+          },
+          "id": { "type": "string", "description": "The id attribute." },
+          "testId": {
+            "type": "string",
+            "description": "The test id attribute: data-testid unless the capture named another."
+          },
+          "cls": {
+            "type": "array",
+            "description": "The class attribute, split at white space.",
+            "items": { "type": "string" }
+          },
+          "text": {
+            "type": "string",
+            "description": "The element's own text: its rendered text children joined, white space collapsed, at most 80 characters."
+          },
+          "value": { "type": "string", "description": "Current value of an input or textarea." },
+          "checked": {
+            "type": "boolean",
+            "description": "Whether a checkbox or radio input is checked."
+          },
+          "box": { "$ref": "#/$defs/rect", "description": "The element's layout box." },
+          "lineBoxes": {
+            "type": "array",
+            "description": "One box per rendered line of text, when the text wraps.",
+            "items": { "$ref": "#/$defs/rect" }
+          },
+          "scroll": {
+            "$ref": "#/$defs/rect",
+            "description": "Scroll offset and scrollable size of an inner scroller."
+          },
+          "img": {
+            "type": "string",
+            "description": "Hash of the image URL actually chosen for an img."
+          },
+          "s": { "type": "integer", "minimum": 0, "description": "Index in styles." },
+          "a": { "type": "integer", "minimum": 0, "description": "Index in attributions." },
+          "layer": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Paint layer index shared by all nodes of a layer."
+          },
+          "stacking": {
+            "const": true,
+            "description": "Set when the element starts a stacking context."
+          },
+          "font": { "type": "string", "description": "Platform font actually used for the text." },
+          "src": {
+            "type": "string",
+            "description": "Source hint such as src/components/PayButton.ts:12."
+          },
+          "flags": {
+            "type": "array",
+            "description": "Per-node markers that the protocol does not express as styles.",
+            "items": {
+              "enum": [
+                "pseudo:before",
+                "pseudo:after",
+                "pseudo:marker",
+                "shadow:open",
+                "shadow:closed",
+                "clipped",
+                "hidden"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "point": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": { "type": "number" }
+    },
+    "rect": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "prefixItems": [
+        { "type": "number" },
+        { "type": "number" },
+        { "type": "number", "minimum": 0 },
+        { "type": "number", "minimum": 0 }
+      ],
+      "items": false
+    }
+  }
+}

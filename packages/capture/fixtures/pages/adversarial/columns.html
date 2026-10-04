@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Multi-column layout</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .multi { position: absolute; left: 100px; column-gap: 10px; }
+      .m { width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- three 200px columns at 100, 310, 520, 200px tall, filled in order -->
+    <div class="multi" style="top: 100px; width: 620px; height: 200px; columns: 3; column-fill: auto">
+      <div style="height: 160px"></div>
+      <!-- 80px tall: 40px at the foot of column 1 and 40px at the head of column 2, so it covers 100..350 x 100..300 -->
+      <div id="col-split" style="width: 40px; height: 80px; background: #ff0000" data-color="ff0000" data-expect="100,100,250,200"></div>
+      <div id="col-2" class="m" style="background: #00ff00" data-color="00ff00" data-expect="310,140,40,40"></div>
+      <div style="height: 200px"></div>
+      <div id="col-3" class="m" style="background: #0000ff" data-color="0000ff" data-expect="520,180,40,40"></div>
+    </div>
+    <!-- two balanced columns of one box each -->
+    <div class="multi" style="top: 400px; width: 410px; columns: 2">
+      <div id="bal-1" class="m" style="background: #ff00ff" data-color="ff00ff" data-expect="100,400,40,40"></div>
+      <div id="bal-2" class="m" style="background: #ffff00" data-color="ffff00" data-expect="310,400,40,40"></div>
+    </div>
+  </body>
+</html>

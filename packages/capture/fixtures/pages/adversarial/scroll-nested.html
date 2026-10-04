@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Nested scrollers</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .m { position: absolute; width: 40px; height: 40px; }
+      #outer { position: absolute; left: 100px; top: 100px; width: 400px; height: 300px; overflow: auto; background: #eeeeee; }
+      #outer-content { position: relative; width: 1000px; height: 1200px; }
+      #inner { position: absolute; left: 380px; top: 350px; width: 200px; height: 150px; overflow: auto; background: #dddddd; }
+      #inner-content { position: relative; width: 600px; height: 600px; }
+    </style>
+  </head>
+  <body>
+    <!-- outer scrolled to 100,150 shows its content origin at 0,-50; inner sits at 380,300 and is scrolled to 30,60, so its content origin is 350,240 -->
+    <div id="outer" data-expect-scroll="100,150,1000,1200">
+      <div id="outer-content">
+        <div id="out-1" class="m" style="left: 150px; top: 200px; background: #ff0000" data-color="ff0000" data-expect="150,150,40,40"></div>
+        <div id="inner" data-expect-scroll="30,60,600,600">
+          <div id="inner-content">
+            <div id="in-1" class="m" style="left: 70px; top: 100px; background: #00ff00" data-color="00ff00" data-expect="420,340,40,40"></div>
+            <div id="in-2" class="m" style="left: 20px; top: 0; background: #0000ff" data-color="0000ff" data-expect-flag="clipped"></div>
+            <div id="in-3" class="m" style="left: 180px; top: 100px; background: #ff00ff" data-color="ff00ff" data-expect-flag="clipped"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.getElementById('outer').scrollTo(100, 150)
+      document.getElementById('inner').scrollTo(30, 60)
+    </script>
+  </body>
+</html>

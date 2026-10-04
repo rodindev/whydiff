@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Frames inside transformed ancestors</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .at { position: absolute; }
+      iframe { display: block; width: 100px; height: 100px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- scale(2) on the iframe's parent: a 20px square at 10,10 paints as 40px at 120,120 -->
+    <div class="at" style="left: 100px; top: 100px; transform: scale(2); transform-origin: 0 0">
+      <iframe srcdoc="<style>body{margin:0}</style><div id='ft-scale' data-color='ff0000' data-expect='120,120,40,40' style='position:absolute;left:10px;top:10px;width:20px;height:20px;background:#ff0000'></div>"></iframe>
+    </div>
+    <!-- a pure translation on the parent -->
+    <div class="at" style="left: 400px; top: 100px; transform: translate(30px, 20px)">
+      <iframe srcdoc="<style>body{margin:0}</style><div id='ft-translate' data-color='00ff00' data-expect='440,130,40,40' style='position:absolute;left:10px;top:10px;width:40px;height:40px;background:#00ff00'></div>"></iframe>
+    </div>
+    <!-- rotate(180deg) about the centre of a 100px box at 600,100 maps local 10,10..50,50 to 50,50..90,90 -->
+    <div class="at" style="left: 600px; top: 100px; transform: rotate(180deg)">
+      <iframe srcdoc="<style>body{margin:0}</style><div id='ft-rotate' data-color='0000ff' data-expect='650,150,40,40' style='position:absolute;left:10px;top:10px;width:40px;height:40px;background:#0000ff'></div>"></iframe>
+    </div>
+  </body>
+</html>

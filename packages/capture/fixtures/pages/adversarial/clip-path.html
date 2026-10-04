@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>clip-path and clip</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- inset(0 100px 0 0) keeps only the left half 100..200 of a 200px box -->
+    <div style="position: absolute; left: 100px; top: 100px; width: 200px; height: 100px; clip-path: inset(0 100px 0 0); background: #eeeeee">
+      <div id="cp-kept" class="m" style="left: 0; top: 0; background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></div>
+      <div id="cp-cut" class="m" style="left: 120px; top: 0; background: #00ff00" data-color="00ff00" data-expect-flag="clipped"></div>
+    </div>
+    <!-- circle(50%) of a 400px box has radius 200 around 200,200: the corner square 0..40 lies outside it -->
+    <div style="position: absolute; left: 400px; top: 100px; width: 400px; height: 400px; clip-path: circle(50%); background: #eeeeee">
+      <div id="cp-corner" class="m" style="left: 0; top: 0; background: #0000ff" data-color="0000ff" data-expect-flag="clipped"></div>
+      <div id="cp-centre" class="m" style="left: 180px; top: 180px; background: #ff00ff" data-color="ff00ff" data-expect="580,280,40,40"></div>
+    </div>
+    <!-- the legacy clip property on an absolute box, as in visually-hidden utilities -->
+    <div style="position: absolute; left: 900px; top: 100px; width: 40px; height: 40px; clip: rect(0 0 0 0)">
+      <div id="cp-rect" class="m" style="left: 0; top: 0; background: #ffff00" data-color="ffff00" data-expect-flag="clipped"></div>
+    </div>
+  </body>
+</html>

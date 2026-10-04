@@ -1,0 +1,54 @@
+@layer theme, base, utilities;
+@layer theme {
+  :root, :host {
+    --ui-spacing: 0.25rem;
+    --ui-color-ink: rgb(17, 24, 39);
+    --ui-color-surface: rgb(249, 250, 251);
+    --ui-color-shadow: rgb(0 0 0 / 0.1);
+    --ui-text-sm: 0.875rem;
+    --ui-text-sm--line-height: calc(1.25 / 0.875);
+    --ui-radius-md: 0.375rem;
+  }
+}
+@layer base {
+  *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; border: 0 solid; }
+}
+@layer utilities {
+  .ui-flex { display: flex; }
+  .ui-gap-2 { gap: calc(var(--ui-spacing) * 2); }
+  .ui-p-4 { padding: calc(var(--ui-spacing) * 4); }
+  .ui-px-4 { padding-inline: calc(var(--ui-spacing) * 4); }
+  .ui-ps-2 { padding-inline-start: calc(var(--ui-spacing) * 2); }
+  .ui-py-2 { padding-block: calc(var(--ui-spacing) * 2); }
+  .ui-mx-auto { margin-inline: auto; }
+  .ui-my-2 { margin-block: calc(var(--ui-spacing) * 2); }
+  .ui-border { border-style: var(--ui-border-style); border-width: 1px; }
+  .ui-rounded-md { border-radius: var(--ui-radius-md); }
+  .ui-bg-surface { background-color: var(--ui-color-surface); }
+  .ui-text-ink { color: var(--ui-color-ink); }
+  .ui-text-sm { font-size: var(--ui-text-sm); line-height: var(--ui-leading, var(--ui-text-sm--line-height)); }
+  .ui-leading-6 { --ui-leading: calc(var(--ui-spacing) * 6); line-height: calc(var(--ui-spacing) * 6); }
+  .ui-shadow-md {
+    --ui-shadow: 0 4px 6px -1px var(--ui-color-shadow);
+    box-shadow: var(--ui-inset-shadow), var(--ui-inset-ring-shadow), var(--ui-ring-offset-shadow), var(--ui-ring-shadow), var(--ui-shadow);
+  }
+  .ui-ring-2 {
+    --ui-ring-shadow: 0 0 0 2px var(--ui-ring-color, currentcolor);
+    box-shadow: var(--ui-inset-shadow), var(--ui-inset-ring-shadow), var(--ui-ring-offset-shadow), var(--ui-ring-shadow), var(--ui-shadow);
+  }
+  .ui-translate-x-2 { --ui-translate-x: calc(var(--ui-spacing) * 2); translate: var(--ui-translate-x) var(--ui-translate-y); }
+  .ui-rotate-3 { rotate: 3deg; }
+  .ui-scale-95 { --ui-scale-x: 95%; --ui-scale-y: 95%; scale: var(--ui-scale-x) var(--ui-scale-y); }
+  .ui-vertical { writing-mode: vertical-rl; }
+}
+@property --ui-border-style { syntax: '*'; inherits: false; initial-value: solid; }
+@property --ui-shadow { syntax: '*'; inherits: false; initial-value: 0 0 #0000; }
+@property --ui-inset-shadow { syntax: '*'; inherits: false; initial-value: 0 0 #0000; }
+@property --ui-inset-ring-shadow { syntax: '*'; inherits: false; initial-value: 0 0 #0000; }
+@property --ui-ring-offset-shadow { syntax: '*'; inherits: false; initial-value: 0 0 #0000; }
+@property --ui-ring-shadow { syntax: '*'; inherits: false; initial-value: 0 0 #0000; }
+@property --ui-translate-x { syntax: '*'; inherits: false; initial-value: 0; }
+@property --ui-translate-y { syntax: '*'; inherits: false; initial-value: 0; }
+@property --ui-scale-x { syntax: '*'; inherits: false; initial-value: 1; }
+@property --ui-scale-y { syntax: '*'; inherits: false; initial-value: 1; }
+@property --ui-leading { syntax: '*'; inherits: false; }

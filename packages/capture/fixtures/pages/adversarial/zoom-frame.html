@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Frames under CSS zoom</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .at { position: absolute; }
+      iframe { display: block; width: 150px; height: 100px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- zoom 2 on the iframe's parent: the child document paints at twice its size, a 20px square at 10,10 becomes 40px at 120,120 -->
+    <div class="at" style="left: 100px; top: 100px">
+      <div style="zoom: 2">
+        <iframe srcdoc="<style>body{margin:0}</style><div id='zf-plain' data-color='ff0000' data-expect='120,120,40,40' style='position:absolute;left:10px;top:10px;width:20px;height:20px;background:#ff0000'></div>"></iframe>
+      </div>
+    </div>
+    <!-- the same with a 5px border and 5px padding on the iframe, both zoomed to 10px -->
+    <div class="at" style="left: 500px; top: 100px">
+      <div style="zoom: 2">
+        <iframe style="border: 5px solid #999999; padding: 5px" srcdoc="<style>body{margin:0}</style><div id='zf-inset' data-color='00ff00' data-expect='540,140,40,40' style='position:absolute;left:10px;top:10px;width:20px;height:20px;background:#00ff00'></div>"></iframe>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>text-overflow: ellipsis</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .line { position: absolute; left: 100px; top: 100px; width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 10px; }
+      .m { display: inline-block; vertical-align: top; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- a 100px line of four 40px boxes: the third crosses the end edge and is hidden behind the ellipsis, the fourth lies past it -->
+    <div class="line"><span id="el-1" class="m" style="background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></span><span id="el-2" class="m" style="background: #00ff00" data-color="00ff00" data-expect="140,100,40,40"></span><span id="el-3" class="m" style="background: #0000ff" data-color="0000ff" data-expect-flag="clipped"></span><span id="el-4" class="m" style="background: #ff00ff" data-color="ff00ff" data-expect-flag="clipped"></span></div>
+    <!-- a truncated label: the text keeps its full content -->
+    <div id="el-text" class="line" style="top: 200px; font-size: 16px" data-expect-text="A label far too long for its box">A label far too long for its box</div>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "kind": "unchanged",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "kind": "scrolled",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          0
+        ],
+        "rel": [
+          0,
+          0
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true,
+      "scroll": {
+        "from": [
+          0,
+          0
+        ],
+        "to": [
+          0,
+          25
+        ]
+      }
+    },
+    {
+      "before": 3,
+      "after": 3,
+      "kind": "shifted",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          -25
+        ],
+        "rel": [
+          0,
+          -25
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    },
+    {
+      "before": 4,
+      "after": 4,
+      "kind": "shifted",
+      "style": [],
+      "geometry": {
+        "abs": [
+          0,
+          -25
+        ],
+        "rel": [
+          0,
+          -25
+        ],
+        "size": [
+          0,
+          0
+        ]
+      },
+      "inRegion": true
+    }
+  ],
+  "added": [],
+  "removed": []
+}

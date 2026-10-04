@@ -1,0 +1,65 @@
+{
+  "pairs": [
+    {
+      "before": 0,
+      "after": 0,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 1,
+      "after": 1,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 2,
+      "after": 2,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 3,
+      "after": 3,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 4,
+      "after": 4,
+      "confidence": 950,
+      "pass": 2
+    },
+    {
+      "before": 5,
+      "after": 5,
+      "confidence": 950,
+      "pass": 2
+    }
+  ],
+  "removed": [],
+  "added": [
+    {
+      "node": 6,
+      "descendants": 0
+    }
+  ],
+  "afterOf": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "beforeOf": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    -1
+  ],
+  "lowConfidence": []
+}

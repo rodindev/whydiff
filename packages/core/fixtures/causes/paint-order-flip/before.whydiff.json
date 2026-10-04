@@ -1,0 +1,26 @@
+{
+  "formatVersion": 1,
+  "tool": {"name":"whydiff","version":"0.0.1","source":"cdp","browser":"chromium 147.0.0"},
+  "page": {"url":"http://app.test/","title":"Fixture"},
+  "image": {"width":1000,"height":800,"k":1,"layoutFactor":1,"origin":[0,0],"fullPage":false},
+  "viewport": {"width":1000,"height":800,"scrollX":0,"scrollY":0},
+  "content": {"width":1000,"height":800},
+  "compare": {"threshold":0.2,"animations":"disabled","caret":"hide","scale":"css"},
+  "frames": [{"url":"http://app.test/","owner":null,"offset":[0,0],"scroll":[0,0],"status":"captured"}],
+  "masks": [],
+  "sheets": [],
+  "props": ["display","justify-content","flex-direction","direction","float","order","padding-top","padding-left","margin-top","margin-bottom","margin-right","font-size","color","opacity","contain","z-index","position"],
+  "styles": [
+    ["block","normal","row","ltr","none","0","0px","0px","0px","0px","0px","16px","rgb(0, 0, 0)","1","none","auto","static"],
+    ["block","normal","row","ltr","none","0","0px","0px","0px","0px","0px","16px","rgb(0, 0, 0)","1","none","auto","sticky"],
+    ["block","normal","row","ltr","none","0","0px","0px","0px","0px","0px","16px","rgb(0, 0, 0)","1","layout","auto","static"],
+    ["block","normal","row","ltr","none","0","0px","0px","0px","0px","0px","16px","rgb(0, 0, 0)","1","none","1","absolute"]
+  ],
+  "nodes": [
+    {"i":0,"p":-1,"tag":"html","box":[0,0,1000,800],"s":0},
+    {"i":1,"p":0,"tag":"body","box":[0,0,1000,800],"s":0},
+    {"i":2,"p":1,"tag":"div","text":"Bar","box":[0,100,400,60],"s":1,"layer":5},
+    {"i":3,"p":1,"tag":"div","box":[0,80,400,100],"s":2,"layer":2,"stacking":true},
+    {"i":4,"p":3,"tag":"label","text":"Email","box":[10,110,60,20],"s":3,"layer":3}
+  ]
+}

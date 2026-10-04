@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>whydiff: 4 of 5 screenshots changed</title>
+<style>
+:root{color-scheme:light dark;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#eff2f5;--accent:#0969da;--bg:#ffffff}
+@media (prefers-color-scheme:dark){:root{--fg:#e6edf3;--muted:#9198a1;--line:#3d444d;--code:#212830;--accent:#4493f8;--bg:#0d1117}}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:64rem;padding:2rem 1.25rem 4rem;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--bg)}
+h1{font-size:1.75rem;line-height:1.25;margin:.25rem 0}
+h2{font-size:1.125rem;line-height:1.4;margin:0 0 .5rem}
+a{color:var(--accent)}
+code{font:.875em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);padding:.1em .3em;border-radius:4px;overflow-wrap:anywhere}
+ul,ol{margin:.25rem 0 .75rem;padding-left:1.5rem}
+li{margin:.2rem 0}
+.tool,.meta,.impact,.id,.where,.handle,footer{color:var(--muted)}
+.impact{font-weight:400}
+.tool{margin:0;font-weight:600;letter-spacing:.04em}
+.meta{margin:0 0 2rem}
+.summary{border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem;margin-bottom:2.5rem}
+.summary p{margin:0}
+.summary ol{margin:.5rem 0}
+.cause{border-top:1px solid var(--line);padding:1.25rem 0 .75rem}
+.id{font-weight:400;font-size:.875rem;margin-left:.5rem}
+.example{margin:.25rem 0 .5rem}
+.fix{margin:.5rem 0}
+.handle{font-size:.875rem;margin:.5rem 0 0}
+details{margin:.5rem 0}
+summary{cursor:pointer;color:var(--accent)}
+.more>summary,.tail>summary{font-size:1.125rem;font-weight:600;color:var(--fg);margin:1.5rem 0 .5rem}
+footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-size:.875rem}
+</style>
+</head>
+<body>
+<header>
+<p class="tool">whydiff</p>
+<h1>4 of 5 screenshots changed</h1>
+<p class="meta">whydiff compared main with feat/buttons in chromium 147 at 1000x800 and found 3 causes and 1 unexplained region.</p>
+</header>
+<main>
+<section class="summary">
+<p>3 causes appear on all 4 changed screenshots, 79% of changed pixels; they account for every changed pixel on 3 of them:</p>
+<ol>
+<li><a href="#c257ja7">the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels</a></li>
+<li><a href="#c1h66kd">the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
+<li><a href="#c2u6o6c">the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
+</ol>
+<p>1 unexplained region on 1 screenshot holds 21% of changed pixels.</p>
+</section>
+<section class="causes">
+<article class="cause" id="c257ja7">
+<h2>the inner spacing of 2 buttons grew by 8 px<span class="impact">, on 2 of 4 changed screenshots, 40% of changed pixels</span><span class="id">c257ja7</span></h2>
+<p class="example">for example, the &quot;Save it&quot; button&#x27;s inner spacing grew by 8 px, at <code>getByText(&#x27;Save it&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li>padding-left: was 0, now 8px</li>
+</ul>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="where">tests/buttons.spec.ts, chromium</span> <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="where">tests/buttons.spec.ts, chromium</span> <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c257ja7</code></p>
+</article>
+<article class="cause" id="c1h66kd">
+<h2>the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909)<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/hero.spec.ts</span><span class="id">c1h66kd</span></h2>
+<p class="example">at <code>getByText(&#x27;Lonely one&#x27;)</code> in &quot;s4 &gt;&gt; renders&quot; (s4udi5f)</p>
+<ul class="why">
+<li>color: was #000000, now #090909</li>
+</ul>
+<details>
+<summary>on 1 screenshot</summary>
+<ul>
+<li>s4 &gt;&gt; renders <span class="where">tests/hero.spec.ts:40, chromium</span> <span class="id">s4udi5f, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c1h66kd</code></p>
+</article>
+<article class="cause" id="c2u6o6c">
+<h2>the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/buttons.spec.ts</span><span class="id">c2u6o6c</span></h2>
+<p class="example">at <code>getByText(&#x27;Reset it&#x27;)</code> in &quot;s3 &gt;&gt; renders&quot; (s4udg7a)</p>
+<ul class="why">
+<li>padding-left: was 0, now 12px</li>
+</ul>
+<details>
+<summary>on 1 screenshot</summary>
+<ul>
+<li>s3 &gt;&gt; renders <span class="where">tests/buttons.spec.ts, chromium</span> <span class="id">s4udg7a, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c2u6o6c</code></p>
+</article>
+</section>
+<details class="tail">
+<summary>1 unexplained region on 1 screenshot</summary>
+<p>Pixels changed, no DOM, style or geometry change found under the region.</p>
+<p>Usual reasons: image content, canvas, icon font, text anti-aliasing.</p>
+<ul>
+<li>1 region on &quot;s4 &gt;&gt; renders&quot; (s4udi5f), 2,500 changed pixels: 1 under <code>&lt;img&gt;</code>; around <code>locator(&#x27;img.hero&#x27;)</code>; every region with its candidates: <code>npx whydiff explain s4udi5f</code></li>
+</ul>
+</details>
+</main>
+<footer>Every field of this run is in <code>report.json</code> next to this page; a cause, a screenshot or a region by its id: <code>npx whydiff explain &lt;id&gt;</code>.</footer>
+</body>
+</html>

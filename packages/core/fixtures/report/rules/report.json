@@ -1,0 +1,403 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/framework-upgrade"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 5,
+      "changed": 5,
+      "identical": 0
+    },
+    "causes": 2,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c16qjvd",
+        "c13w2jg"
+      ],
+      "screenshots": 5,
+      "settled": 5,
+      "pixels": 12000,
+      "text": "2 causes appear on all 5 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c16qjvd)\n- the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c13w2jg)"
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c16qjvd"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "s2 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c16qjvd"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udg7a",
+      "title": "s3 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c16qjvd"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udi5f",
+      "title": "s4 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c13w2jg"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udijg",
+      "title": "s5 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c13w2jg"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "c16qjvd",
+      "headline": "the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels",
+      "text": "## the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c16qjvd)\n- for example, the \"Save\" button's inner spacing shrank by 8 px, at `getByText('Save')` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets color (was #0000ff, now #000000), font-weight (was 700, now 400), padding-left (was 8px, now 0px)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c16qjvd`",
+      "key": "k1|rule|reset.css|*|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": "*",
+        "sheet": "reset.css",
+        "sets": [
+          "color",
+          "font-weight",
+          "padding-left"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": [
+          {
+            "prop": "color",
+            "from": "rgb(0, 0, 255)",
+            "to": "rgb(0, 0, 0)"
+          },
+          {
+            "prop": "font-weight",
+            "from": "700",
+            "to": "400"
+          },
+          {
+            "prop": "padding-left",
+            "from": "8px",
+            "to": "0px"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 3,
+      "elements": 3,
+      "pixels": 7200,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('Save')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('Save')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "8px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Save",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 8,
+                "to": 0
+              }
+            ],
+            "text": "the \"Save\" button's inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('More')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "color",
+              "from": "rgb(0, 0, 255)",
+              "to": "rgb(0, 0, 0)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "link",
+              "name": "More",
+              "tag": "a"
+            },
+            "facts": [
+              {
+                "kind": "color",
+                "from": "#0000ff",
+                "to": "#000000"
+              }
+            ],
+            "text": "the \"More\" link's label is darker (was #0000ff, now #000000)"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udg7a",
+          "locator": "getByText('Card')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "font-weight",
+              "from": "700",
+              "to": "400"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Card",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "font-weight",
+                "from": 700,
+                "to": 400
+              }
+            ],
+            "text": "the \"Card\" text is less bold"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c13w2jg",
+      "headline": "the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels",
+      "text": "## the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c13w2jg)\n- for example, the \"Col\" element's inner spacing shrank by 8 px, at `getByText('Col')` in \"s4 >> renders\" (s4udi5f)\n- `.ui-col` and 2 more from `framework.css` (layer `framework.components`) now sets padding-left (values differ per element: `npx whydiff explain c13w2jg`) in place of `.ui-col` from `app.css` (unlayered)\n- to restore it: change the rule in `framework.css`, or set the old values in your own stylesheet if `framework.css` comes from a dependency\n- all occurrences: `npx whydiff explain c13w2jg`",
+      "key": "k1|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-col-12, .ui-col-6, .ui-col",
+        "sheet": "framework.css",
+        "layer": "framework.components",
+        "sets": [
+          "padding-left"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": [],
+        "over": {
+          "selector": ".ui-col",
+          "sheet": "app.css"
+        }
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 4800,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udi5f",
+        "locator": "getByText('Col')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udi5f",
+          "locator": "getByText('Col')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "12px",
+              "to": "4px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 12,
+                "to": 4
+              }
+            ],
+            "text": "the \"Col\" element's inner spacing shrank by 8 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udijg",
+          "locator": "getByText('Col two')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "16px",
+              "to": "6px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col two",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 16,
+                "to": 6
+              }
+            ],
+            "text": "the \"Col two\" element's inner spacing shrank by 10 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

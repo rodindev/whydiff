@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Video posters</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      video { position: absolute; display: block; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- a square poster fills a square video box -->
+    <video id="vp-square" style="left: 100px; top: 100px" poster="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2740%27 height=%2740%27%3E%3Crect width=%2740%27 height=%2740%27 fill=%27%23ff0000%27/%3E%3C/svg%3E" data-color="ff0000" data-expect="100,100,40,40"></video>
+    <!-- a 2:1 poster covering a square box -->
+    <video id="vp-cover" style="left: 200px; top: 100px; object-fit: cover" poster="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2780%27 height=%2740%27%3E%3Crect width=%2780%27 height=%2740%27 fill=%27%2300ff00%27/%3E%3C/svg%3E" data-color="00ff00" data-expect="200,100,40,40"></video>
+    <!-- a poster video inside a transformed parent -->
+    <div style="position: absolute; left: 300px; top: 100px; transform: translate(20px, 30px)">
+      <video id="vp-moved" style="position: static" poster="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2740%27 height=%2740%27%3E%3Crect width=%2740%27 height=%2740%27 fill=%27%230000ff%27/%3E%3C/svg%3E" data-color="0000ff" data-expect="320,130,40,40"></video>
+    </div>
+  </body>
+</html>

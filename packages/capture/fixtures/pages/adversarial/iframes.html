@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>srcdoc, sandbox and lazy frames</title>
+    <style>
+      body { margin: 0; background: #fff; height: 12000px; }
+      iframe { position: absolute; width: 200px; height: 150px; border: 0; }
+    </style>
+  </head>
+  <body>
+    <iframe style="left: 100px; top: 100px" srcdoc="<style>body{margin:0}</style><div id='f-srcdoc' data-color='ff0000' data-expect='110,110,40,40' style='position:absolute;left:10px;top:10px;width:40px;height:40px;background:#ff0000'></div>"></iframe>
+    <!-- sandbox without allow-same-origin gives the document an opaque origin; 5px border and 5px padding -->
+    <iframe sandbox="" style="left: 400px; top: 100px; border: 5px solid #999999; padding: 5px" srcdoc="<style>body{margin:0}</style><div id='f-sandbox' data-color='00ff00' data-expect='420,120,40,40' style='position:absolute;left:10px;top:10px;width:40px;height:40px;background:#00ff00'></div>"></iframe>
+    <!-- a lazy frame inside the viewport loads; one 10000px down does not -->
+    <iframe loading="lazy" style="left: 100px; top: 300px" src="/adversarial/frames/marker.html?id=f-lazy&amp;c=0000ff&amp;x=10&amp;y=10&amp;expect=110,310,40,40"></iframe>
+    <iframe id="far" loading="lazy" style="left: 100px; top: 10000px" src="/adversarial/frames/marker.html?id=f-far&amp;c=ffff00&amp;x=10&amp;y=10"></iframe>
+    <!-- a scripted sandboxed frame from the other loopback name -->
+    <iframe sandbox="allow-scripts" style="left: 400px; top: 300px" src="http://localhost:__PORT__/adversarial/frames/marker.html?id=f-cross&amp;c=ff00ff&amp;x=20&amp;y=30&amp;expect=420,330,40,40"></iframe>
+  </body>
+</html>

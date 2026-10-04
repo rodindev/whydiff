@@ -1,0 +1,59 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "main"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 2,
+      "changed": 0,
+      "identical": 2
+    },
+    "causes": 0,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [],
+      "screenshots": 0,
+      "settled": 0,
+      "pixels": 0,
+      "text": "No cause explains these changes."
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "status": "identical",
+      "width": 1000,
+      "height": 800,
+      "regions": 0,
+      "pixels": 0,
+      "massChange": false,
+      "causes": [],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "s2 >> renders",
+      "status": "identical",
+      "width": 1000,
+      "height": 800,
+      "regions": 0,
+      "pixels": 0,
+      "massChange": false,
+      "causes": [],
+      "unexplained": []
+    }
+  ],
+  "causes": [],
+  "unexplained": []
+}

@@ -1,0 +1,40 @@
+@layer theme {
+  :root {
+    --ui-space: 4px;
+    --ui-pad: calc(var(--ui-space) * 2);
+    --ui-surface: rgb(255, 255, 255);
+    --ui-ink: rgb(17, 17, 17);
+    --ui-edge: 2px !important;
+  }
+}
+/* a later normal declaration loses to the important one in the theme layer */
+:root { --ui-edge: 9px; }
+/* the scope overrides tokens below it; --ui-pad keeps the root's --ui-space, substituted where it was declared */
+.ui-dark { --ui-surface: rgb(20, 20, 20); --ui-space: 8px; }
+@property --ui-border-style { syntax: '*'; inherits: false; initial-value: solid; }
+@property --ui-tint { syntax: '*'; inherits: false; }
+.ui-card {
+  padding: var(--ui-pad) calc(var(--ui-space) * 3);
+  background-color: var(--ui-surface);
+  border-style: var(--ui-border-style);
+  border-width: var(--ui-edge);
+  border-color: var(--ui-accent, rgb(0, 0, 255));
+}
+.ui-cycle { --ui-a: var(--ui-b); --ui-b: var(--ui-a); margin-top: var(--ui-a, 3px); }
+.ui-gap { display: flex; column-gap: var(--ui-gap, 6px); }
+.ui-scope { --ui-tint: rgb(1, 2, 3); outline-style: solid; outline-color: var(--ui-tint); }
+/* registered without inheritance or an initial value: the child sees nothing and takes the fallback */
+.ui-tinted { outline-style: solid; outline-color: var(--ui-tint, rgb(9, 9, 9)); }
+.ui-keywords {
+  --ui-ink: inherit;
+  --ui-surface: unset;
+  --ui-border-style: initial;
+  color: var(--ui-ink);
+  background-color: var(--ui-surface);
+  border-top-style: var(--ui-border-style);
+}
+.ui-outlined { outline-style: solid; outline-width: var(--ui-line); }
+/* two scopes give one value: their children share a style group, which carries the first child's chain */
+.ui-warm { --ui-mark: rgb(1, 1, 1); }
+.ui-cool { --ui-mark: rgb(1, 1, 1); }
+.ui-marked { color: var(--ui-mark); }

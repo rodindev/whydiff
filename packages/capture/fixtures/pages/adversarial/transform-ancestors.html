@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Transforms on ancestors</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .box { position: absolute; }
+    </style>
+  </head>
+  <body>
+    <!-- translate(50,30) then scale(2) from 0 0: a 20px square with margin-left 10 lands at 100+50+20, 100+30 -->
+    <div class="box" style="left: 100px; top: 100px; transform: translate(50px, 30px)">
+      <div style="transform: scale(2); transform-origin: 0 0">
+        <div id="t-scale" style="width: 20px; height: 20px; margin-left: 10px; background: #ff0000" data-color="ff0000" data-expect="170,130,40,40"></div>
+      </div>
+    </div>
+    <!-- rotate(180deg) about the centre of a 200x100 box at 300,100 maps local 0,0..40,40 to 160,60..200,100 -->
+    <div class="box" style="left: 300px; top: 100px; width: 200px; height: 100px; transform: rotate(180deg)">
+      <div id="t-rot180" style="width: 40px; height: 40px; background: #00ff00" data-color="00ff00" data-expect="460,160,40,40"></div>
+    </div>
+    <!-- rotate(90deg) about 600,100 maps local x,y to 600-y, 100+x; a square at local 20,10 covers 550..590, 120..160 -->
+    <div class="box" style="left: 600px; top: 100px; width: 200px; height: 100px; transform: rotate(90deg); transform-origin: 0 0">
+      <div id="t-rot90" style="width: 40px; height: 40px; margin: 10px 0 0 20px; background: #0000ff" data-color="0000ff" data-expect="550,120,40,40"></div>
+    </div>
+    <!-- translateX(100) then scale(0.5) on a box with 40px padding: an 80px square lands at 100+100+20, 300+20 -->
+    <div class="box" style="left: 100px; top: 300px; transform: translateX(100px)">
+      <div style="transform: scale(0.5); transform-origin: 0 0; padding: 40px">
+        <div id="t-half" style="width: 80px; height: 80px; background: #ff00ff" data-color="ff00ff" data-expect="220,320,40,40"></div>
+      </div>
+    </div>
+    <!-- the individual scale property instead of transform -->
+    <div class="box" style="left: 700px; top: 300px">
+      <div id="t-prop" style="width: 20px; height: 20px; scale: 2; transform-origin: 0 0; background: #ffff00" data-color="ffff00" data-expect="700,300,40,40"></div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>BEM</title>
+    <style>
+      body { margin: 0; background: #fff; font: 14px sans-serif; }
+      .ui-card { margin: 8px; padding: 8px; border: 1px solid #cccccc; }
+      .ui-card__title { font-weight: bold; }
+      .ui-badge__dot { display: inline-block; width: 8px; height: 8px; background: #999999; }
+    </style>
+  </head>
+  <body>
+    <!-- blocks, elements and modifiers; repeated and unique test ids; a custom element whose open shadow root holds twins of its light child -->
+    <nav class="ui-nav">
+      <a class="ui-nav__link ui-nav__link--active" href="#a">Home</a>
+      <a class="ui-nav__link" href="#b">Home office</a>
+      <a class="ui-nav__link" href="#c"></a>
+    </nav>
+    <section id="main">
+      <div class="ui-card" data-testid="row"><span class="ui-card__title">Alpha</span></div>
+      <div class="ui-card ui-card--wide" data-testid="row"><span class="ui-card__title"></span></div>
+      <div class="ui-card" data-testid="summary"><span class="ui-card__title"></span></div>
+      <input id="field-12" class="ui-field" />
+    </section>
+    <ui-badge>
+      <template shadowrootmode="open">
+        <style>
+          .ui-badge__dot { display: inline-block; width: 8px; height: 8px; background: #333333; }
+        </style>
+        <span class="ui-badge__dot"></span>
+        <slot></slot>
+        <span class="ui-badge__dot"></span>
+      </template>
+      <span class="ui-badge__dot"></span>
+    </ui-badge>
+    <span class="ui-badge__dot"></span>
+  </body>
+</html>

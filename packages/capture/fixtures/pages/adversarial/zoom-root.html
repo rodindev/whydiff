@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html data-scroll="0,100" style="zoom: 2">
+  <head>
+    <meta charset="utf-8" />
+    <title>CSS zoom on the root</title>
+    <style>
+      body { margin: 0; background: #fff; height: 1000px; position: relative; }
+      .m { position: absolute; width: 20px; height: 20px; }
+    </style>
+  </head>
+  <body>
+    <!-- zoom 2 on html doubles every length; the page is then scrolled by 100 px -->
+    <div id="zr-a" class="m" style="left: 50px; top: 100px; background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></div>
+    <div id="zr-b" class="m" style="left: 200px; top: 150px; background: #00ff00" data-color="00ff00" data-expect="400,200,40,40"></div>
+    <div id="zr-fixed" style="position: fixed; left: 300px; top: 10px; width: 20px; height: 20px; background: #0000ff" data-color="0000ff" data-expect="600,20,40,40"></div>
+  </body>
+</html>

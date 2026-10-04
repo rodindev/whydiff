@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #fff;
+        color: #1d2330;
+        font-family: 'Inter', sans-serif;
+      }
+      .fig {
+        width: 960px;
+        padding: 8px 0 12px;
+      }
+      .label {
+        margin: 0 0 14px;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b7280;
+      }
+      .mono {
+        font-family: 'SF Mono', Menlo, Consolas, monospace;
+      }
+      .shots {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .shot {
+        margin: 0;
+      }
+      .shot img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 480 / 250;
+        object-fit: cover;
+        object-position: top;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+      }
+      .shot figcaption {
+        margin-top: 8px;
+        font-size: 15px;
+        color: #6b7280;
+      }
+      .down {
+        margin: 18px 0 10px;
+        text-align: center;
+        font-size: 30px;
+        color: #b0b6c1;
+      }
+      .term {
+        padding: 22px 24px;
+        border-radius: 12px;
+        background: #11141b;
+        font-size: 16.5px;
+        line-height: 1.6;
+        color: #9aa3b2;
+      }
+      .term p {
+        margin: 0;
+      }
+      .term .gap {
+        margin-top: 10px;
+      }
+      .term .h {
+        color: #6b7385;
+      }
+      .term .w,
+      .term em {
+        color: #f2f4f8;
+      }
+      .term em {
+        font-style: normal;
+        white-space: nowrap;
+      }
+      .term .k {
+        color: #ffcf70;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #0d1117;
+          color: #e6edf3;
+        }
+        .label,
+        .shot figcaption {
+          color: #8b949e;
+        }
+        .shot img {
+          border-color: #30363d;
+        }
+        .down {
+          color: #6e7681;
+        }
+        .term {
+          background: #161b22;
+          box-shadow: inset 0 0 0 1px #30363d;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="fig">
+      <div class="label">What a failed test gives you</div>
+      <div class="shots">
+        <!-- shots -->
+      </div>
+      <div class="down">&darr;</div>
+      <div class="label">What whydiff adds</div>
+      <div class="term mono">
+        <!-- lines -->
+      </div>
+    </div>
+  </body>
+</html>

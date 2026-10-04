@@ -1,0 +1,307 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/framework-upgrade"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 4,
+      "changed": 4,
+      "identical": 0
+    },
+    "causes": 1,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "cfnwmqa"
+      ],
+      "screenshots": 4,
+      "settled": 4,
+      "pixels": 9600,
+      "text": "1 cause appears on all 4 changed screenshots, 100% of changed pixels, and accounts for every changed pixel there:\n- the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, cfnwmqa)"
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "cfnwmqa"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "s2 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "cfnwmqa"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udg7a",
+      "title": "s3 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "cfnwmqa"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udi5f",
+      "title": "s4 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "cfnwmqa"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "cfnwmqa",
+      "headline": "the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels",
+      "text": "## the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, cfnwmqa)\n- for example, the \"Col\" element's inner spacing shrank by 12 px, at `getByText('Col')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-col` from `framework-*.css` (layer `framework.components`) now sets font-weight (was 400, now 700); changed its declaration of color (was #0000ff, now #ff0000); no longer sets padding-left (values differ per element: `npx whydiff explain cfnwmqa`)\n- it moved from unlayered into layer `framework.components`: its declarations now lose to any declaration of the same property outside a layer, whatever the selectors' specificity\n- to restore it: change the rule in the source file that builds `framework-*.css`, or set the old values in your own stylesheet if the rule comes from a dependency; whydiff cannot tell from a built sheet which it is\n- all occurrences: `npx whydiff explain cfnwmqa`",
+      "key": "k1|rule|framework-*.css|.ui-col|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-col",
+        "sheet": "framework-*.css",
+        "layer": "framework.components",
+        "sets": [
+          "font-weight"
+        ],
+        "changed": [
+          "color"
+        ],
+        "unsets": [
+          "padding-left"
+        ],
+        "values": [
+          {
+            "prop": "color",
+            "from": "rgb(0, 0, 255)",
+            "to": "rgb(255, 0, 0)"
+          },
+          {
+            "prop": "font-weight",
+            "from": "400",
+            "to": "700"
+          }
+        ],
+        "layerTo": "framework.components"
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 4,
+      "elements": 4,
+      "pixels": 9600,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('Col')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('Col')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "12px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 12,
+                "to": 0
+              }
+            ],
+            "text": "the \"Col\" element's inner spacing shrank by 12 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('Col two')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "16px",
+              "to": "0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col two",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 16,
+                "to": 0
+              }
+            ],
+            "text": "the \"Col two\" element's inner spacing shrank by 16 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udg7a",
+          "locator": "getByText('Col three')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "color",
+              "from": "rgb(0, 0, 255)",
+              "to": "rgb(255, 0, 0)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col three",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "color",
+                "from": "#0000ff",
+                "to": "#ff0000"
+              }
+            ],
+            "text": "the \"Col three\" text is lighter (was #0000ff, now #ff0000)"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udi5f",
+          "locator": "getByText('Col four')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "font-weight",
+              "from": "400",
+              "to": "700"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "Col four",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "font-weight",
+                "from": 400,
+                "to": 700
+              }
+            ],
+            "text": "the \"Col four\" text is bolder"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

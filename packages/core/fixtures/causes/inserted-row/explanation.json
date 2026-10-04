@@ -1,0 +1,61 @@
+{
+  "causes": [
+    {
+      "id": 0,
+      "node": {
+        "added": 4
+      },
+      "kind": "added",
+      "effects": [
+        {
+          "kind": "shifted",
+          "nodes": [
+            4,
+            5
+          ],
+          "vector": [
+            0,
+            20
+          ]
+        }
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "region": {
+        "x": 0,
+        "y": 20,
+        "width": 400,
+        "height": 60,
+        "pixels": 24000
+      },
+      "causes": [
+        0
+      ],
+      "candidates": [
+        {
+          "before": 4,
+          "after": 5,
+          "share": 1000
+        },
+        {
+          "before": null,
+          "after": 4,
+          "share": 1000
+        },
+        {
+          "before": 5,
+          "after": 6,
+          "share": 1000
+        }
+      ]
+    }
+  ],
+  "unexplained": [],
+  "suppressed": {
+    "movedWithAncestor": 0,
+    "inherited": 0,
+    "derivedOnly": 0
+  }
+}

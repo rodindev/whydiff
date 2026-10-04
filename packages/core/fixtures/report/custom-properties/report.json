@@ -1,0 +1,1152 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "main",
+    "after": "feat/tokens"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 2,
+      "changed": 2,
+      "identical": 0
+    },
+    "causes": 7,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c2azv0u"
+      ],
+      "screenshots": 2,
+      "settled": 0,
+      "pixels": 16842,
+      "text": "1 cause appears on all 2 changed screenshots, 14% of changed pixels; every one of those screenshots has other changes too:\n- the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, c2azv0u)\n\nThe other 6 causes hold 86% of changed pixels."
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 58884,
+      "massChange": false,
+      "causes": [
+        "c2azv0u",
+        "c1rjqha",
+        "c1i00el",
+        "c232xsm",
+        "c4acdp1",
+        "c32ihgf",
+        "c2jd0t3"
+      ],
+      "unexplained": []
+    },
+    {
+      "id": "s4udft9",
+      "title": "s2 >> renders",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 2,
+      "pixels": 58884,
+      "massChange": false,
+      "causes": [
+        "c2azv0u",
+        "c1rjqha",
+        "c1i00el",
+        "c232xsm",
+        "c4acdp1",
+        "c32ihgf",
+        "c2jd0t3"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "c2azv0u",
+      "headline": "the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, c2azv0u)\n- for example, the \"ring s1\" element's shadow appears, at `getByText('ring s1')` in \"s1 >> renders\" (s4udgzc)\n- `*` and 2 more from `app.css` (layer `base`) now sets --ui-glow, --ui-ring\n- --ui-glow, --ui-ring are read by box-shadow, which was invalid without them\n- to restore it: change the rule in `app.css`, or set the old values in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c2azv0u`",
+      "key": "k1|rule|app.css|*, ::before, ::after|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": "*, ::before, ::after",
+        "sheet": "app.css",
+        "layer": "base",
+        "sets": [
+          "--ui-glow",
+          "--ui-ring"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": [],
+        "vars": [
+          {
+            "name": "--ui-glow",
+            "to": "0 1px 2px #0003",
+            "readBy": [
+              "box-shadow"
+            ],
+            "missing": "invalid"
+          },
+          {
+            "name": "--ui-ring",
+            "to": "0 0 #0000",
+            "readBy": [
+              "box-shadow"
+            ],
+            "missing": "invalid"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16842,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('ring s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('ring s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "box-shadow",
+              "from": "none",
+              "to": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.2) 0px 1px 2px 0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "ring s1",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "shadow",
+                "from": "none",
+                "to": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.2) 0px 1px 2px 0px"
+              }
+            ],
+            "text": "the \"ring s1\" element's shadow appears"
+          },
+          "box": {
+            "before": [
+              10,
+              160,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              160,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('ring s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "box-shadow",
+              "from": "none",
+              "to": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.2) 0px 1px 2px 0px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "ring s2",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "shadow",
+                "from": "none",
+                "to": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0.2) 0px 1px 2px 0px"
+              }
+            ],
+            "text": "the \"ring s2\" element's shadow appears"
+          },
+          "box": {
+            "before": [
+              10,
+              160,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              160,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1rjqha",
+      "headline": "2 buttons are 2 px wider, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## 2 buttons are 2 px wider, on all 2 changed screenshots, 14% of changed pixels (`.ui-reset .ui-btn`, c1rjqha)\n- for example, the \"btn s1\" button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42), at `getByText('btn s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-reset .ui-btn` from `app.css` (unlayered) now sets border-width (all sides, was 2px, now 3px) in place of the browser's default `button { border-width: 2px }`\n- to restore it: change the rule in `app.css`, or set border-width (all sides) back to 2px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1rjqha`",
+      "key": "k1|rule|app.css|.ui-reset .ui-btn|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-reset .ui-btn",
+        "sheet": "app.css",
+        "sets": [
+          "border-bottom-width",
+          "border-left-width",
+          "border-right-width",
+          "border-top-width"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": [
+          {
+            "prop": "border-bottom-width",
+            "from": "2px",
+            "to": "3px"
+          },
+          {
+            "prop": "border-left-width",
+            "from": "2px",
+            "to": "3px"
+          },
+          {
+            "prop": "border-right-width",
+            "from": "2px",
+            "to": "3px"
+          },
+          {
+            "prop": "border-top-width",
+            "from": "2px",
+            "to": "3px"
+          }
+        ],
+        "over": {
+          "selector": "button",
+          "sheet": "user agent stylesheet",
+          "userAgent": true
+        },
+        "defaults": [
+          {
+            "prop": "border-bottom-width",
+            "value": "2px"
+          },
+          {
+            "prop": "border-left-width",
+            "value": "2px"
+          },
+          {
+            "prop": "border-right-width",
+            "value": "2px"
+          },
+          {
+            "prop": "border-top-width",
+            "value": "2px"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16842,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('btn s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('btn s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "border-bottom-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-left-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-right-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-top-width",
+              "from": "2px",
+              "to": "3px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "btn s1",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "width",
+                "from": 200,
+                "to": 202
+              },
+              {
+                "kind": "height",
+                "from": 40,
+                "to": 42
+              }
+            ],
+            "text": "the \"btn s1\" button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42)"
+          },
+          "box": {
+            "before": [
+              10,
+              310,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              310,
+              202,
+              42
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('btn s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "border-bottom-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-left-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-right-width",
+              "from": "2px",
+              "to": "3px"
+            },
+            {
+              "prop": "border-top-width",
+              "from": "2px",
+              "to": "3px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "btn s2",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "width",
+                "from": 200,
+                "to": 202
+              },
+              {
+                "kind": "height",
+                "from": 40,
+                "to": 42
+              }
+            ],
+            "text": "the \"btn s2\" button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42)"
+          },
+          "box": {
+            "before": [
+              10,
+              310,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              310,
+              202,
+              42
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c1i00el",
+      "headline": "the borders of 2 `<div>` elements disappear, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the borders of 2 `<div>` elements disappear, on all 2 changed screenshots, 14% of changed pixels (`@property --ui-border-style`, c1i00el)\n- for example, the \"frame s1\" element's border disappears, at `getByText('frame s1')` in \"s1 >> renders\" (s4udgzc)\n- `@property --ui-border-style` from `app.css` no longer registers it (initial value solid)\n- --ui-border-style is read by border-style (all sides), which is invalid without it\n- to restore it: change the rule in `app.css`, or set --ui-border-style back to solid in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1i00el`",
+      "key": "k1|rule|app.css|@property --ui-border-style|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": "@property --ui-border-style",
+        "sheet": "app.css",
+        "sets": [],
+        "changed": [],
+        "unsets": [
+          "--ui-border-style"
+        ],
+        "values": [],
+        "vars": [
+          {
+            "name": "--ui-border-style",
+            "from": "solid",
+            "readBy": [
+              "border-bottom-style",
+              "border-left-style",
+              "border-right-style",
+              "border-top-style"
+            ],
+            "missing": "invalid"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16842,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('frame s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('frame s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "border-bottom-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-left-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-right-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-top-style",
+              "from": "solid",
+              "to": "none"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "frame s1",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "border",
+                "from": "#000000",
+                "to": "none"
+              }
+            ],
+            "text": "the \"frame s1\" element's border disappears"
+          },
+          "box": {
+            "before": [
+              10,
+              260,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              260,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('frame s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "border-bottom-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-left-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-right-style",
+              "from": "solid",
+              "to": "none"
+            },
+            {
+              "prop": "border-top-style",
+              "from": "solid",
+              "to": "none"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "frame s2",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "border",
+                "from": "#000000",
+                "to": "none"
+              }
+            ],
+            "text": "the \"frame s2\" element's border disappears"
+          },
+          "box": {
+            "before": [
+              10,
+              260,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              260,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c232xsm",
+      "headline": "the backgrounds of 2 `<div>` elements are lighter (was #353535, now #ffffff), on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the backgrounds of 2 `<div>` elements are lighter (was #353535, now #ffffff), on all 2 changed screenshots, 14% of changed pixels (style attribute of an ancestor, c232xsm)\n- for example, the \"surface s1\" element's background is lighter (was #353535, now #ffffff) and its border changes colour, at `getByText('surface s1')` in \"s1 >> renders\" (s4udgzc)\n- the style attribute of an ancestor changed its declaration of --ui-surface (was #353535, now #ffffff)\n- --ui-surface is read by background-color, border-color (all sides)\n- to restore it: change the style attribute where the markup or a script sets it\n- all occurrences: `npx whydiff explain c232xsm`",
+      "key": "k1|rule|inline|||ancestor",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": "",
+        "sheet": "style attribute of an ancestor",
+        "sets": [],
+        "changed": [
+          "--ui-surface"
+        ],
+        "unsets": [],
+        "values": [],
+        "vars": [
+          {
+            "name": "--ui-surface",
+            "from": "#353535",
+            "to": "#ffffff",
+            "readBy": [
+              "background-color",
+              "border-bottom-color",
+              "border-left-color",
+              "border-right-color",
+              "border-top-color"
+            ]
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16842,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('surface s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('surface s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "background-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-bottom-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-left-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-right-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-top-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "surface s1",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "background",
+                "from": "#353535",
+                "to": "#ffffff"
+              },
+              {
+                "kind": "border",
+                "from": "#353535",
+                "to": "#ffffff"
+              }
+            ],
+            "text": "the \"surface s1\" element's background is lighter (was #353535, now #ffffff) and its border changes colour"
+          },
+          "box": {
+            "before": [
+              10,
+              210,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              210,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('surface s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "background-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-bottom-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-left-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-right-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            },
+            {
+              "prop": "border-top-color",
+              "from": "rgb(53, 53, 53)",
+              "to": "rgb(255, 255, 255)"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "surface s2",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "background",
+                "from": "#353535",
+                "to": "#ffffff"
+              },
+              {
+                "kind": "border",
+                "from": "#353535",
+                "to": "#ffffff"
+              }
+            ],
+            "text": "the \"surface s2\" element's background is lighter (was #353535, now #ffffff) and its border changes colour"
+          },
+          "box": {
+            "before": [
+              10,
+              210,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              210,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c4acdp1",
+      "headline": "the shadows of 2 `<div>` elements change, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the shadows of 2 `<div>` elements change, on all 2 changed screenshots, 14% of changed pixels (`.ui-card`, c4acdp1)\n- for example, the \"card s1\" element's shadow changes, at `getByText('card s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-card` from `app.css` (unlayered) now sets box-shadow (was `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px`, now `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px`) in place of `.ui-elevated` from `app.css` (unlayered)\n- box-shadow reads --ui-shadow, set by `.ui-elevated` from `app.css` (unlayered)\n- to restore it: change the rule in `app.css`, or set box-shadow back to `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px` in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c4acdp1`",
+      "key": "k1|rule|app.css|.ui-card|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-card",
+        "sheet": "app.css",
+        "sets": [
+          "box-shadow"
+        ],
+        "changed": [],
+        "unsets": [],
+        "values": [
+          {
+            "prop": "box-shadow",
+            "from": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px",
+            "to": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px"
+          }
+        ],
+        "over": {
+          "selector": ".ui-elevated",
+          "sheet": "app.css"
+        },
+        "via": [
+          {
+            "name": "--ui-shadow",
+            "rule": {
+              "selector": ".ui-elevated",
+              "sheet": "app.css"
+            },
+            "readBy": [
+              "box-shadow"
+            ]
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16800,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('card s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('card s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "box-shadow",
+              "from": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px",
+              "to": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "card s1",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "shadow",
+                "from": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px",
+                "to": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px"
+              }
+            ],
+            "text": "the \"card s1\" element's shadow changes"
+          },
+          "box": {
+            "before": [
+              10,
+              60,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              60,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('card s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "box-shadow",
+              "from": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px",
+              "to": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "card s2",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "shadow",
+                "from": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px",
+                "to": "rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px"
+              }
+            ],
+            "text": "the \"card s2\" element's shadow changes"
+          },
+          "box": {
+            "before": [
+              10,
+              60,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              60,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c32ihgf",
+      "headline": "the inner spacing of 2 `<div>` elements grew by 4 px, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the inner spacing of 2 `<div>` elements grew by 4 px, on all 2 changed screenshots, 14% of changed pixels (`:root` and 1 more, c32ihgf)\n- for example, the \"panel s1\" element's inner spacing grew by 4 px, at `getByText('panel s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` and 1 more from `app.css` (layer `theme`) changed its declaration of --ui-space (was 4px, now 5px)\n- --ui-space is read by padding (all sides), row-gap\n- to restore it: change the rule in `app.css`, or set --ui-space back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c32ihgf`",
+      "key": "k1|rule|app.css|:root, :host|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ":root, :host",
+        "sheet": "app.css",
+        "layer": "theme",
+        "sets": [],
+        "changed": [
+          "--ui-space"
+        ],
+        "unsets": [],
+        "values": [],
+        "vars": [
+          {
+            "name": "--ui-space",
+            "from": "4px",
+            "to": "5px",
+            "readBy": [
+              "padding-bottom",
+              "padding-left",
+              "padding-right",
+              "padding-top",
+              "row-gap"
+            ]
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16800,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('panel s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('panel s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-bottom",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "row-gap",
+              "from": "4px",
+              "to": "5px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "panel s1",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 16,
+                "to": 20
+              }
+            ],
+            "text": "the \"panel s1\" element's inner spacing grew by 4 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              10,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('panel s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-bottom",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-left",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-right",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "padding-top",
+              "from": "4px",
+              "to": "5px"
+            },
+            {
+              "prop": "row-gap",
+              "from": "4px",
+              "to": "5px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "name": "panel s2",
+              "tag": "div"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 16,
+                "to": 20
+              }
+            ],
+            "text": "the \"panel s2\" element's inner spacing grew by 4 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              10,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "c2jd0t3",
+      "headline": "the column-gap property of 2 elements changed, on all 2 changed screenshots, 14% of changed pixels",
+      "text": "## the column-gap property of 2 elements changed, on all 2 changed screenshots, 14% of changed pixels (`:root`, c2jd0t3)\n- for example, column-gap (was 4px, now 6px) changed, at `getByText('row s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` from `app.css` (layer `theme`) no longer sets --ui-gap\n- --ui-gap is read by column-gap, which now uses its var() fallback\n- to restore it: change the rule in `app.css`, or set --ui-gap back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c2jd0t3`",
+      "key": "k1|rule|app.css|:root|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ":root",
+        "sheet": "app.css",
+        "layer": "theme",
+        "sets": [],
+        "changed": [],
+        "unsets": [
+          "--ui-gap"
+        ],
+        "values": [],
+        "vars": [
+          {
+            "name": "--ui-gap",
+            "from": "4px",
+            "readBy": [
+              "column-gap"
+            ],
+            "missing": "fallback"
+          }
+        ]
+      },
+      "scope": "global",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 2,
+      "elements": 2,
+      "pixels": 16800,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('row s1')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('row s1')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "column-gap",
+              "from": "4px",
+              "to": "6px"
+            }
+          ],
+          "box": {
+            "before": [
+              10,
+              110,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              110,
+              200,
+              40
+            ]
+          }
+        },
+        {
+          "screenshot": "s4udft9",
+          "locator": "getByText('row s2')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "column-gap",
+              "from": "4px",
+              "to": "6px"
+            }
+          ],
+          "box": {
+            "before": [
+              10,
+              110,
+              200,
+              40
+            ],
+            "after": [
+              10,
+              110,
+              200,
+              40
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

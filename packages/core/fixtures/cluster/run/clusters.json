@@ -1,0 +1,92 @@
+{
+  "rulesVersion": "k1",
+  "clusters": [
+    {
+      "id": "c257ja7",
+      "alias": "c01",
+      "level": 1,
+      "key": "k1|ui-btn|style|padding-left=0>8px",
+      "kind": "ui-btn",
+      "summary": {
+        "kind": "style",
+        "changes": [
+          {
+            "prop": "padding-left",
+            "from": "0",
+            "to": "8px"
+          }
+        ]
+      },
+      "members": [
+        {
+          "screen": "s1",
+          "cause": 0,
+          "nodes": 1,
+          "pixels": 2400
+        },
+        {
+          "screen": "s2",
+          "cause": 0,
+          "nodes": 1,
+          "pixels": 2400
+        }
+      ],
+      "screens": 2,
+      "pixels": 4800
+    },
+    {
+      "id": "c1h66kd",
+      "alias": "c02",
+      "level": 1,
+      "key": "k1|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "kind": "ui-btn",
+      "summary": {
+        "kind": "style",
+        "changes": [
+          {
+            "prop": "color",
+            "from": "rgb(0, 0, 0)",
+            "to": "rgb(9, 9, 9)"
+          }
+        ]
+      },
+      "members": [
+        {
+          "screen": "s4",
+          "cause": 0,
+          "nodes": 1,
+          "pixels": 2400
+        }
+      ],
+      "screens": 1,
+      "pixels": 2400
+    },
+    {
+      "id": "c2u6o6c",
+      "alias": "c03",
+      "level": 1,
+      "key": "k1|ui-btn|style|padding-left=0>12px",
+      "kind": "ui-btn",
+      "summary": {
+        "kind": "style",
+        "changes": [
+          {
+            "prop": "padding-left",
+            "from": "0",
+            "to": "12px"
+          }
+        ]
+      },
+      "members": [
+        {
+          "screen": "s3",
+          "cause": 0,
+          "nodes": 1,
+          "pixels": 2400
+        }
+      ],
+      "screens": 1,
+      "pixels": 2400
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "formatVersion": 1,
+  "tool": {"name":"whydiff","version":"0.0.1","source":"cdp","browser":"chromium 147.0.0"},
+  "page": {"url":"http://app.test/","title":"Fixture"},
+  "image": {"width":1000,"height":800,"k":1,"layoutFactor":1,"origin":[0,0],"fullPage":false},
+  "viewport": {"width":1000,"height":800,"scrollX":0,"scrollY":0},
+  "content": {"width":1000,"height":800},
+  "compare": {"threshold":0.2,"animations":"disabled","caret":"hide","scale":"css"},
+  "frames": [{"url":"http://app.test/","owner":null,"offset":[0,0],"scroll":[0,0],"status":"captured"}],
+  "masks": [],
+  "sheets": [],
+  "props": ["display","justify-content","flex-direction","direction","float","order","padding-top","padding-left","margin-top","margin-bottom","margin-right","font-size","color","opacity","contain","z-index","position"],
+  "styles": [
+    ["block","normal","row","ltr","none","0","0px","0px","0px","0px","0px","16px","rgb(0, 0, 0)","1","none","auto","static"]
+  ],
+  "nodes": [
+    {"i":0,"p":-1,"tag":"html","box":[0,0,1000,800],"s":0},
+    {"i":1,"p":0,"tag":"body","box":[0,0,1000,800],"s":0},
+    {"i":2,"p":1,"tag":"table","box":[0,0,400,60],"s":0},
+    {"i":3,"p":2,"tag":"tr","text":"alpha","box":[0,0,400,20],"s":0},
+    {"i":4,"p":2,"tag":"tr","text":"beta","box":[0,20,400,20],"s":0},
+    {"i":5,"p":2,"tag":"tr","text":"gamma","box":[0,40,400,20],"s":0}
+  ]
+}

@@ -1,0 +1,3 @@
+* text=auto eol=lf
+packages/*/fixtures/** linguist-vendored
+packages/cli/fixtures/readme/*/*.whydiff.json -diff linguist-generated=true

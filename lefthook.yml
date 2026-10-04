@@ -1,0 +1,11 @@
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: '*.{js,ts}'
+      exclude:
+        - '**/fixtures/**'
+      run: pnpm eslint {staged_files}
+    format:
+      glob: '*.{js,ts,json,md,yaml,yml}'
+      run: pnpm prettier --check {staged_files}

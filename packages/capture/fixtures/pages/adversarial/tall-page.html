@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="whydiff-screenshot" content="full-page">
+    <title>A page 24,000 px tall</title>
+    <style>
+      body { margin: 0; background: #fff; height: 24000px; position: relative; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- full-page screenshot 1000x24000, past the 16384 px texture size of most GPUs -->
+    <div id="tall-fixed" style="position: fixed; left: 800px; top: 20px; width: 40px; height: 40px; background: #ff00ff" data-color="ff00ff" data-expect="800,20,40,40"></div>
+    <div id="tall-a" class="m" style="left: 100px; top: 100px; background: #ff0000" data-color="ff0000" data-expect="100,100,40,40"></div>
+    <div id="tall-b" class="m" style="left: 200px; top: 12000px; background: #00ff00" data-color="00ff00" data-expect="200,12000,40,40"></div>
+    <div id="tall-c" class="m" style="left: 300px; top: 16500px; background: #0000ff" data-color="0000ff" data-expect="300,16500,40,40"></div>
+    <div id="tall-d" class="m" style="left: 400px; top: 23900px; background: #ffff00" data-color="ffff00" data-expect="400,23900,40,40"></div>
+  </body>
+</html>

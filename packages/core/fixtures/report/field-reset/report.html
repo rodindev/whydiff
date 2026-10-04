@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>whydiff: 2 of 2 screenshots changed</title>
+<style>
+:root{color-scheme:light dark;--fg:#1f2328;--muted:#59636e;--line:#d1d9e0;--code:#eff2f5;--accent:#0969da;--bg:#ffffff}
+@media (prefers-color-scheme:dark){:root{--fg:#e6edf3;--muted:#9198a1;--line:#3d444d;--code:#212830;--accent:#4493f8;--bg:#0d1117}}
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:64rem;padding:2rem 1.25rem 4rem;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--fg);background:var(--bg)}
+h1{font-size:1.75rem;line-height:1.25;margin:.25rem 0}
+h2{font-size:1.125rem;line-height:1.4;margin:0 0 .5rem}
+a{color:var(--accent)}
+code{font:.875em/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);padding:.1em .3em;border-radius:4px;overflow-wrap:anywhere}
+ul,ol{margin:.25rem 0 .75rem;padding-left:1.5rem}
+li{margin:.2rem 0}
+.tool,.meta,.impact,.id,.where,.handle,footer{color:var(--muted)}
+.impact{font-weight:400}
+.tool{margin:0;font-weight:600;letter-spacing:.04em}
+.meta{margin:0 0 2rem}
+.summary{border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem;margin-bottom:2.5rem}
+.summary p{margin:0}
+.summary ol{margin:.5rem 0}
+.cause{border-top:1px solid var(--line);padding:1.25rem 0 .75rem}
+.id{font-weight:400;font-size:.875rem;margin-left:.5rem}
+.example{margin:.25rem 0 .5rem}
+.fix{margin:.5rem 0}
+.handle{font-size:.875rem;margin:.5rem 0 0}
+details{margin:.5rem 0}
+summary{cursor:pointer;color:var(--accent)}
+.more>summary,.tail>summary{font-size:1.125rem;font-weight:600;color:var(--fg);margin:1.5rem 0 .5rem}
+footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-size:.875rem}
+</style>
+</head>
+<body>
+<header>
+<p class="tool">whydiff</p>
+<h1>2 of 2 screenshots changed</h1>
+<p class="meta">whydiff compared main with feat/form-reset and found 2 causes and 0 unexplained regions.</p>
+</header>
+<main>
+<section class="summary">
+<p>2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:</p>
+<ol>
+<li><a href="#c16qjvd">the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels</a></li>
+<li><a href="#c1xqq06">2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels</a></li>
+</ol>
+</section>
+<section class="causes">
+<article class="cause" id="c16qjvd">
+<h2>the inner spacing of 4 buttons and text fields shrank by 8 to 24 px<span class="impact">, on all 2 changed screenshots, 54% of changed pixels</span><span class="id"><code>*</code>, c16qjvd</span></h2>
+<p class="example">for example, the &quot;Notes s1&quot; text field&#x27;s inner spacing shrank by 8 px, at <code>getByRole(&#x27;textbox&#x27;, { name: &#x27;Notes s1&#x27; })</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>*</code> from <code>reset.css</code> (unlayered) now sets padding (all sides, values differ per element: <code>npx whydiff explain c16qjvd</code>)</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>reset.css</code>, or set the old values in your own stylesheet if <code>reset.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 2 elements</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 2 elements</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c16qjvd</code></p>
+</article>
+<article class="cause" id="c1xqq06">
+<h2>2 text fields become visible<span class="impact">, on all 2 changed screenshots, 46% of changed pixels</span><span class="id"><code>.ui-field</code>, c1xqq06</span></h2>
+<p class="example">for example, the &quot;Notes s1&quot; text field becomes visible, at <code>getByRole(&#x27;textbox&#x27;, { name: &#x27;Notes s1&#x27; })</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
+<ul class="why">
+<li><code>.ui-field</code> from <code>app.css</code> (unlayered) no longer sets opacity (was 0, now 1)</li>
+</ul>
+<p class="fix">to restore it: change the rule in <code>app.css</code>, or set opacity back to 0 in your own stylesheet if <code>app.css</code> comes from a dependency</p>
+<details>
+<summary>on 2 screenshots</summary>
+<ul>
+<li>s1 &gt;&gt; renders <span class="id">s4udgzc, 1 element</span></li>
+<li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
+</ul>
+</details>
+<p class="handle">every member: <code>npx whydiff explain c1xqq06</code></p>
+</article>
+</section>
+</main>
+<footer>Every field of this run is in <code>report.json</code> next to this page; a cause, a screenshot or a region by its id: <code>npx whydiff explain &lt;id&gt;</code>.</footer>
+</body>
+</html>

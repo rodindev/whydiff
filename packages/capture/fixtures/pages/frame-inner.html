@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <body style="margin: 0; background: #fff">
+    <div id="marker" style="position: absolute; left: 30px; top: 30px; width: 40px; height: 40px"></div>
+    <script>
+      const params = new URLSearchParams(location.search)
+      const marker = document.getElementById('marker')
+      marker.style.background = '#' + params.get('c')
+      if (params.get('nest')) {
+        const frame = document.createElement('iframe')
+        frame.src = '/frame-inner.html?c=' + params.get('nest')
+        frame.style.cssText = 'position:absolute;left:100px;top:100px;width:150px;height:150px;border:0'
+        document.body.appendChild(frame)
+      }
+      if (params.get('scroll')) {
+        document.body.style.height = '1000px'
+        marker.style.top = 30 + Number(params.get('scroll')) + 'px'
+        window.scrollTo(0, Number(params.get('scroll')))
+      }
+    </script>
+  </body>
+</html>

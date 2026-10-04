@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="whydiff-screenshot" content="full-page">
+    <title>Right to left, full page</title>
+    <style>
+      body { margin: 0; background: #fff; width: 2000px; height: 1000px; position: relative; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the body spans document x -1000..1000; the full-page PNG starts at its left edge, so PNG x = 2000 - right - width -->
+    <div id="rf-a" class="m" style="right: 100px; top: 100px; background: #ff0000" data-color="ff0000" data-expect="1860,100,40,40"></div>
+    <div id="rf-b" class="m" style="right: 1800px; top: 500px; background: #00ff00" data-color="00ff00" data-expect="160,500,40,40"></div>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html dir="rtl" data-scroll="-300,0">
+  <head>
+    <meta charset="utf-8" />
+    <title>Right to left with scroll</title>
+    <style>
+      body { margin: 0; background: #fff; width: 2000px; height: 1000px; position: relative; }
+      .m { position: absolute; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- the body spans document x -1000..1000; scrolled to -300 the viewport shows -300..700, so screen x = 1300 - right - width -->
+    <div id="rtl-a" class="m" style="right: 500px; top: 400px; background: #ff0000" data-color="ff0000" data-expect="760,400,40,40"></div>
+    <div id="rtl-b" class="m" style="right: 1100px; top: 400px; background: #00ff00" data-color="00ff00" data-expect="160,400,40,40"></div>
+    <!-- an rtl scroller at screen 400..700: its 1000px content spans -300..700, scrollLeft -250 shifts it to -50..950 -->
+    <div id="rtl-scroller" style="position: absolute; right: 600px; top: 100px; width: 300px; height: 200px; overflow: auto; background: #eeeeee" data-expect-scroll="-250,0,1000,200">
+      <div style="position: relative; width: 1000px; height: 200px">
+        <div id="rtl-in" class="m" style="right: 400px; top: 20px; background: #0000ff" data-color="0000ff" data-expect="510,120,40,40"></div>
+        <div id="rtl-out" class="m" style="right: 0; top: 20px; background: #ff00ff" data-color="ff00ff" data-expect-flag="clipped"></div>
+      </div>
+    </div>
+    <script>
+      document.getElementById('rtl-scroller').scrollLeft = -250
+    </script>
+  </body>
+</html>

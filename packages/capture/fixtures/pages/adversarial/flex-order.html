@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flex order and reversed directions</title>
+    <style>
+      body { margin: 0; background: #fff; }
+      .m { flex: none; width: 40px; height: 40px; }
+    </style>
+  </head>
+  <body>
+    <!-- order 3, 1, 2 in the source: painted b, c, a at 100, 150, 200 -->
+    <div style="position: absolute; left: 100px; top: 100px; display: flex; gap: 10px">
+      <div id="o-a" class="m" style="order: 3; background: #ff0000" data-color="ff0000" data-expect="200,100,40,40"></div>
+      <div id="o-b" class="m" style="order: 1; background: #00ff00" data-color="00ff00" data-expect="100,100,40,40"></div>
+      <div id="o-c" class="m" style="order: 2; background: #0000ff" data-color="0000ff" data-expect="150,100,40,40"></div>
+    </div>
+    <!-- row-reverse in a 300px row: the first item sits at the right edge -->
+    <div style="position: absolute; left: 100px; top: 200px; width: 300px; display: flex; flex-direction: row-reverse">
+      <div id="r-1" class="m" style="background: #ff00ff" data-color="ff00ff" data-expect="360,200,40,40"></div>
+      <div id="r-2" class="m" style="background: #ffff00" data-color="ffff00" data-expect="320,200,40,40"></div>
+    </div>
+    <!-- grid: order -1 goes first, an explicit column 3, then dense placement fills column 2 -->
+    <div style="position: absolute; left: 100px; top: 300px; display: grid; grid-template-columns: repeat(3, 40px); grid-auto-flow: dense">
+      <div id="g-a" class="m" style="grid-column: 3; background: #00ffff" data-color="00ffff" data-expect="180,300,40,40"></div>
+      <div id="g-b" class="m" style="background: #ff8000" data-color="ff8000" data-expect="140,300,40,40"></div>
+      <div id="g-c" class="m" style="order: -1; background: #8000ff" data-color="8000ff" data-expect="100,300,40,40"></div>
+    </div>
+    <!-- column-reverse with a negative margin pulling the second item up into the first -->
+    <div style="position: absolute; left: 600px; top: 100px; height: 200px; display: flex; flex-direction: column-reverse">
+      <div id="c-1" class="m" style="background: #00ff80" data-color="00ff80" data-expect="600,260,40,40"></div>
+      <div id="c-2" class="m" style="margin-bottom: 20px; background: #ff0080" data-color="ff0080" data-expect="600,200,40,40"></div>
+    </div>
+  </body>
+</html>
