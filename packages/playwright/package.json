@@ -1,6 +1,6 @@
 {
   "name": "@whydiff/playwright",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Explains failed toHaveScreenshot assertions as text, for Playwright: the element, the CSS rule, every test with the same cause.",
   "license": "MIT",
   "type": "module",

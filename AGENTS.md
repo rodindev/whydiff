@@ -1,6 +1,6 @@
 # AGENTS.md - whydiff
 
-Deterministic tool that explains visual UI changes as text: it captures a render-tree snapshot next to each screenshot, diffs two states, finds root causes and clusters them across a test run. pnpm monorepo, TypeScript, ESM only. Verified against code: 2026-10-03 (v0.0.1).
+Deterministic tool that explains visual UI changes as text: it captures a render-tree snapshot next to each screenshot, diffs two states, finds root causes and clusters them across a test run. pnpm monorepo, TypeScript, ESM only. Verified against code: 2026-10-04 (v0.1.0).
 
 ## Commands
 
