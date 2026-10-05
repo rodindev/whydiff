@@ -1,0 +1,135 @@
+{
+  "formatVersion": 1,
+  "tool": {
+    "name": "whydiff",
+    "version": "0.0.1",
+    "rules": {
+      "cluster": "k1"
+    }
+  },
+  "compared": {
+    "before": "before",
+    "after": "after"
+  },
+  "summary": {
+    "screenshots": {
+      "compared": 1,
+      "changed": 1,
+      "identical": 0
+    },
+    "causes": 1,
+    "unexplained": 0,
+    "massChange": 0,
+    "lead": {
+      "causes": [
+        "c6npvfg"
+      ],
+      "screenshots": 1,
+      "settled": 1,
+      "pixels": 2400,
+      "text": "1 cause appears on the changed screenshot, 100% of changed pixels, and accounts for every changed pixel there:\n- the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels (`.ui-btn`, c6npvfg)"
+    }
+  },
+  "screenshots": [
+    {
+      "id": "s4udgzc",
+      "title": "s1 >> renders",
+      "file": "tests/settings.spec.ts",
+      "project": "chromium",
+      "status": "changed",
+      "width": 1000,
+      "height": 800,
+      "regions": 1,
+      "pixels": 2400,
+      "massChange": false,
+      "causes": [
+        "c6npvfg"
+      ],
+      "unexplained": []
+    }
+  ],
+  "causes": [
+    {
+      "id": "c6npvfg",
+      "headline": "the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels",
+      "text": "## the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels, only in tests/settings.spec.ts (`.ui-btn`, c6npvfg)\n- at `getByText('Help')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-btn` from `ui-kit.css` (unlayered) changed its declaration of padding-left (was 12px, now 16px)\n- to restore it: change the rule in `ui-kit.css`, or set padding-left back to 12px in your own stylesheet if `ui-kit.css` comes from a dependency",
+      "key": "k1|rule|ui-kit.css|.ui-btn|",
+      "kind": "rule",
+      "level": 0,
+      "summary": {
+        "kind": "rule",
+        "selector": ".ui-btn",
+        "sheet": "ui-kit.css",
+        "sets": [],
+        "changed": [
+          "padding-left"
+        ],
+        "unsets": [],
+        "values": [
+          {
+            "prop": "padding-left",
+            "from": "12px",
+            "to": "16px"
+          }
+        ]
+      },
+      "scope": "local",
+      "file": "tests/settings.spec.ts",
+      "match": "exact",
+      "ambiguous": 0,
+      "screenshots": 1,
+      "elements": 1,
+      "pixels": 2400,
+      "effects": [],
+      "example": {
+        "screenshot": "s4udgzc",
+        "locator": "getByText('Help')"
+      },
+      "members": [
+        {
+          "screenshot": "s4udgzc",
+          "locator": "getByText('Help')",
+          "elements": 1,
+          "effects": [],
+          "changes": [
+            {
+              "prop": "padding-left",
+              "from": "12px",
+              "to": "16px"
+            }
+          ],
+          "observation": {
+            "element": {
+              "role": "button",
+              "name": "Help",
+              "tag": "button"
+            },
+            "facts": [
+              {
+                "kind": "padding",
+                "from": 12,
+                "to": 16
+              }
+            ],
+            "text": "the \"Help\" button's inner spacing grew by 4 px"
+          },
+          "box": {
+            "before": [
+              10,
+              10,
+              80,
+              30
+            ],
+            "after": [
+              10,
+              10,
+              80,
+              30
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "unexplained": []
+}

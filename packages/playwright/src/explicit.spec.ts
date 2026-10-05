@@ -284,12 +284,12 @@ describe('whydiffCapture after the built-in ran', () => {
       /^What changed on this screen:\n[^\n]+\n\n# whydiff: named failure > card \| 1 cause \| 0 unexplained regions\n/
     )
     expect(markdown).toContain(
-      '\n- padding-left: was 0, now 24px; the children were laid out again\n'
+      '\n- `#card` from `<style> #1` (unlayered) changed its declaration of padding-left (was 0px, now 24px)\n'
     )
     const actual = parseSnapshot(await attachmentText(result, 'whydiff/card/snapshot-actual'))
     expect(actual.tool.capturedAfterMs).toBeGreaterThanOrEqual(0)
     expect(whydiffAnnotations(only(second, 'named failure').test)).toEqual([
-      'a <div> is 24 px wider (was 200, now 224) (c1dsr5a)',
+      'a <div> is 24 px wider (was 200, now 224) (cxjwf9h)',
     ])
     // The built-in recorded its error before whydiffCapture ran, so the message stays its own.
     expect(result.errors[0]?.message).not.toContain('whydiff, expected -> actual')

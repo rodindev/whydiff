@@ -188,7 +188,7 @@ describe('withWhydiff in a Playwright run', () => {
 
     it('says what changed in one annotation and after the pixel count of the message, the status kept', () => {
       const { test, result } = only(second, 'named failure')
-      const line = 'a <div> is 24 px wider (was 200, now 224) (c1dsr5a)'
+      const line = 'a <div> is 24 px wider (was 200, now 224) (cxjwf9h)'
       expect(result.status).toBe('failed')
       expect(whydiffAnnotations(test)).toEqual([line])
       const message = stripVTControlCharacters(result.errors[0]?.message ?? '')
@@ -602,7 +602,7 @@ describe('every failure of a run accounted for', () => {
     const { test, result } = only(second, 'retried in a loop')
     expect(result.status).toBe('failed')
     expect(whydiffAnnotations(test)).toEqual([
-      'the column-gap and row-gap properties of 1 element changed (c3oc5ni)',
+      'the column-gap and row-gap properties of 1 element changed (c241adb)',
       expect.stringMatching(/^The explanation of this screenshot is in .+\/s[0-9a-z]{6}\.md\.$/),
     ])
     const names = ['loop', 'loop-1', 'loop-2', 'after']
@@ -698,7 +698,7 @@ describe('every failure of a run accounted for', () => {
     expect(result.status).toBe('failed')
     expect(pairAttachments(result)).toEqual([])
     expect(whydiffAnnotations(test)).toEqual([
-      'the column-gap and row-gap properties of 1 element changed (c3oc5ni)',
+      'the column-gap and row-gap properties of 1 element changed (c241adb)',
     ])
     const markdown = await readFile(
       join(

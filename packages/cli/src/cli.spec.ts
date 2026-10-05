@@ -188,7 +188,7 @@ describe('snap, diff and explain on a page', { timeout: 120_000 }, () => {
     )
     expect(diff.stdout).toContain('at `locator(\'#card\')` in "before -> after" (')
     expect(diff.stdout).toContain(
-      '\n- padding-left: was 0, now 16px; the children were laid out again\n- as a result, 1 element moved 16 px right\n'
+      '\n- `#card` from `<style> #1` (unlayered) changed its declaration of padding-left (was 0px, now 16px)\n- as a result, 1 element moved 16 px right\n- to restore it: change the rule where `<style> #1` comes from, or set padding-left back to 0px in your own stylesheet if a dependency injects it; whydiff cannot tell which\n'
     )
     expect(diff.stdout).toContain(
       ": 1 under `<canvas>`; around `locator('#chart')`; every region with its candidates: `npx whydiff explain s"
@@ -369,14 +369,14 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     expect(json.stdout).toBe(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
   })
 
-  it("prints in a failed assertion's message only ids the run's report explains, the test's own cause ids not among them", async () => {
+  it("prints in a failed assertion's message only ids the run's report explains, the test's own cause id among them", async () => {
     const report = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
     const tests = playwrightTests(await readFile(join(tmp, 'full.json'), 'utf8'))
-    // The header's own page saw one banner, an element cause; the run saw it on three, a rule cause.
+    // The header's own page saw one banner, the run saw it on three: both name its rule, by one id.
     const header = tests.find((t) => t.title === 'header')
     const own = /\((c[0-9a-z]{6})\)$/.exec(header?.annotations[0] ?? '')?.[1]
     expect(own).toEqual(expect.any(String))
-    expect(report.causes.map((c) => c.id)).not.toContain(own)
+    expect(report.causes.map((c) => c.id)).toContain(own)
     const blocks = tests.flatMap(({ title, messages }) =>
       messages.flatMap((message) => {
         const start = message.indexOf('whydiff, expected -> actual:')
