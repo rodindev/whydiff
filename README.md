@@ -71,6 +71,8 @@ npx whydiff init
 npx whydiff doctor
 ```
 
+A project whose `.npmrc` sets `min-release-age` cannot install a release of whydiff younger than that many days; npm then stops with `notarget` and a date, without naming the setting.
+
 `init` shows each edit as a diff and asks before it writes:
 
 - `withWhydiff` around `test` and `expect` in the fixtures file your specs import them from, or, when there is none, a new `fixtures.ts` (`fixtures.js` next to a JavaScript config) in the test directory;

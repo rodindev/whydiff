@@ -2,4 +2,4 @@
 'whydiff': patch
 ---
 
-`whydiff report --from` keeps each repeat of `--repeat-each` apart and folds a test's retries into it, where it took a retried repeat for a test of its own, and its progress line counts tests, not the directories of their attempts.
+`whydiff report --from` reads a run with `--repeat-each` as the reporter does: each repeat is a test of its own and its retries are attempts of it, where 0.1 merged the repeats of a test and took a retried repeat for another test. Its progress line counts tests, not the directories of their attempts.

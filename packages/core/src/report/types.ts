@@ -25,7 +25,7 @@ export type ScreenshotStatus = 'changed' | 'identical'
 
 /** One compared pair of screenshots and what the report holds about it. */
 export interface ScreenshotV1 {
-  /** `s` plus a hash of the screen key; the same in every report over the same test. */
+  /** `s` plus a hash of the screen key; the same in every report that keys the screenshot alike. */
   readonly id: string
   /** The describe blocks, the test title and the screenshot name, joined by ` > `; the two names for two snaps or files. */
   readonly title: string

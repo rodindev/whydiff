@@ -143,7 +143,7 @@
       }
     },
     "screenshots": {
-      "description": "One entry per compared pair, in run order; the reporter adds each passed assertion by its title alone, width and height 0. A report rebuilt from test-results has no passed one.",
+      "description": "One entry per compared pair, ordered by project, test file, line and title; the reporter adds each passed assertion by its title alone, width and height 0. A report rebuilt from test-results has no passed one.",
       "type": "array",
       "items": {
         "type": "object",
@@ -162,7 +162,7 @@
         ],
         "properties": {
           "id": {
-            "description": "s plus six base36 digits of a hash of the pair's key (under Playwright: project, test file, title path, repeat index and screenshot name), the same in every report over the same screenshot, a run's reporter and report --from alike.",
+            "description": "s plus six base36 digits of a hash of the pair's key, the same in every report that keys the pair alike. A Playwright run's reporter and report --from key it by project, test file, title path, repeat index and screenshot name (for a passed screenshot, its place in the test), so both give a screenshot the same id; whydiff diff keys two runs by project, Playwright's test id and the screenshot's place in its test, two snapshot directories by the baseline's path and two snaps or files by the two arguments.",
             "type": "string"
           },
           "title": {
