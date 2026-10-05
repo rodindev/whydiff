@@ -1,6 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
-import { WhydiffError } from '@whydiff/core'
+import { screenKey, WhydiffError } from '@whydiff/core'
 import type { ManifestLine, ReportedAttachment, TestIdentity } from '@whydiff/playwright'
 
 import { walkFiles } from './walk.js'
@@ -38,6 +38,8 @@ const CONTENT_TYPES: Readonly<Record<string, string>> = {
 /** One side of a pair found in a run directory: who it belongs to and the two files to read; `png` is null when the run recorded none. */
 export interface RunSide {
   readonly key: string
+  /** The key the report's id hashes when it is not `key`: a screenshot that failed in the run, keyed as the run's reporter keys it. */
+  readonly screen?: string
   readonly title: string
   readonly file?: string
   readonly line?: number
@@ -74,16 +76,24 @@ export async function isRunDir(dir: string): Promise<boolean> {
   )
 }
 
-/** The sides of a two-run output, keyed by project, test id and ordinal; the last retry of each wins. */
+/** The sides of a two-run output, keyed by project, test id and ordinal; the last retry of each wins. A screenshot that failed in any attempt is named as the built-in named its images and keyed for its id as the run's reporter keys it, so its id is the one its test printed. */
 export async function runSides(dir: string): Promise<Map<string, RunSide>> {
   const lines = (await readManifest(dir)).sort((a, b) => a.retry - b.retry)
+  const failed = new Map<string, string>()
+  for (const line of lines) {
+    if (line.failedName !== undefined) failed.set(placeOf(line), line.failedName)
+  }
   const sides = new Map<string, RunSide>()
   for (const line of lines) {
     if (line.snapshot === null) continue
-    const key = `${line.project}|${line.testId}|${String(line.ordinal)}`
+    const key = placeOf(line)
+    const failedName = failed.get(key)
+    const title = `${line.title} > ${failedName ?? line.name}`
+    const test = { project: line.project, file: line.file, repeat: line.repeat ?? 0 }
     sides.set(key, {
       key,
-      title: `${line.title} > ${line.name}`,
+      ...(failedName === undefined ? {} : { screen: screenKey(test, title) }),
+      title,
       file: line.file,
       line: line.line,
       project: line.project,
@@ -92,6 +102,10 @@ export async function runSides(dir: string): Promise<Map<string, RunSide>> {
     })
   }
   return sides
+}
+
+function placeOf(line: ManifestLine): string {
+  return `${line.project}|${line.testId}|${String(line.ordinal)}`
 }
 
 /** The baselines of a Playwright snapshot directory that have a sidecar snapshot, keyed by relative path. */
@@ -297,6 +311,8 @@ function isManifestLine(value: unknown): value is ManifestLine {
     typeof line.ordinal === 'number' &&
     typeof line.name === 'string' &&
     typeof line.retry === 'number' &&
+    (line.failedName === undefined || typeof line.failedName === 'string') &&
+    (line.repeat === undefined || typeof line.repeat === 'number') &&
     (typeof line.screenshot === 'string' || line.screenshot === null) &&
     (typeof line.snapshot === 'string' || line.snapshot === null) &&
     (typeof line.png === 'string' || line.png === null)

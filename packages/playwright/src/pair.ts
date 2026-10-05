@@ -7,6 +7,7 @@ import {
   diffMask,
   diffRegions,
   parseSnapshot,
+  screenKey,
   type ComparedV1,
   type Region,
   type ReportV1,
@@ -51,15 +52,6 @@ export interface PixelSummary {
   readonly height: number
   readonly differing: number
   readonly regions: readonly Region[]
-}
-
-// Below every printable character, so keys sort field by field, as report.json's fields do.
-const FIELD = '\x1e'
-
-/** A screenshot's key: project, test file and title, the repeat index under --repeat-each, then `rest`. These are what Playwright makes a test id from, and a test's page and test-results keep them too, so the run's reporter and a report rebuilt from test-results key a screenshot alike. */
-export function screenKey(test: TestIdentity, title: string, ...rest: string[]): string {
-  const repeat = test.repeat > 0 ? ` (repeat:${String(test.repeat)})` : ''
-  return [test.project, test.file, `${title}${repeat}`, ...rest].join(FIELD)
 }
 
 export function pairIdentity(test: TestIdentity, name: string): PairIdentity {

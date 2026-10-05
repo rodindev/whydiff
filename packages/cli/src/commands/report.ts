@@ -158,7 +158,7 @@ async function mergeShards(paths: readonly string[], out: string, ctx: Context):
   return { report, markdown, markdownPath: files.markdown }
 }
 
-/** Deterministic union of shard reports; members follow the order of their screenshots' project, file and title, the fields a screen key sorts by. */
+/** Deterministic union of shard reports; members follow the order of their screenshots' project, file and title, the fields a screen key sorts by, and on one screenshot the order of their shard. */
 export function mergeReports(shards: readonly ReportV1[]): ReportV1 {
   const [first] = shards
   if (first === undefined)
@@ -216,19 +216,23 @@ function mergeCause(
 ): CauseDraft {
   const [first] = parts
   if (first === undefined) throw new Error('a cause without parts')
+  // A screenshot belongs to one shard, whose report already orders its members as the run's
+  // reporter does (by their cause on that screen), so their place there decides among them.
   const members = parts
-    .flatMap((part) => part.members)
+    .flatMap((part) => part.members.map((member, place) => ({ member, place })))
     .sort((a, b) => {
-      const x = byId.get(a.screenshot)
-      const y = byId.get(b.screenshot)
+      const x = byId.get(a.member.screenshot)
+      const y = byId.get(b.member.screenshot)
       return (
         compareText(x?.project ?? '', y?.project ?? '') ||
         compareText(x?.file ?? '', y?.file ?? '') ||
         compareText(x?.title ?? '', y?.title ?? '') ||
-        compareText(a.screenshot, b.screenshot) ||
-        compareText(a.locator, b.locator)
+        compareText(a.member.screenshot, b.member.screenshot) ||
+        a.place - b.place ||
+        compareText(a.member.locator, b.member.locator)
       )
     })
+    .map(({ member }) => member)
   const screens = new Set(members.map((m) => m.screenshot))
   const files = new Set(
     members

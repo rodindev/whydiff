@@ -6,6 +6,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+import { screenshotId } from '@whydiff/core'
 import { PNG } from 'pngjs'
 
 const execute = promisify(execFile)
@@ -498,7 +499,7 @@ describe('whydiff diff over two run directories on their own', { timeout: 300_00
     const result = await whydiff(['diff', 'before', 'after', '--out', 'report'], tmp)
     expect(result.code).toBe(0)
     expect(result.stderr).toMatch(
-      /^warning: after: explicit\|[^|\n]+\|1 has no counterpart\nanalyzing 5 pairs\n2 of 5 screenshots changed, 1 cause, 0 unexplained regions in \d+ ms\nreport\/report\.md\n$/
+      /^warning: after: missing baseline > fresh has no counterpart\nanalyzing 5 pairs\n2 of 5 screenshots changed, 1 cause, 0 unexplained regions in \d+ ms\nreport\/report\.md\n$/
     )
     expect(result.stdout).toMatch(
       /^# whydiff: 2 of 5 screenshots changed \| 1 cause \| 0 unexplained regions\ncompared: before -> after \| chromium [\d.]+ 800x600\n/
@@ -521,6 +522,75 @@ describe('whydiff diff over two run directories on their own', { timeout: 300_00
       'no baseline snapshot > bare',
       'heavy page captured once > heavy',
     ])
+  })
+})
+
+describe('whydiff diff over a run that passed and a run that failed', { timeout: 300_000 }, () => {
+  let tmp: string
+  let result: Run
+  const at = (name: string): string => join(tmp, name)
+
+  beforeAll(async () => {
+    tmp = await mkdtemp(join(tmpdir(), 'whydiff-cli-names-'))
+    await playwright(['test', '--project', 'names', '--update-snapshots'], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_OUT: at('before'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-before'),
+      WHYDIFF_FIXTURE_REPORT: at('before.json'),
+    })
+    await playwright(['test', '--project', 'names'], {
+      WHYDIFF_FIXTURE_VARIANT: 'changed',
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_OUT: at('after'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-after'),
+      WHYDIFF_FIXTURE_REPORT: at('after.json'),
+      WHYDIFF_FIXTURE_WHYDIFF_REPORT: at('run'),
+    })
+    result = await whydiff(['diff', 'before', 'after', '--out', 'two-run'], tmp)
+  }, 300_000)
+
+  afterAll(async () => {
+    await rm(tmp, { recursive: true, force: true })
+  })
+
+  it("gives a screenshot that failed in the second run the id its test printed and its run's report gives it", async () => {
+    expect(result.code).toBe(0)
+    expect(result.stderr).not.toContain('warning')
+    const screenshots = readJson(await readFile(at('two-run/report.json'), 'utf8')).screenshots
+    // Unnamed calls, a name the built-in sanitizes, a name in segments and a name used twice.
+    expect(screenshots.map((s) => s.title)).toEqual([
+      'unnamed call > unnamed-call-1',
+      'name the built-in rewrites > ui-header',
+      'name in segments > ui/panel',
+      'name used twice > ui-panel',
+      'name used twice > ui-panel-1',
+      'unchanged > ui-stable',
+      'explicit calls > explicit-calls-1',
+      'explicit calls > ui-footer',
+    ])
+    const run = readJson(await readFile(at('run/report.json'), 'utf8'))
+    const ids = new Map(run.screenshots.map((s) => [s.title, s.id]))
+    const failed = screenshots.filter((s) => s.title !== 'unchanged > ui-stable')
+    expect(failed.map((s) => s.id)).toEqual(failed.map((s) => ids.get(s.title)))
+    // Only the matcher adds to the message of an assertion; the explicit calls print no id.
+    const printed = playwrightTests(await readFile(at('after.json'), 'utf8')).flatMap((test) =>
+      test.messages.flatMap(
+        (m) => /details when the run ends: npx whydiff explain (\S+)/.exec(m)?.[1] ?? []
+      )
+    )
+    expect(printed).toEqual(failed.slice(0, 5).map((s) => s.id))
+  })
+
+  it('keeps the id of 0.1 for a screenshot that passed in the second run', async () => {
+    const lines = (await readFile(at('after/manifest.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line) as { title: string; testId: string; ordinal: number }) // written by recordCapture
+    const unchanged = lines.find((line) => line.title === 'unchanged')
+    const report = readJson(await readFile(at('two-run/report.json'), 'utf8'))
+    expect(report.screenshots.find((s) => s.title === 'unchanged > ui-stable')?.id).toBe(
+      screenshotId(`names|${unchanged?.testId ?? ''}|${String(unchanged?.ordinal)}`)
+    )
   })
 })
 

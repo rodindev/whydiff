@@ -9,7 +9,9 @@ interface Line {
   testId: string
   ordinal: number
   name: string
+  failedName?: string
   retry: number
+  repeat?: number
   snapshot: string | null
   screenshot: string | null
   png: string | null
@@ -167,11 +169,41 @@ describe('pairInputs', () => {
       },
     ])
     expect(paired.unpaired).toEqual([
-      'before: chromium|t1|2 has no counterpart',
-      'before: chromium|t2|1 has no counterpart',
-      'after: chromium|t3|1 has no counterpart',
+      'before: test t1 > card has no counterpart',
+      'before: test t2 > card has no counterpart',
+      'after: test t3 > card has no counterpart',
     ])
     expect(paired.withoutPng).toEqual([])
+  })
+
+  it("gives a pair whose after side failed the id of the after run's report, and every other pair the key of 0.1", async () => {
+    const png = await file(join(dir, 'baseline.png'))
+    const line = (testId: string, failedName?: string): Line => ({
+      project: 'chromium',
+      testId,
+      ordinal: 1,
+      name: 'home_page',
+      ...(failedName === undefined ? {} : { failedName }),
+      retry: 0,
+      snapshot: `chromium/${testId}/1-home_page.whydiff.json`,
+      screenshot: png,
+      png: `chromium/${testId}/1-home_page.png`,
+    })
+    // A run recorded by 0.1 has no failedName and no repeat.
+    await manifest(join(dir, 'before'), [line('t1'), line('t2', 'home-page')])
+    await manifest(join(dir, 'after'), [
+      { ...line('t1', 'home-page'), repeat: 0 },
+      { ...line('t2'), repeat: 0 },
+    ])
+    const paired = await pairInputs(
+      await resolveInput('before', dir),
+      await resolveInput('after', dir)
+    )
+    expect(paired.pairs.map((pair) => [pair.screen, pair.title])).toEqual([
+      [['chromium', 'tests/a.spec.ts', 'test t1 > home-page'].join('\x1e'), 'test t1 > home-page'],
+      ['chromium|t2|1', 'test t2 > home_page'],
+    ])
+    expect(paired.unpaired).toEqual([])
   })
 
   it('lists a two-run pair apart when a side recorded no PNG and its baseline is gone', async () => {

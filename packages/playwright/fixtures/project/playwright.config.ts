@@ -105,6 +105,12 @@ export default defineConfig<{ whydiff: WhydiffUseOptions }>({
       snapshotPathTemplate,
       use: { viewport, whydiff: {} },
     },
+    {
+      name: 'names',
+      testMatch: 'names.spec.ts',
+      snapshotPathTemplate,
+      use: { viewport, whydiff: {} },
+    },
     ...(existsSync(webkit.executablePath())
       ? [
           {

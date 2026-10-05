@@ -1,7 +1,8 @@
 import { stripVTControlCharacters } from 'node:util'
+import { screenKey } from '@whydiff/core'
 
 import { ATTACHMENT_PREFIX } from './constants.js'
-import { pairIdentity, screenKey, type PairIdentity, type TestIdentity } from './pair.js'
+import { pairIdentity, type PairIdentity, type TestIdentity } from './pair.js'
 
 export type { TestIdentity }
 

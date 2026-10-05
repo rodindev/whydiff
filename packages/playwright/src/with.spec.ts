@@ -340,6 +340,30 @@ describe('withWhydiff in a Playwright run', () => {
     }
   })
 
+  it("records a failed call under the name of the built-in's images, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['named failure', 'card'],
+      ['unnamed calls', undefined],
+      ['unnamed calls', undefined],
+      ['negated on a mismatch', undefined],
+      ['soft failure keeps the test running', 'soft'],
+      ['backfill on a pass', undefined],
+      ['without backfill > no backfill on a pass', undefined],
+      // The built-in wrote the baseline and passed the assertion; the test fails on its soft error.
+      ['missing baseline', undefined],
+      ['no baseline snapshot', 'bare'],
+      ['with a style path that does not exist > injected failure on a mismatch', 'injected'],
+      ['with a style path that does not exist > injected failure on a pass', undefined],
+      ['without attachments > unattached failure', 'unattached'],
+      ['without a budget > over budget', undefined],
+      ['taller by a blank strip', 'taller'],
+    ])
+    for (const line of manifest.filter((l) => l.failedName !== undefined)) {
+      const { result } = only(second, line.title.split(' > ').at(-1) ?? '')
+      expect(result.attachments.map((a) => a.name)).toContain(`${line.failedName ?? ''}-actual.png`)
+    }
+  })
+
   it.skipIf(!webkitInstalled)('annotates a test in another browser once', () => {
     expect(whydiffAnnotations(only(first, 'another browser').test)).toEqual([
       'webkit screenshots are not explained: whydiff captures in Chromium only',
@@ -680,6 +704,18 @@ describe('every failure of a run accounted for', () => {
       ['missing locator', null],
       ['missing locator through the explicit call', null],
     ])
+  })
+
+  it("records a failure without an actual image under the name of its expected image, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['missing locator', 'row'],
+      ['missing locator through the explicit call', 'explicit-row'],
+    ])
+    for (const line of manifest) {
+      const names = only(twoRun, line.title).result.attachments.map((a) => a.name)
+      expect(names).toContain(`${line.failedName ?? ''}-expected.png`)
+      expect(names).not.toContain(`${line.failedName ?? ''}-actual.png`)
+    }
   })
 
   it('skips the capture of a locator gone after the assertion, and the test keeps its pass', () => {

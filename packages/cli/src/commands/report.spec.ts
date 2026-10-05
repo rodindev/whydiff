@@ -104,6 +104,28 @@ describe('mergeReports', () => {
     )
   })
 
+  it("keeps the members of a cause on one screenshot in their shard's order, which is the run's, and takes the example from it", () => {
+    const report = parseReport(
+      readFileSync(
+        new URL('../../../core/fixtures/report/field-reset/report.json', import.meta.url),
+        'utf8'
+      )
+    )
+    // The run orders the members on one screenshot by their cause there, which report.json does not hold.
+    const reversed: ReportV1 = {
+      ...report,
+      causes: report.causes.map((c) => ({ ...c, members: [...c.members].reverse() })),
+    }
+    const cause = mergeReports([reversed]).causes.find((c) => c.id === 'c1aw389')
+    expect(cause?.members.map((m) => [m.screenshot, m.locator])).toEqual([
+      ['s4udgzc', "getByText('Send s1')"],
+      ['s4udgzc', "getByRole('textbox', { name: 'Notes s1' })"],
+      ['s4udft9', "getByText('Send s2')"],
+      ['s4udft9', "getByRole('textbox', { name: 'Notes s2' })"],
+    ])
+    expect(cause?.example).toEqual({ screenshot: 's4udgzc', locator: "getByText('Send s1')" })
+  })
+
   it('says how many moved by the most common vector the members record, when not all did', () => {
     const [cause] = fixture.causes
     if (cause === undefined) throw new Error('the fixture has a cause')

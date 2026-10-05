@@ -403,6 +403,26 @@ describe('whydiffCapture after the built-in ran', () => {
     ])
   })
 
+  it("records a failed call under the name of the built-in's images, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['named failure', 'card'],
+      ['backfill on a pass', undefined],
+      ['stale sidecar on a pass', undefined],
+      ['unnamed call', undefined],
+      // The built-in wrote the baseline and passed the assertion; the test fails on its soft error.
+      ['missing baseline', undefined],
+      ['no baseline snapshot', 'bare'],
+      ['heavy page captured once', undefined],
+      ['injected failure on a mismatch', 'injected'],
+      ['injected failure on a pass', undefined],
+      ['over budget', undefined],
+    ])
+    for (const line of manifest.filter((l) => l.failedName !== undefined)) {
+      const { result } = only(second, line.title)
+      expect(result.attachments.map((a) => a.name)).toContain(`${line.failedName ?? ''}-actual.png`)
+    }
+  })
+
   it('copies the actual of a failure and the baseline of a pass next to the snapshot', async () => {
     const recorded = async (name: string): Promise<Buffer> => {
       const line = manifest.find((l) => l.name === name)

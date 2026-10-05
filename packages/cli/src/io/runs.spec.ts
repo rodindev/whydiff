@@ -39,9 +39,18 @@ async function testDir(root: string, name: string, files: Record<string, string>
 interface Line {
   readonly ordinal: number
   readonly retry?: number
+  readonly testId?: string
+  readonly name?: string
+  readonly failedName?: string
+  readonly repeat?: number
   readonly snapshot: string | null
   readonly screenshot: string | null
   readonly png: string | null
+}
+
+/** The key the run's reporter gives a screenshot of `tests/a.spec.ts` in project chromium. */
+function reported(title: string): string {
+  return ['chromium', 'tests/a.spec.ts', title].join('\x1e')
 }
 
 async function manifest(dir: string, lines: readonly Line[]): Promise<void> {
@@ -123,6 +132,92 @@ describe('runSides', () => {
     ])
     const sides = await runSides(join(dir, 'run'))
     expect(sides.get('chromium|t1|1')?.png).toBe(join(dir, 'run', 'chromium/t1/1-card-retry1.png'))
+  })
+
+  it("keys the id of a screenshot that failed as the run's reporter does, by the name the built-in gave its images", async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        name: 'home_page',
+        failedName: 'home-page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      {
+        ordinal: 2,
+        name: 'screenshot',
+        failedName: 'test-t1-1',
+        repeat: 0,
+        snapshot: '2.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      {
+        ordinal: 1,
+        testId: 't1-repeat2',
+        failedName: 'card',
+        repeat: 2,
+        snapshot: '3.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect([...sides.values()].map((side) => [side.key, side.screen, side.title])).toEqual([
+      ['chromium|t1|1', reported('test t1 > home-page'), 'test t1 > home-page'],
+      ['chromium|t1|2', reported('test t1 > test-t1-1'), 'test t1 > test-t1-1'],
+      ['chromium|t1-repeat2|1', reported('test t1 > card (repeat:2)'), 'test t1 > card'],
+    ])
+  })
+
+  it('keeps the name of a failed attempt when a retry passed, and the files of the retry', async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        retry: 1,
+        name: 'home_page',
+        repeat: 0,
+        snapshot: '1-retry1.whydiff.json',
+        screenshot: null,
+        png: '1-retry1.png',
+      },
+      {
+        ordinal: 1,
+        name: 'home_page',
+        failedName: 'home-page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: '1.png',
+      },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect(sides.get('chromium|t1|1')).toMatchObject({
+      screen: reported('test t1 > home-page'),
+      title: 'test t1 > home-page',
+      png: join(dir, 'run', '1-retry1.png'),
+    })
+  })
+
+  it('keeps the key of 0.1 as the id of a screenshot that passed, in a line 0.1 recorded too', async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        name: 'home_page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      { ordinal: 2, name: 'home_page', snapshot: '2.whydiff.json', screenshot: null, png: null },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect([...sides.values()].map((side) => [side.key, side.screen, side.title])).toEqual([
+      ['chromium|t1|1', undefined, 'test t1 > home_page'],
+      ['chromium|t1|2', undefined, 'test t1 > home_page'],
+    ])
   })
 })
 

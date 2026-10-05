@@ -162,7 +162,7 @@ npx whydiff snap http://localhost:3000 --name after
 npx whydiff diff before after
 ```
 
-`snap` needs `@playwright/test` or `playwright-core` in the project. It opens the page in Playwright's Chromium headless shell (`npx playwright install chromium-headless-shell`, or `npx playwright-core install chromium-headless-shell` with only `playwright-core` installed), or in the Chromium that `WHYDIFF_CHROMIUM` or `--executable` names. `npx whydiff report --from test-results` rebuilds the report of a run the reporter did not see, from its failed screenshots alone, since test-results keep nothing of a passed one, and `npx whydiff report --merge` joins the reports of shards. `npx whydiff --help` lists every command and `npx whydiff <command> --help` its options.
+`snap` needs `@playwright/test` or `playwright-core` in the project. It opens the page in Playwright's Chromium headless shell (`npx playwright install chromium-headless-shell`, or `npx playwright-core install chromium-headless-shell` with only `playwright-core` installed), or in the Chromium that `WHYDIFF_CHROMIUM` or `--executable` names. `npx whydiff report --from test-results` rebuilds the report of a run the reporter did not see, from its failed screenshots alone, since test-results keep nothing of a passed one, and `npx whydiff report --merge` joins the reports of shards into the report one run would have written. `npx whydiff --help` lists every command and `npx whydiff <command> --help` its options.
 
 ## For coding agents
 

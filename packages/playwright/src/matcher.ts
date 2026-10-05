@@ -224,7 +224,8 @@ async function explain(a: Assertion): Promise<readonly string[]> {
     const files = a.outcome === 'failed' ? await builtinFiles(a) : null
     const root = outputRoot(a.settings.use)
     if (root !== null) {
-      await recordCapture(a, root, nextOrdinal(a.testInfo), await comparedPng(a, files))
+      const ordinal = nextOrdinal(a.testInfo)
+      await recordCapture(a, root, ordinal, await comparedPng(a, files), nameIfFailed(a))
     }
     if (a.state.isNot) return []
     if (a.outcome === 'failed') {
@@ -253,6 +254,13 @@ async function explain(a: Assertion): Promise<readonly string[]> {
 async function comparedPng(a: Assertion, files: BuiltinFiles | null): Promise<string | null> {
   if (a.outcome === 'failed') return files?.actual ?? null
   return (await stampOf(a.baseline)) === null ? null : a.baseline
+}
+
+// The run's reporter keys a failed screenshot by the images the built-in attached, by its place in
+// the test when there are none.
+function nameIfFailed(a: Assertion): string | null {
+  if (a.outcome !== 'failed') return null
+  return attachedImages(a.testInfo.attachments, a.attachmentsBefore)?.name ?? null
 }
 
 async function builtinFiles(a: Assertion): Promise<BuiltinFiles | null> {
