@@ -126,7 +126,7 @@ The run page of the same run, its summary and first cause:
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
-  <img alt="whydiff's run page: 3 of 3 screenshots changed, a summary that lists 2 causes and 1 unexplained region, then the first cause, 9 buttons 8 px wider on all 3 screenshots, with the .ui-button rule from ui-kit.css that changed padding-left and padding-right from 12px to 16px, how to restore it, and the command that lists every member." src="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
+  <img alt="whydiff's run page: 3 of 3 screenshots changed, a summary that lists 2 causes and 1 unexplained region, then the first cause, 9 buttons 8 px wider on all 3 screenshots, with the .ui-button rule from ui-kit.css that changed padding-left and padding-right from 12px to 16px, how to restore it, and the command that lists all its occurrences." src="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
 </picture>
 
 Listed before `html`, the reporter also attaches the run page to every test with a failed screenshot and puts the run's description in place of the test's own. The cause ids in Playwright's HTML report then match `report.json`, and its search `annot:<cause id>` lists every test with that cause. On GitHub Actions, when a screenshot failed, the reporter adds a short summary to the job summary. `whydiff-report/` is not part of `playwright-report/`; upload it as an artifact of its own to keep it after a CI run.
