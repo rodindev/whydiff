@@ -1,4 +1,5 @@
 import {
+  acrossAttempts,
   attachedImages,
   attachmentName,
   collectPairs,
@@ -10,6 +11,8 @@ import {
   notExplainedReason,
   readImageAttachment,
   readWhydiffAttachment,
+  timeoutOf,
+  type Listed,
   type ReportedAttachment,
   type StepLike,
 } from './attachments.js'
@@ -112,6 +115,7 @@ const step = (
 ): StepLike => ({
   category: title.startsWith('Expect') ? 'expect' : 'test.step',
   title,
+  duration: 1,
   attachments,
   steps,
   ...(error === undefined ? {} : { error: { message: error } }),
@@ -123,6 +127,7 @@ const test = (titles: string[], line: number, project = 'chromium') => ({
   titles,
   file: 'card.spec.ts',
   line,
+  repeat: 0,
 })
 
 describe('listScreenshots', () => {
@@ -151,10 +156,10 @@ describe('listScreenshots', () => {
     expect(
       listed.map((l) => [l.identity.screen, l.identity.title, l.ordinal, l.files?.name])
     ).toEqual([
-      ['chromium|chromium-card-renders|b', 'card > renders > b', 0, 'b'],
-      ['chromium|chromium-card-renders|a', 'card > renders > a', 1, 'a'],
-      ['chromium|chromium-card-renders|#2', 'card > renders', 2, undefined],
-      ['chromium|chromium-card-renders|#3', 'card > renders', 3, undefined],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders > b', 'card > renders > b', 0, 'b'],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders > a', 'card > renders > a', 1, 'a'],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders\x1e#2', 'card > renders', 2, undefined],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders\x1e#3', 'card > renders', 3, undefined],
     ])
   })
 
@@ -195,18 +200,179 @@ describe('listScreenshots', () => {
         l.notExplained,
       ])
     ).toEqual([
-      ['chromium|chromium-card|b', 'card > b', 0, 'b', null],
-      ['chromium|chromium-card|a', 'card > a', 1, undefined, 'ENOENT: no file'],
-      ['chromium|chromium-card|gone', 'card > gone', 2, undefined, 'gone failed'],
+      ['chromium\x1ecard.spec.ts\x1ecard > b', 'card > b', 0, 'b', null],
+      ['chromium\x1ecard.spec.ts\x1ecard > a', 'card > a', 1, undefined, 'ENOENT: no file'],
+      ['chromium\x1ecard.spec.ts\x1ecard > gone', 'card > gone', 2, undefined, 'gone failed'],
       [
-        'chromium|chromium-card|#3',
+        'chromium\x1ecard.spec.ts\x1ecard\x1e#3',
         'card',
         3,
         undefined,
         "A snapshot doesn't exist at /fresh.png.",
       ],
-      ['chromium|chromium-card|#4', 'card', 4, undefined, null],
+      ['chromium\x1ecard.spec.ts\x1ecard\x1e#4', 'card', 4, undefined, null],
     ])
+  })
+
+  // Errors, images and annotations as Playwright 1.53 to 1.63 record them for a test that times out.
+  describe('in an attempt that ran into the test timeout', () => {
+    const timeout = '\u001b[31mTest timeout of 2000ms exceeded.\u001b[39m'
+    const closed = 'Error: screencast.showOverlays: Target page, context or browser has been closed'
+    const failed = (receiver: string, detail: string, name: string): string =>
+      `Error: \u001b[2mexpect(\u001b[22m\u001b[31m${receiver}\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\n${detail}\n\n  Snapshot: ${name}.png`
+    const png = (name: string): ReportedAttachment => ({
+      name,
+      contentType: 'image/png',
+      path: `/${name}`,
+    })
+    /** The annotation the matcher and whydiffCapture write for a failure without an actual image. */
+    const noActual = (name: string, error: string) => ({
+      type: 'whydiff',
+      description: `${notExplainedLabel(name)}: ${noActualImage(error)}`,
+    })
+
+    it('gives an assertion it cut the timeout as its reason, and one that failed before it in a toPass its own', () => {
+      // 1.53 rejects the cut assertion with the reason the page was closed for.
+      const cut =
+        "Error: expect.toHaveScreenshot(slow.png): Test timeout of 2000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.ui-missing')\u001b[22m\n"
+      const own =
+        'Error: \u001b[31mTimed out 500ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveScreenshot\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\n  Timeout 500ms exceeded.'
+      const steps = [
+        step('Expect "toPass"', [
+          step('Expect "toHaveScreenshot(loop.png)"', [], own, [png('loop-expected.png')]),
+          step('Expect "toHaveScreenshot(loop.png)"'),
+        ]),
+        step('Expect "toHaveScreenshot(slow.png)"', [], cut),
+      ]
+      const reasons = (status: string, errors: string[]): (string | null)[] =>
+        listScreenshots(
+          test(['card'], 3),
+          [],
+          steps,
+          [noActual('loop', own)],
+          timeoutOf({ status, errors: errors.map((message) => ({ message })) })
+        ).map((l) => l.notExplained)
+      const ownReason =
+        'the assertion produced no actual image (Timed out 500ms waiting for expect(locator).toHaveScreenshot(expected))'
+      expect(reasons('timedOut', [timeout, cut])).toEqual([
+        ownReason,
+        'Test timeout of 2000ms exceeded.',
+        null,
+      ])
+      expect(reasons('failed', [cut])).toEqual([
+        ownReason,
+        'expect.toHaveScreenshot(slow.png): Test timeout of 2000ms exceeded.',
+        null,
+      ])
+    })
+
+    it('gives the timeout to an assertion it cut that attached its expected image, over an annotation made of the teardown, as 1.55 to 1.59 leave it', () => {
+      const shapes: [string, boolean][] = [
+        // 1.55 and 1.57: a failed comparison, which the matcher annotates.
+        [failed('locator', '  Target page, context or browser has been closed', 'slow'), true],
+        // 1.59: the error of the finally that shows the overlays again, through either path.
+        [closed, false],
+        [closed, true],
+      ]
+      const listed = shapes.map(([error, annotated]) => {
+        const images = [png('slow-expected.png')]
+        const [only] = listScreenshots(
+          test(['card'], 3),
+          images,
+          [step('Expect "toHaveScreenshot(slow.png)"', [], error, images)],
+          annotated ? [noActual('slow', error)] : [],
+          timeoutOf({ status: 'timedOut', errors: [{ message: timeout }, { message: error }] })
+        )
+        return [only?.identity.title, only?.notExplained]
+      })
+      expect(listed).toEqual(shapes.map(() => ['card > slow', 'Test timeout of 2000ms exceeded.']))
+    })
+
+    it('gives the timeout to an assertion it cut on a page that never settled, which left all its images, under the name a rebuilt run gives it', () => {
+      const images = ['expected', 'previous', 'actual', 'diff'].map((kind) =>
+        png(`unstable-${kind}.png`)
+      )
+      const error = failed('page', '  Target page, context or browser has been closed', 'unstable')
+      // 1.55 and 1.57 also annotate the capture that met the closed page.
+      const capture = {
+        type: 'whydiff',
+        description:
+          'unstable: not explained: whydiff captures through the Chrome DevTools Protocol, which this browser does not offer (browserContext.newCDPSession: Target page, context or browser has been closed). Run the screenshot tests in Chromium.',
+      }
+      const [live] = listScreenshots(
+        test(['card'], 3),
+        images,
+        [step('Expect "toHaveScreenshot(unstable.png)"', [], error, images)],
+        [capture],
+        timeoutOf({ status: 'timedOut', errors: [{ message: timeout }, { message: error }] })
+      )
+      const [rebuilt] = listScreenshots(test(['card'], 3), images, [], [])
+      expect([live?.identity, live?.notExplained]).toEqual([
+        rebuilt?.identity,
+        'Test timeout of 2000ms exceeded.',
+      ])
+    })
+
+    it('finds the timeout behind a soft failure that kept the attempt failed, and leaves that failure its own reason', () => {
+      const own = failed(
+        'locator',
+        "Locator: locator('.ui-missing')\nTimeout: 500ms\n  Timeout 500ms exceeded.",
+        'own'
+      )
+      const shapes: [string, ReportedAttachment[], boolean][] = [
+        // 1.53 closes the page as for a test that ended: the soft failure set the status.
+        [
+          "Error: expect.toHaveScreenshot(later.png): Test ended.\nCall log:\n\u001b[2m  - waiting for locator('.ui-missing')\u001b[22m\n",
+          [],
+          false,
+        ],
+        // 1.55 and 1.57, then 1.59, then 1.60 and later.
+        [
+          failed('locator', '  Target page, context or browser has been closed', 'later'),
+          [png('later-expected.png')],
+          true,
+        ],
+        [closed, [png('later-expected.png')], false],
+        [closed, [], false],
+      ]
+      const reasons = shapes.map(([error, images, annotated]) =>
+        listScreenshots(
+          test(['card'], 3),
+          [png('own-expected.png'), ...images],
+          [
+            step('Expect "soft toHaveScreenshot(own.png)"', [], own, [png('own-expected.png')]),
+            step('Expect "toHaveScreenshot(later.png)"', [], error, images),
+          ],
+          [noActual('own', own), ...(annotated ? [noActual('later', error)] : [])],
+          timeoutOf({
+            status: 'failed',
+            errors: [own, '\u001b[31mTest timeout of 2002ms exceeded.\u001b[39m', error].map(
+              (message) => ({ message })
+            ),
+          })
+        ).map((l) => l.notExplained)
+      )
+      expect(reasons).toEqual(
+        shapes.map(() => [
+          'the assertion produced no actual image (expect(locator).toHaveScreenshot(expected) failed: Timeout 500ms exceeded.)',
+          'Test timeout of 2002ms exceeded.',
+        ])
+      )
+    })
+
+    it('lists an assertion it cut that never ended as failed, as 1.61 and later leave one on a page that never settles', () => {
+      const steps = [{ ...step('Expect "toHaveScreenshot(unstable.png)"'), duration: -1 }]
+      const listed = (status: string, errors: string[]): (string | null)[][] =>
+        listScreenshots(
+          test(['card'], 3),
+          [],
+          steps,
+          [],
+          timeoutOf({ status, errors: errors.map((message) => ({ message })) })
+        ).map((l) => [l.identity.title, l.notExplained])
+      expect(listed('timedOut', [timeout])).toEqual([['card', 'Test timeout of 2000ms exceeded.']])
+      expect(listed('interrupted', [])).toEqual([['card', null]])
+    })
   })
 
   it('lists a diff no step names with the fixed reason, as a run rebuilt without steps has it', () => {
@@ -236,6 +402,71 @@ describe('listScreenshots', () => {
         .sort(compareListed)
         .map((e) => `${e.identity.project} ${e.identity.title} ${String(e.ordinal)}`)
     ).toEqual(['chromium a 0', 'chromium b 0', 'chromium b 1', 'chromium z 0', 'firefox a 0'])
+  })
+})
+
+describe('acrossAttempts', () => {
+  const card = test(['card'], 3)
+
+  /** One attempt of the card test: a pair for each failed name, its Markdown under the attempt's directory, then the passed names. */
+  const attempt = (retry: number, failed: string[], passed: string[] = []): Listed[] =>
+    listScreenshots(
+      card,
+      failed.map((name) => ({
+        name: `whydiff/${name}/markdown`,
+        contentType: 'text/markdown',
+        path: `/retry${String(retry)}/${name}.md`,
+      })),
+      [
+        ...failed.map((name) =>
+          step(`Expect "toHaveScreenshot(${name}.png)"`, [], 'Error: x', [
+            { name: `${name}-actual.png`, contentType: 'image/png', path: `/${name}-actual.png` },
+          ])
+        ),
+        ...passed.map((name) => step(`Expect "toHaveScreenshot(${name}.png)"`)),
+      ],
+      []
+    )
+
+  const taken = (attempts: Listed[][]): (string | null)[][] =>
+    acrossAttempts(card, attempts).map((l) => [
+      l.files?.name ?? `#${String(l.ordinal)}`,
+      l.files?.whydiff.markdown?.path ?? null,
+    ])
+
+  it('is the attempt itself for a test that ran once', () => {
+    expect(acrossAttempts(card, [attempt(0, ['a'], ['b', 'c'])])).toEqual(
+      attempt(0, ['a'], ['b', 'c'])
+    )
+  })
+
+  it('keeps a screenshot the retry never reached, as the attempt that failed it lists it', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, [])])).toEqual([['a', '/retry0/a.md']])
+    expect(taken([attempt(0, ['a', 'b']), attempt(1, ['a'])])).toEqual([
+      ['b', '/retry0/b.md'],
+      ['a', '/retry1/a.md'],
+    ])
+  })
+
+  it('keeps a screenshot that failed and then passed on retry as failed, and counts it once', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, [], ['a'])])).toEqual([['a', '/retry0/a.md']])
+    expect(taken([attempt(0, ['a'], ['b']), attempt(1, [], ['a', 'b'])])).toEqual([
+      ['a', '/retry0/a.md'],
+      ['#1', null],
+    ])
+  })
+
+  it('takes a screenshot that failed again from the retry', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, ['a']), attempt(2, [])])).toEqual([
+      ['a', '/retry1/a.md'],
+    ])
+  })
+
+  it('keeps the passed screenshots of the attempt that reached the most, as a serial retry that skips the test leaves them', () => {
+    expect(taken([attempt(0, [], ['a', 'b']), attempt(1, [])])).toEqual([
+      ['#0', null],
+      ['#1', null],
+    ])
   })
 })
 

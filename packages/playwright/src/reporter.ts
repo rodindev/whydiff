@@ -5,6 +5,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import type { FullConfig, Reporter, TestCase, TestResult } from '@playwright/test/reporter'
 import {
   buildReport,
+  changedScreenshots,
   clusterCauses,
   code,
   noneExplained,
@@ -21,10 +22,12 @@ import {
 } from '@whydiff/core'
 
 import {
+  acrossAttempts,
   compareListed,
   listScreenshots,
   readImageAttachment,
   readWhydiffAttachment,
+  timeoutOf,
   type Listed,
   type ReportedAttachment,
 } from './attachments.js'
@@ -69,7 +72,13 @@ interface MissingBaseline {
 
 interface Ended {
   readonly identity: TestIdentity
+  /** Every attempt, in the order Playwright ran them. */
+  readonly results: readonly TestResult[]
+}
+
+interface Attempt {
   readonly result: TestResult
+  readonly listed: readonly Listed[]
 }
 
 interface NotExplained {
@@ -85,7 +94,7 @@ const HTML_FIRST = `the html reporter runs before this one, so Playwright's HTML
 const HTML_FIRST_MARKDOWN = `the html reporter runs before this one, so Playwright's HTML report keeps each test's own page; list ${code(REPORTER_NAME)} before ${code('html')} (${code('npx whydiff init')} does it)`
 
 const NOT_EXPLAINED =
-  'Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion.'
+  "Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion, or the test's own when the test timed out during it."
 
 const BLANK: SnapshotV1 = {
   formatVersion: SNAPSHOT_FORMAT_VERSION,
@@ -128,8 +137,12 @@ export default class WhydiffReporter implements Reporter {
       titles: test.titlePath().slice(3),
       file: relativeTo(rootDir, test.location.file),
       line: test.location.line,
+      repeat: test.repeatEachIndex,
     }
-    this.tests.set(test.id, { identity, result })
+    this.tests.set(test.id, {
+      identity,
+      results: [...(this.tests.get(test.id)?.results ?? []), result],
+    })
   }
 
   async onEnd(): Promise<void> {
@@ -151,15 +164,23 @@ export default class WhydiffReporter implements Reporter {
   private async write(config: FullConfig): Promise<void> {
     const dir = reportDir(config, this.outputDir)
     const suffix = shardSuffix(config.shard)
-    const tests = [...this.tests.values()].map((test) => ({
-      ...test,
-      listed: listScreenshots(
-        test.identity,
-        test.result.attachments,
-        test.result.steps,
-        test.result.annotations
-      ),
-    }))
+    const tests = [...this.tests.values()].map(({ identity, results }) => {
+      const attempts: Attempt[] = results.map((result) => ({
+        result,
+        listed: listScreenshots(
+          identity,
+          result.attachments,
+          result.steps,
+          result.annotations,
+          timeoutOf(result)
+        ),
+      }))
+      const listed = acrossAttempts(
+        identity,
+        attempts.map((a) => a.listed)
+      )
+      return { identity, attempts, listed }
+    })
     const listed = tests.flatMap((test) => test.listed).sort(compareListed)
     const screens: ScreenInput[] = []
     const missing: MissingBaseline[] = []
@@ -189,28 +210,40 @@ export default class WhydiffReporter implements Reporter {
     })
     const markdown = join(dir, `report${suffix}.md`)
     const failed = missing.length + notExplained.length
+    const totalUnknown = stepless(tests)
     const text =
-      renderReport(report, { failed }) + missingSection(missing) + notExplainedSection(notExplained)
+      renderReport(report, { failed, totalUnknown }) +
+      missingSection(missing) +
+      notExplainedSection(notExplained)
     await mkdir(dir, { recursive: true })
     await writeFile(join(dir, `report${suffix}.json`), serializeReport(report))
     await writeFile(markdown, text)
     await writeScreenshots(report, join(dir, `screenshots${suffix}`))
     const explain = explanations(report, screens, missing)
     let later = 0
-    for (const test of tests) later += await writeBack(test, explain)
+    for (const test of tests) {
+      for (const { result, listed } of test.attempts) {
+        // A failed screenshot gets the run's page in the one attempt the report took it from.
+        const taken = listed.filter((l) => test.listed.includes(l)).map((l) => l.identity.screen)
+        later += await writeBack(test.identity, result, (screen) =>
+          taken.includes(screen) ? explain(screen) : undefined
+        )
+      }
+    }
     const page = join(dir, `report${suffix}.html`)
-    await writeFile(page, renderRunPage(report, { failed }))
+    await writeFile(page, renderRunPage(report, { failed, totalUnknown }))
     attachRunPage(
       tests
-        .filter((test) => test.listed.some((l) => l.files !== null || l.notExplained !== null))
-        .map((test) => test.result),
+        .flatMap((test) => test.attempts)
+        .filter((a) => a.listed.some((l) => l.files !== null || l.notExplained !== null))
+        .map((a) => a.result),
       page
     )
     const { summary } = report
     const totals = [
       summary.screenshots.changed === 0 && failed > 0
         ? noneExplained(failed)
-        : `${count(summary.screenshots.changed)} of ${plural(summary.screenshots.compared, 'screenshot')} changed${missing.length > 0 ? `, ${count(missing.length)} more without a baseline snapshot` : ''}${notExplained.length > 0 ? `, ${count(notExplained.length)} more failed but not explained` : ''}`,
+        : `${changedScreenshots(report, totalUnknown)}${missing.length > 0 ? `, ${count(missing.length)} more without a baseline snapshot` : ''}${notExplained.length > 0 ? `, ${count(notExplained.length)} more failed but not explained` : ''}`,
       `${plural(summary.causes, 'cause')}, ${plural(summary.unexplained, 'unexplained region')}`,
     ]
     for (const line of totals) console.log(`whydiff: ${line}`)
@@ -283,7 +316,8 @@ function explanations(
 // report.json and annot: finds every test of a cause. Changed in place, before the html
 // reporter reads them in its own onEnd: it finds a step's attachments in the result's by identity.
 async function writeBack(
-  { identity, result }: Ended,
+  identity: TestIdentity,
+  result: TestResult,
   explain: (screen: string) => Explained | undefined
 ): Promise<number> {
   let pointers = 0
@@ -315,6 +349,20 @@ async function rewriteCopy(result: TestResult, name: string, page: string): Prom
   })?.path
   const copy = actual?.replace(/-actual\.png$/, '-whydiff.md')
   if (copy !== undefined && copy !== actual && existsSync(copy)) await writeFile(copy, page)
+}
+
+// Passed screenshots are counted from the steps of each attempt, which test-results do not keep: a
+// run rebuilt from them lists only its failed screenshots, and its total is not known. A live
+// attempt that ran has steps, its hooks at least, so only such a run has none in any attempt of a
+// test that took a screenshot.
+function stepless(
+  tests: readonly { readonly attempts: readonly Attempt[]; readonly listed: readonly Listed[] }[]
+): boolean {
+  const shot = tests.filter((test) => test.listed.length > 0)
+  return (
+    shot.length > 0 &&
+    shot.every((test) => test.attempts.every((attempt) => attempt.result.steps.length === 0))
+  )
 }
 
 /** True when the config lists Playwright's html reporter before this one, which then reads each test's results before this one rewrites them. */

@@ -33,12 +33,8 @@ const AFTER_PREFIX = /[-_].*/
 
 const contexts = new WeakMap<SnapshotV1, Context>()
 
-/** What a cause on `node` is grouped by: its test id stem; else the BEM block of a class naming it, first one a rule in `won` (indices into `rules` behind the changed longhands) styles it through, then one whose prefix holds the most BEM names on the page; else its tag and classes, states left out and, with rules recorded, only those setting its box other than colours, else any styling it (`td.py-2`); else its role or tag. */
-export function componentKind(
-  node: NodeV1,
-  snapshot: SnapshotV1,
-  won: readonly number[] = []
-): string {
+/** What a cause on `node` is grouped by: its test id stem; else the BEM block of a class naming it, the one whose prefix holds the most BEM names on the page; else its tag and classes, states left out and, with rules recorded, only those setting its box other than colours, else any styling it (`td.py-2`); else its role or tag. */
+export function componentKind(node: NodeV1, snapshot: SnapshotV1): string {
   if (node.testId !== undefined) {
     const stem = node.testId.replace(TEST_ID_INDEX, '')
     if (stem !== '') return stem
@@ -46,9 +42,7 @@ export function componentKind(
   const context = contextOf(snapshot)
   const own = classNames(node)
   const names = own.filter((name) => context.names.has(name))
-  const carried = new Set(won.flatMap((rule) => context.subjects[rule] ?? []))
-  const carriers = names.filter((name) => carried.has(name))
-  const [name] = (carriers.length > 0 ? carriers : names).sort(byPrefix(context.blocks))
+  const [name] = names.sort(byPrefix(context.blocks))
   if (name !== undefined) {
     const element = name.indexOf('__')
     return element > 0 ? name.slice(0, element) : name

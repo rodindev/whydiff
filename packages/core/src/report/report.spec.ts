@@ -9,6 +9,8 @@ import {
   ruleFamilies,
   ruleMove,
   screenOf,
+  styleRow,
+  type Attributed,
 } from '../testing/screens.js'
 import { buildReport } from './build.js'
 import { renderRunPage } from './html.js'
@@ -104,6 +106,41 @@ describe('report goldens', () => {
     )
     await expect(renderRunPage(report)).toMatchFileSnapshot(
       '../../fixtures/report/rule-move/report.html'
+    )
+  })
+
+  it('pins one element whose rule changed, in the run and on its screenshot', async () => {
+    const side: Attributed = {
+      sheets: [{ href: 'http://app.test/ui-kit.css', hash: 'kit1' }],
+      rules: [{ sheet: 0, selector: '.ui-btn' }],
+      attributions: [styleRow().map(() => -1), styleRow().map((_, i) => (i === 1 ? 0 : -1))],
+    }
+    const screens = [
+      screenOf(
+        's1',
+        page([button(10, { 'padding-left': '12px' }, 'Help', { a: 1 })]),
+        page([button(10, { 'padding-left': '16px' }, 'Help', { a: 1 })]),
+        [[10, 10, 80, 30]],
+        { file: 'tests/settings.spec.ts', project: 'chromium', before: side, after: side }
+      ),
+    ]
+    const report = buildReport({
+      version: '0.0.1',
+      compared: { before: 'before', after: 'after' },
+      screens,
+      clusters: clusterCauses(screens),
+    })
+    await expect(serializeReport(report)).toMatchFileSnapshot(
+      '../../fixtures/report/one-rule/report.json'
+    )
+    await expect(renderReport(report)).toMatchFileSnapshot(
+      '../../fixtures/report/one-rule/report.md'
+    )
+    await expect(renderRunPage(report)).toMatchFileSnapshot(
+      '../../fixtures/report/one-rule/report.html'
+    )
+    await expect(renderScreenshot(report, screenshotId('s1'))).toMatchFileSnapshot(
+      '../../fixtures/report/one-rule/screenshot.md'
     )
   })
 

@@ -17,6 +17,7 @@ const causes = (file: string): URL =>
 const step = (title: string, attachments: ReportedAttachment[] = [], error?: string): StepLike => ({
   category: 'expect',
   title,
+  duration: 1,
   attachments,
   steps: [],
   ...(error === undefined ? {} : { error: { message: error } }),
@@ -45,6 +46,7 @@ describe('WhydiffReporter', () => {
       id: title,
       titlePath: () => ['', 'chromium', 'card.spec.ts', title],
       location: { file: '/repo/tests/card.spec.ts', line, column: 1 },
+      repeatEachIndex: 0,
       parent: { project: () => ({ name: 'chromium' }) },
     } as unknown as TestCase // only these fields are read
   }
@@ -53,7 +55,7 @@ describe('WhydiffReporter', () => {
     attachments: ReportedAttachment[],
     steps: StepLike[] = [],
     annotations: AnnotationLike[] = []
-  ): TestResult => ({ attachments, steps, annotations }) as unknown as TestResult // only these fields are read
+  ): TestResult => ({ attachments, steps, annotations, errors: [] }) as unknown as TestResult // only these fields are read
 
   async function run(shard: FullConfig['shard']): Promise<void> {
     const expected = await png('expected.png', false)
@@ -102,17 +104,7 @@ describe('WhydiffReporter', () => {
         },
       ])
     )
-    reporter.onTestEnd(
-      testCase('flaky card', 40),
-      result([
-        ...images('flaky'),
-        {
-          name: 'whydiff/flaky/snapshot-actual',
-          contentType: 'application/json',
-          path: '/missing',
-        },
-      ])
-    )
+    reporter.onTestEnd(testCase('flaky card', 40), result([]))
     reporter.onTestEnd(
       testCase('flaky card', 40),
       result([], [step('Expect "toHaveScreenshot(flaky.png)"')])
@@ -237,7 +229,7 @@ describe('WhydiffReporter', () => {
     expect(markdown.slice(markdown.indexOf('\n## Not explained')).split('\n')).toEqual([
       '',
       '## Not explained (5)',
-      'Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion.',
+      "Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion, or the test's own when the test timed out during it.",
       expect.stringMatching(
         /^- broken card > broken \| card\.spec\.ts:50 \| chromium \| its files could not be read: ENOENT/
       ),
@@ -333,6 +325,38 @@ describe('WhydiffReporter', () => {
     expect((await readFile(file, 'utf8')).split('\n', 2)).toEqual(['## whydiff', `- ${line}`])
   })
 
+  it('says how many screenshots changed, not of how many, in every place the run is summed up when no test came with steps, as none rebuilt from test-results does', async () => {
+    const file = join(dir, 'step-summary.md')
+    vi.stubEnv('GITHUB_STEP_SUMMARY', file)
+    const reporter = new WhydiffReporter({ outputDir: 'report' })
+    reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read
+    reporter.onTestEnd(
+      testCase('padded card', 20),
+      result([
+        { name: 'card-expected.png', contentType: 'image/png', path: await png('e.png', false) },
+        { name: 'card-actual.png', contentType: 'image/png', path: await png('a.png', true) },
+        {
+          name: 'whydiff/card/snapshot-actual',
+          contentType: 'application/json',
+          path: causes('after.whydiff.json').pathname,
+        },
+        {
+          name: 'whydiff/card/snapshot-expected',
+          contentType: 'application/json',
+          path: causes('before.whydiff.json').pathname,
+        },
+      ])
+    )
+    await reporter.onEnd()
+    const line = '1 screenshot changed'
+    expect((await readFile(join(dir, 'report', 'report.md'), 'utf8')).split('\n', 1)).toEqual([
+      `# whydiff: ${line} | 1 cause | 0 unexplained regions`,
+    ])
+    expect(await readFile(join(dir, 'report', 'report.html'), 'utf8')).toContain(`<h1>${line}</h1>`)
+    expect(lines[0]).toBe(`whydiff: ${line}`)
+    expect((await readFile(file, 'utf8')).split('\n', 2)).toEqual(['## whydiff', `- ${line}`])
+  })
+
   it('hands the workers a fresh run directory and its report directory, and takes both back at the end', async () => {
     const reporter = new WhydiffReporter({ outputDir: 'report' })
     reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read
@@ -390,7 +414,7 @@ describe('WhydiffReporter', () => {
     // What the test wrote for the same pair explained alone, here the same as the run's line.
     const own = ended(
       '# whydiff: own card > card\n',
-      "a <section>'s inner spacing grew by 24 px (c365v0c)"
+      "a <section>'s inner spacing grew by 24 px (c2k0l43)"
     )
     const markdownOf = (test: TestResult): ReportedAttachment | undefined =>
       test.attachments.find((a) => a.name === 'whydiff/card/markdown')
@@ -413,7 +437,7 @@ describe('WhydiffReporter', () => {
       expect(written).toContain(markdownOf(test)?.body?.toString('utf8'))
       expect(test.annotations.map((a) => a.description)).toEqual([
         'card: something else',
-        "a <section>'s inner spacing grew by 24 px (c365v0c)",
+        "a <section>'s inner spacing grew by 24 px (c2k0l43)",
       ])
     }
     expect(markdownOf(past)).toBe(markdown)
@@ -461,6 +485,65 @@ describe('WhydiffReporter', () => {
     expect(page).toMatch(/^What changed on this screen:\n/)
     expect(await readFile(copy, 'utf8')).toBe(page)
     expect(existsSync(join(dir, 'other-whydiff.md'))).toBe(false)
+  })
+
+  it('takes each failed screenshot from the last attempt that failed it, and gives the run page to that attempt only', async () => {
+    const expected = await png('e.png', false)
+    const actual = await png('a.png', true)
+    const pair = (name: string): ReportedAttachment[] => [
+      { name: `${name}-expected.png`, contentType: 'image/png', path: expected },
+      { name: `${name}-actual.png`, contentType: 'image/png', path: actual },
+      { name: `whydiff/${name}/markdown`, contentType: 'text/markdown', body: Buffer.from('#') },
+      {
+        name: `whydiff/${name}/snapshot-actual`,
+        contentType: 'application/json',
+        path: causes('after.whydiff.json').pathname,
+      },
+      {
+        name: `whydiff/${name}/snapshot-expected`,
+        contentType: 'application/json',
+        path: causes('before.whydiff.json').pathname,
+      },
+    ]
+    const timedOut = [result(pair('timed')), result([])]
+    const flaky = [
+      result(pair('flaky')),
+      result([], [step('Expect "toHaveScreenshot(flaky.png)"')]),
+    ]
+    const partial = [result([...pair('one'), ...pair('two')]), result(pair('one'))]
+    const reporter = new WhydiffReporter({ outputDir: 'report' })
+    reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read
+    for (const [title, line, attempts] of [
+      ['timed out card', 10, timedOut],
+      ['flaky card', 20, flaky],
+      ['partial card', 30, partial],
+    ] as const) {
+      for (const attempt of attempts) reporter.onTestEnd(testCase(title, line), attempt)
+    }
+    await reporter.onEnd()
+    const report = JSON.parse(await readFile(join(dir, 'report', 'report.json'), 'utf8')) as {
+      screenshots: { title: string; status: string }[]
+    } // the report format
+    expect(report.screenshots.map((s) => [s.title, s.status])).toEqual([
+      ['timed out card > timed', 'changed'],
+      ['flaky card > flaky', 'changed'],
+      ['partial card > one', 'changed'],
+      ['partial card > two', 'changed'],
+    ])
+    const own = (attempt: TestResult | undefined, name: string): boolean =>
+      attempt?.attachments.find((a) => a.name === `whydiff/${name}/markdown`)?.body?.toString() ===
+      '#'
+    expect([
+      own(timedOut[0], 'timed'),
+      own(flaky[0], 'flaky'),
+      own(partial[0], 'one'),
+      own(partial[0], 'two'),
+      own(partial[1], 'one'),
+    ]).toEqual([false, false, true, false, false])
+    expect(timedOut.map((attempt) => attempt.attachments[0]?.name)).toEqual([
+      'whydiff/run',
+      undefined,
+    ])
   })
 
   it('warns on the console and in the job summary when html runs before it, and not when it runs first', async () => {
@@ -511,7 +594,7 @@ describe('WhydiffReporter', () => {
     await run(null)
     const summary = await readFile(file, 'utf8')
     expect(summary).toMatch(
-      /^# earlier step\n## whydiff\n- 1 of 2 screenshots changed, 1 more without a baseline snapshot, 5 more failed but not explained\n- 1 cause, 0 unexplained regions\n\n1 cause appears on the changed screenshot, 100% of changed pixels, [^\n]+:\n- a `<section>`'s inner spacing grew by 24 px, [^\n]+ \(c365v0c\)\n\n/
+      /^# earlier step\n## whydiff\n- 1 of 2 screenshots changed, 1 more without a baseline snapshot, 5 more failed but not explained\n- 1 cause, 0 unexplained regions\n\n1 cause appears on the changed screenshot, 100% of changed pixels, [^\n]+:\n- a `<section>`'s inner spacing grew by 24 px, [^\n]+ \(c2k0l43\)\n\n/
     )
     expect(summary).toMatch(
       /\nThe whole run in `[^`]*\/report\/report\.md`; the page of each changed screenshot in `[^`]*\/report\/screenshots\/`\.\n$/

@@ -1,12 +1,13 @@
 export { buildReport, describeRun } from './build.js'
 export { code, count, plain, plural } from './format.js'
 export { renderRunPage } from './html.js'
-export { screenshotId } from './ids.js'
+export { screenKey, screenshotId } from './ids.js'
 export { locatorFor } from './locator.js'
 export { parseReport } from './parse.js'
 export {
   bareHeadline,
   changedLines,
+  changedScreenshots,
   describeEffect,
   describeMemberChanges,
   describeRegion,

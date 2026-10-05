@@ -45,13 +45,13 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:</p>
 <ol>
-<li><a href="#c1g6bij">the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 12 px, on all 2 changed screenshots, 87% of changed pixels</a></li>
-<li><a href="#c3hhw9m">the labels of 2 buttons are lighter (was #000000, now #090909), on all 2 changed screenshots, 13% of changed pixels</a></li>
+<li><a href="#c13u1c7">the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 12 px, on all 2 changed screenshots, 87% of changed pixels</a></li>
+<li><a href="#c3p6wov">the labels of 2 buttons are lighter (was #000000, now #090909), on all 2 changed screenshots, 13% of changed pixels</a></li>
 </ol>
 </section>
 <section class="causes">
-<article class="cause" id="c1g6bij">
-<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 12 px<span class="impact">, on all 2 changed screenshots, 87% of changed pixels</span><span class="id"><code>.ui-row</code>, c1g6bij</span></h2>
+<article class="cause" id="c13u1c7">
+<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 12 px<span class="impact">, on all 2 changed screenshots, 87% of changed pixels</span><span class="id"><code>.ui-row</code>, c13u1c7</span></h2>
 <p class="example">for example, a <code>&lt;div&gt;</code>&#x27;s inner spacing shrank by 12 px, at <code>locator(&#x27;div.\\!ui-p-0&#x27;).locator(&#x27;div.ui-row&#x27;)</code> in <code>&quot;cart &lt;ui-badge&gt; &gt; __totals__&quot;</code> (s4udgzc)</p>
 <ul class="why">
 <li><code>.ui-row</code> from <code>vendor-ui-*.css</code> (layer <code>ui.components</code>) no longer sets padding-left (was 12px, now 0px)</li>
@@ -65,10 +65,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>checkout &gt; __totals__ <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c1g6bij</code></p>
+<p class="handle">all occurrences: <code>npx whydiff explain c13u1c7</code></p>
 </article>
-<article class="cause" id="c3hhw9m">
-<h2>the labels of 2 buttons are lighter (was #000000, now #090909)<span class="impact">, on all 2 changed screenshots, 13% of changed pixels</span><span class="id">c3hhw9m</span></h2>
+<article class="cause" id="c3p6wov">
+<h2>the labels of 2 buttons are lighter (was #000000, now #090909)<span class="impact">, on all 2 changed screenshots, 13% of changed pixels</span><span class="id">c3p6wov</span></h2>
 <p class="example">for example, the <code>&quot;Total *&quot;</code> button&#x27;s label is lighter (was #000000, now #090909), at <code>getByRole(&#x27;button&#x27;, { name: &#x27;Total *&#x27; })</code> in <code>&quot;cart &lt;ui-badge&gt; &gt; __totals__&quot;</code> (s4udgzc)</p>
 <ul class="why">
 <li>color: was #000000, now #090909</li>
@@ -80,7 +80,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>checkout &gt; __totals__ <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c3hhw9m</code></p>
+<p class="handle">all occurrences: <code>npx whydiff explain c3p6wov</code></p>
 </article>
 </section>
 </main>

@@ -1,6 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises'
 import { basename, join, relative } from 'node:path'
-import { WhydiffError } from '@whydiff/core'
+import { screenKey, WhydiffError } from '@whydiff/core'
 import type { ManifestLine, ReportedAttachment, TestIdentity } from '@whydiff/playwright'
 
 import { walkFiles } from './walk.js'
@@ -8,7 +8,9 @@ import { walkFiles } from './walk.js'
 const MANIFEST = 'manifest.jsonl'
 const SIDECAR = '.whydiff.json'
 const PNG = /\.png$/i
-const ATTEMPT_SUFFIX = /-(?:retry|repeat)\d+$/
+// Playwright names an attempt's directory after its test and project, then `-retry<n>` from the first
+// retry on, then `-repeat<n>` under --repeat-each from the second repeat on.
+const ATTEMPT = /^(.*?)(?:-retry(\d+))?(?:-repeat(\d+))?$/
 const WHYDIFF_COPY = /^whydiff-(.+)-(snapshot-(?:actual|expected))-[0-9a-f]{40}\.json$/
 const MARKDOWN = /^(.+)-whydiff\.md$/
 const IMAGE = /^(.+)-(?:expected|actual|diff)\.png$/
@@ -36,6 +38,8 @@ const CONTENT_TYPES: Readonly<Record<string, string>> = {
 /** One side of a pair found in a run directory: who it belongs to and the two files to read; `png` is null when the run recorded none. */
 export interface RunSide {
   readonly key: string
+  /** The key the report's id hashes when it is not `key`: a screenshot that failed in the run, keyed as the run's reporter keys it. */
+  readonly screen?: string
   readonly title: string
   readonly file?: string
   readonly line?: number
@@ -72,16 +76,24 @@ export async function isRunDir(dir: string): Promise<boolean> {
   )
 }
 
-/** The sides of a two-run output, keyed by project, test id and ordinal; the last retry of each wins. */
+/** The sides of a two-run output, keyed by project, test id and ordinal; the last retry of each wins. A screenshot that failed in any attempt is named as the built-in named its images and keyed for its id as the run's reporter keys it, so its id is the one its test printed. */
 export async function runSides(dir: string): Promise<Map<string, RunSide>> {
   const lines = (await readManifest(dir)).sort((a, b) => a.retry - b.retry)
+  const failed = new Map<string, string>()
+  for (const line of lines) {
+    if (line.failedName !== undefined) failed.set(placeOf(line), line.failedName)
+  }
   const sides = new Map<string, RunSide>()
   for (const line of lines) {
     if (line.snapshot === null) continue
-    const key = `${line.project}|${line.testId}|${String(line.ordinal)}`
+    const key = placeOf(line)
+    const failedName = failed.get(key)
+    const title = `${line.title} > ${failedName ?? line.name}`
+    const test = { project: line.project, file: line.file, repeat: line.repeat ?? 0 }
     sides.set(key, {
       key,
-      title: `${line.title} > ${line.name}`,
+      ...(failedName === undefined ? {} : { screen: screenKey(test, title) }),
+      title,
       file: line.file,
       line: line.line,
       project: line.project,
@@ -90,6 +102,10 @@ export async function runSides(dir: string): Promise<Map<string, RunSide>> {
     })
   }
   return sides
+}
+
+function placeOf(line: ManifestLine): string {
+  return `${line.project}|${line.testId}|${String(line.ordinal)}`
 }
 
 /** The baselines of a Playwright snapshot directory that have a sidecar snapshot, keyed by relative path. */
@@ -109,20 +125,28 @@ export async function snapshotSides(dir: string): Promise<SnapshotSides> {
   return { sides, withoutSnapshot }
 }
 
+/** A test directory's name as Playwright builds it: `testId` without the retry, `base` without the repeat index either. */
+interface Attempt {
+  readonly testId: string
+  readonly base: string
+  readonly retry: number
+  readonly repeat: number
+}
+
 /** A test attempt no whydiff page names, with the error context Playwright wrote for it, empty when there is none. */
 interface Unnamed {
-  readonly testId: string
+  readonly attempt: Attempt
   readonly context: string
   readonly attachments: readonly ReportedAttachment[]
   readonly annotations: TestRun['annotations']
 }
 
-/** Every test attempt of a `test-results` directory with its attachments, rebuilt from the files Playwright copied there and the Markdown whydiff wrote next to them; a test whose pages only point to the run report, as past `use.whydiff.maxExplained`, from Playwright's error context. */
+/** Every test attempt of a `test-results` directory with its attachments, each test's in the order they ran, rebuilt from the files Playwright copied there and the Markdown whydiff wrote next to them; a test whose pages only point to the run report, as past `use.whydiff.maxExplained`, from Playwright's error context. */
 export async function listTestResults(dir: string): Promise<TestResults> {
   const entries = (await readdir(dir, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
     .map((entry) => entry.name)
-    .sort()
+    .sort((a, b) => attemptOf(a).retry - attemptOf(b).retry || (a < b ? -1 : a > b ? 1 : 0))
   const read: (TestRun | Unnamed)[] = []
   for (const name of entries) {
     const test = await readTestDir(join(dir, name), name)
@@ -130,16 +154,18 @@ export async function listTestResults(dir: string): Promise<TestResults> {
   }
   const projects = [...new Set(read.flatMap((t) => ('identity' in t ? [t.identity.project] : [])))]
   const runs: TestRun[] = []
-  let skipped = 0
+  const skipped = new Set<string>()
   for (const test of read) {
     const identity = 'identity' in test ? test.identity : contextIdentity(test, projects)
-    if (identity === null) skipped += 1
-    else runs.push({ identity, attachments: test.attachments, annotations: test.annotations })
+    if (identity !== null) {
+      runs.push({ identity, attachments: test.attachments, annotations: test.annotations })
+    } else if ('attempt' in test) skipped.add(test.attempt.testId)
   }
-  return { runs, skipped }
+  return { runs, skipped: skipped.size }
 }
 
 async function readTestDir(dir: string, name: string): Promise<TestRun | Unnamed | null> {
+  const attempt = attemptOf(name)
   const files = (await readdir(dir)).sort()
   const copies = await readdir(join(dir, 'attachments')).then(
     (list) => list.sort(),
@@ -179,7 +205,7 @@ async function readTestDir(dir: string, name: string): Promise<TestRun | Unnamed
   for (const { name: attachment, contentType, path } of attachments) {
     if (contentType !== 'text/markdown' || path === undefined) continue
     // A pointer to the run's report names no test; a description further on may.
-    const identity = parseIdentity(await readFile(path, 'utf8'), name, attachment)
+    const identity = parseIdentity(await readFile(path, 'utf8'), attempt, attachment)
     if (identity !== null) return { identity, attachments, annotations }
   }
   const whydiff = attachments.some((a) => a.name.startsWith('whydiff/'))
@@ -187,7 +213,13 @@ async function readTestDir(dir: string, name: string): Promise<TestRun | Unnamed
   const context = files.includes(ERROR_CONTEXT)
     ? await readFile(join(dir, ERROR_CONTEXT), 'utf8')
     : ''
-  return { testId: name.replace(ATTEMPT_SUFFIX, ''), context, attachments, annotations }
+  return { attempt, context, attachments, annotations }
+}
+
+function attemptOf(dirName: string): Attempt {
+  const [, base = dirName, retry = '0', repeat = '0'] = ATTEMPT.exec(dirName) ?? []
+  const testId = repeat === '0' ? base : `${base}-repeat${repeat}`
+  return { testId, base, retry: Number(retry), repeat: Number(repeat) }
 }
 
 /** Who a test is by its error context: the file and titles of its title path, its line, and the project of the run whose name ends the directory's name, the longest that does, else the run's unnamed project; null when the context says no title or no project fits. */
@@ -195,18 +227,23 @@ function contextIdentity(test: Unnamed, projects: readonly string[]): TestIdenti
   const [file, ...titles] = NAME_LINE.exec(test.context)?.[1]?.split(' >> ') ?? []
   const line = LOCATION_LINE.exec(test.context)?.[1]
   const [named] = projects
-    .filter((p) => p !== '' && test.testId.endsWith(`-${p.replace(UNSAFE, '-')}`))
+    .filter((p) => p !== '' && test.attempt.base.endsWith(`-${p.replace(UNSAFE, '-')}`))
     .sort((a, b) => b.length - a.length || (a < b ? -1 : 1))
   // A project without a name, the default config's one, adds no suffix to the directory.
   const project = named ?? (projects.includes('') ? '' : undefined)
   if (file === undefined || titles.length === 0 || line === undefined || project === undefined) {
     return null
   }
-  return { project, testId: test.testId, titles, file, line: Number(line) }
+  const { testId, repeat } = test.attempt
+  return { project, testId, titles, file, line: Number(line), repeat }
 }
 
 /** Who a screenshot belongs to, read back from the header of the Markdown the matcher attached, after the lines of what changed, first when there are none. */
-function parseIdentity(markdown: string, dirName: string, attachment: string): TestIdentity | null {
+function parseIdentity(
+  markdown: string,
+  attempt: Attempt,
+  attachment: string
+): TestIdentity | null {
   const lines = markdown.split('\n')
   const at = lines.findIndex((line) => TITLE_LINE.test(line))
   const title = unspan(TITLE_LINE.exec(lines[at] ?? '')?.[1])
@@ -221,10 +258,11 @@ function parseIdentity(markdown: string, dirName: string, attachment: string): T
   const suffix = ` > ${name}`
   return {
     project,
-    testId: dirName.replace(ATTEMPT_SUFFIX, ''),
+    testId: attempt.testId,
     titles: [title.endsWith(suffix) ? title.slice(0, -suffix.length) : title],
     file,
     line: Number(line),
+    repeat: attempt.repeat,
   }
 }
 
@@ -273,6 +311,8 @@ function isManifestLine(value: unknown): value is ManifestLine {
     typeof line.ordinal === 'number' &&
     typeof line.name === 'string' &&
     typeof line.retry === 'number' &&
+    (line.failedName === undefined || typeof line.failedName === 'string') &&
+    (line.repeat === undefined || typeof line.repeat === 'number') &&
     (typeof line.screenshot === 'string' || line.screenshot === null) &&
     (typeof line.snapshot === 'string' || line.snapshot === null) &&
     (typeof line.png === 'string' || line.png === null)

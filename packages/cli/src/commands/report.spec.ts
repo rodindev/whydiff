@@ -80,12 +80,50 @@ describe('mergeReports', () => {
     expect(parseReport(serializeReport(merged))).toEqual(merged)
   })
 
+  it("orders a cause's members, and picks its example among equals, by project, file and title as the reporter's screen keys do, not by line", () => {
+    const lines: Readonly<Record<string, number>> = { s4udgzc: 30, s4udft9: 20 }
+    const moved = (report: ReportV1): ReportV1 => ({
+      ...report,
+      screenshots: report.screenshots.map((s) => {
+        const line = lines[s.id]
+        return line === undefined ? s : { ...s, line }
+      }),
+    })
+    const merged = mergeReports([moved(shard(['s4udft9'])), moved(shard(['s4udgzc']))])
+    expect(merged.screenshots.map((s) => s.id)).toEqual(['s4udft9', 's4udgzc'])
+    const cause = merged.causes.find((c) => c.id === 'c3ln8mq')
+    expect(cause?.members.map((m) => m.screenshot)).toEqual(['s4udgzc', 's4udft9'])
+    expect(cause?.example.screenshot).toBe('s4udgzc')
+  })
+
   it('is the identity on one shard that holds the whole run, up to the screenshot order', () => {
     const merged = mergeReports([fixture])
     expect({ ...merged, screenshots: [] }).toEqual({ ...fixture, screenshots: [] })
     expect([...merged.screenshots].sort((a, b) => (a.id < b.id ? -1 : 1))).toEqual(
       [...fixture.screenshots].sort((a, b) => (a.id < b.id ? -1 : 1))
     )
+  })
+
+  it("keeps the members of a cause on one screenshot in their shard's order, which is the run's, and takes the example from it", () => {
+    const report = parseReport(
+      readFileSync(
+        new URL('../../../core/fixtures/report/field-reset/report.json', import.meta.url),
+        'utf8'
+      )
+    )
+    // The run orders the members on one screenshot by their cause there, which report.json does not hold.
+    const reversed: ReportV1 = {
+      ...report,
+      causes: report.causes.map((c) => ({ ...c, members: [...c.members].reverse() })),
+    }
+    const cause = mergeReports([reversed]).causes.find((c) => c.id === 'c1aw389')
+    expect(cause?.members.map((m) => [m.screenshot, m.locator])).toEqual([
+      ['s4udgzc', "getByText('Send s1')"],
+      ['s4udgzc', "getByRole('textbox', { name: 'Notes s1' })"],
+      ['s4udft9', "getByText('Send s2')"],
+      ['s4udft9', "getByRole('textbox', { name: 'Notes s2' })"],
+    ])
+    expect(cause?.example).toEqual({ screenshot: 's4udgzc', locator: "getByText('Send s1')" })
   })
 
   it('says how many moved by the most common vector the members record, when not all did', () => {
@@ -159,9 +197,9 @@ describe('mergeReports', () => {
   })
 
   it('refuses shards written with different cluster rules', () => {
-    const other = { ...fixture, tool: { ...fixture.tool, rules: { cluster: 'k2' } } }
+    const other = { ...fixture, tool: { ...fixture.tool, rules: { cluster: 'k1' } } }
     expect(() => mergeReports([fixture, other])).toThrow(
-      'the shards were written with different cluster rules (k1 and k2). Rebuild them with one whydiff version.'
+      'the shards were written with different cluster rules (k2 and k1). Rebuild them with one whydiff version.'
     )
   })
 })

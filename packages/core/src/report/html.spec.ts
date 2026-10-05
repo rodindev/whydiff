@@ -62,6 +62,13 @@ describe('renderRunPage', () => {
     expect(renderRunPage(report)).toContain('<h1>0 of 0 screenshots changed</h1>')
   })
 
+  it('heads a run whose total is not known with how many screenshots changed alone', () => {
+    const report = parseReport(read('run', 'report.json'))
+    const html = renderRunPage(report, { totalUnknown: true })
+    expect(html).toContain('<title>whydiff: 4 screenshots changed</title>')
+    expect(html).toContain('<h1>4 screenshots changed</h1>')
+  })
+
   it('escapes what a run names: a title, a locator and a compared label', () => {
     const screens = ['s1', 's2'].map((name) =>
       screenOf(
@@ -119,6 +126,19 @@ describe('the golden reports', () => {
   it.each(pages)('write for example, never e.g., in %s', (name) => {
     for (const file of ['report.md', 'report.html']) expect(read(name, file)).not.toContain('e.g.')
   })
+
+  it.each(pages)(
+    'give the same causes the same explain line in %s/report.md and the run page',
+    (name) => {
+      const markdown = [
+        ...read(name, 'report.md').matchAll(/^- ([^`\n]+: `npx whydiff explain c[0-9a-z]+`)$/gm),
+      ].map(([, line = '']) => `<p class="handle">${inline(line)}</p>`)
+      const html = [...read(name, 'report.html').matchAll(/^<p class="handle">.*$/gm)].map(
+        ([line]) => line
+      )
+      expect(html).toEqual(markdown)
+    }
+  )
 })
 
 describe('inline', () => {

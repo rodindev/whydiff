@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,13 +22,13 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c16qjvd",
-        "c13w2jg"
+        "c1aw389",
+        "c8hd8de"
       ],
       "screenshots": 5,
       "settled": 5,
       "pixels": 12000,
-      "text": "2 causes appear on all 5 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c16qjvd)\n- the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c13w2jg)"
+      "text": "2 causes appear on all 5 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c1aw389)\n- the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c8hd8de)"
     }
   },
   "screenshots": [
@@ -42,7 +42,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c16qjvd"
+        "c1aw389"
       ],
       "unexplained": []
     },
@@ -56,7 +56,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c16qjvd"
+        "c1aw389"
       ],
       "unexplained": []
     },
@@ -70,7 +70,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c16qjvd"
+        "c1aw389"
       ],
       "unexplained": []
     },
@@ -84,7 +84,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c13w2jg"
+        "c8hd8de"
       ],
       "unexplained": []
     },
@@ -98,17 +98,17 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c13w2jg"
+        "c8hd8de"
       ],
       "unexplained": []
     }
   ],
   "causes": [
     {
-      "id": "c16qjvd",
+      "id": "c1aw389",
       "headline": "the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels",
-      "text": "## the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c16qjvd)\n- for example, the \"Save\" button's inner spacing shrank by 8 px, at `getByText('Save')` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets color (was #0000ff, now #000000), font-weight (was 700, now 400), padding-left (was 8px, now 0px)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c16qjvd`",
-      "key": "k1|rule|reset.css|*|",
+      "text": "## the color, font-weight and padding properties of 3 `<div>` elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels (`*`, c1aw389)\n- for example, the \"Save\" button's inner spacing shrank by 8 px, at `getByText('Save')` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets color (was #0000ff, now #000000), font-weight (was 700, now 400), padding-left (was 8px, now 0px)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1aw389`",
+      "key": "k2|rule|reset.css|*|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -280,10 +280,10 @@
       ]
     },
     {
-      "id": "c13w2jg",
+      "id": "c8hd8de",
       "headline": "the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels",
-      "text": "## the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c13w2jg)\n- for example, the \"Col\" element's inner spacing shrank by 8 px, at `getByText('Col')` in \"s4 >> renders\" (s4udi5f)\n- `.ui-col` and 2 more from `framework.css` (layer `framework.components`) now sets padding-left (values differ per element: `npx whydiff explain c13w2jg`) in place of `.ui-col` from `app.css` (unlayered)\n- to restore it: change the rule in `framework.css`, or set the old values in your own stylesheet if `framework.css` comes from a dependency\n- all occurrences: `npx whydiff explain c13w2jg`",
-      "key": "k1|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|",
+      "text": "## the inner spacing of 2 `<div>` elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels (`.ui-col` and 2 more, c8hd8de)\n- for example, the \"Col\" element's inner spacing shrank by 8 px, at `getByText('Col')` in \"s4 >> renders\" (s4udi5f)\n- `.ui-col` and 2 more from `framework.css` (layer `framework.components`) now sets padding-left (values differ per element: `npx whydiff explain c8hd8de`) in place of `.ui-col` from `app.css` (unlayered)\n- to restore it: change the rule in `framework.css`, or set the old values in your own stylesheet if `framework.css` comes from a dependency\n- all occurrences: `npx whydiff explain c8hd8de`",
+      "key": "k2|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|",
       "kind": "rule",
       "level": 0,
       "summary": {

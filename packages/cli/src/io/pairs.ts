@@ -122,7 +122,10 @@ function pairSides(
     const a = left.get(key)
     const b = right.get(key)
     if (a === undefined || b === undefined) {
-      unpaired.push(`${a === undefined ? after.label : before.label}: ${key} has no counterpart`)
+      const side = a ?? b
+      unpaired.push(
+        `${a === undefined ? after.label : before.label}: ${side?.title ?? key} has no counterpart`
+      )
       continue
     }
     if (a.png === null || b.png === null) {
@@ -146,7 +149,7 @@ function pairSides(
 
 function identityOf(key: string, side: RunSide): ScreenIdentity {
   return {
-    screen: key,
+    screen: side.screen ?? key,
     title: side.title,
     ...(side.file === undefined ? {} : { file: side.file }),
     ...(side.line === undefined ? {} : { line: side.line }),

@@ -69,7 +69,8 @@ ${MORE}
 
 Prints what the report holds about each id: a cause (c...) with its members grouped
 by identical changes, a screenshot (s...) in full, an unexplained region (u...) with
-its crops written next to the report. --all alone prints every cause.
+its crops written next to the report; a Playwright run keeps the images of its regions,
+so explain says where they are instead. --all alone prints every cause.
 
 Options:
   --all              alone, every cause; with ids, every member and every selector
@@ -87,7 +88,9 @@ ${MORE}
        npx whydiff report --merge <report.json>... [--out <dir>] [--json]
 
 --from rebuilds the run report from what a Playwright run left in test-results, for a
-run the whydiff reporter did not see. --merge joins the reports of shards into one.
+run the whydiff reporter did not see. test-results keep nothing of a passed screenshot,
+so the rebuilt report says how many screenshots changed, not of how many. --merge
+joins the reports of shards into one.
 
 Options:
   --from <dir>         the test-results of a run that used withWhydiff or whydiffCapture

@@ -93,6 +93,24 @@ export default defineConfig<{ whydiff: WhydiffUseOptions }>({
       snapshotPathTemplate,
       use: { viewport, whydiff: {} },
     },
+    {
+      name: 'retries',
+      testMatch: 'retries.spec.ts',
+      snapshotPathTemplate,
+      use: { viewport, whydiff: {} },
+    },
+    {
+      name: 'timeouts',
+      testMatch: 'timeouts.spec.ts',
+      snapshotPathTemplate,
+      use: { viewport, whydiff: {} },
+    },
+    {
+      name: 'names',
+      testMatch: 'names.spec.ts',
+      snapshotPathTemplate,
+      use: { viewport, whydiff: {} },
+    },
     ...(existsSync(webkit.executablePath())
       ? [
           {

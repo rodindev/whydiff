@@ -26,7 +26,7 @@ pnpm check
 
 Reports, explanations and pages are compared byte for byte with files under `packages/*/fixtures/`, through Vitest's `toMatchFileSnapshot`. `pnpm test:run -u <path>` rewrites the ones its specs check. Read every rewritten line as a change of behaviour, and say so in the pull request.
 
-The README's example is one of them: `packages/cli/src/readme.spec.ts` holds it equal to what `whydiff diff` prints for `packages/cli/fixtures/readme`. After a change to the capture, `pnpm build && node scripts/readme-example.ts` captures that fixture again. The README's pictures are not checked by a spec: after a change to what a failed test, `explain`, the run page or Playwright's HTML report shows, `pnpm build && node scripts/readme-figure.ts` rebuilds all of them, light and dark, in `docs/images/` from one Playwright run of the same fixture.
+The README's example is one of them: `packages/cli/src/readme.spec.ts` holds it equal to what `whydiff diff` prints for `packages/cli/fixtures/readme`. After a change to the capture, `pnpm build && node scripts/readme-example.ts` captures that fixture again. The README's pictures are not checked by a spec: after a change to what a failed test, `explain`, the run page or Playwright's HTML report shows, `pnpm build && node scripts/readme-figure.ts` rebuilds all of them, light and dark, in `docs/images/` from one Playwright run of the same fixture. The two `comfyui-run-page` pictures are not among them: they are a frame of the run page of the ComfyUI_frontend replay, taken by hand.
 
 Fixtures stay small and neutral: `ui-` classes, `app.css`, generic labels, nothing from a real product.
 

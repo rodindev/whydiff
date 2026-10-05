@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,13 +22,13 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c16qjvd",
-        "c1xqq06"
+        "c1aw389",
+        "c3gywtd"
       ],
       "screenshots": 2,
       "settled": 2,
       "pixels": 66240,
-      "text": "2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c16qjvd)\n- 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c1xqq06)"
+      "text": "2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:\n- the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c1aw389)\n- 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c3gywtd)"
     }
   },
   "screenshots": [
@@ -42,8 +42,8 @@
       "pixels": 33120,
       "massChange": false,
       "causes": [
-        "c16qjvd",
-        "c1xqq06"
+        "c1aw389",
+        "c3gywtd"
       ],
       "unexplained": []
     },
@@ -57,18 +57,18 @@
       "pixels": 33120,
       "massChange": false,
       "causes": [
-        "c16qjvd",
-        "c1xqq06"
+        "c1aw389",
+        "c3gywtd"
       ],
       "unexplained": []
     }
   ],
   "causes": [
     {
-      "id": "c16qjvd",
+      "id": "c1aw389",
       "headline": "the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels",
-      "text": "## the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c16qjvd)\n- for example, the \"Notes s1\" text field's inner spacing shrank by 8 px, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets padding (all sides, values differ per element: `npx whydiff explain c16qjvd`)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c16qjvd`",
-      "key": "k1|rule|reset.css|*|",
+      "text": "## the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels (`*`, c1aw389)\n- for example, the \"Notes s1\" text field's inner spacing shrank by 8 px, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `*` from `reset.css` (unlayered) now sets padding (all sides, values differ per element: `npx whydiff explain c1aw389`)\n- to restore it: change the rule in `reset.css`, or set the old values in your own stylesheet if `reset.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1aw389`",
+      "key": "k2|rule|reset.css|*|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -344,10 +344,10 @@
       ]
     },
     {
-      "id": "c1xqq06",
+      "id": "c3gywtd",
       "headline": "2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels",
-      "text": "## 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c1xqq06)\n- for example, the \"Notes s1\" text field becomes visible, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `.ui-field` from `app.css` (unlayered) no longer sets opacity (was 0, now 1)\n- to restore it: change the rule in `app.css`, or set opacity back to 0 in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1xqq06`",
-      "key": "k1|rule|app.css|.ui-field|",
+      "text": "## 2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels (`.ui-field`, c3gywtd)\n- for example, the \"Notes s1\" text field becomes visible, at `getByRole('textbox', { name: 'Notes s1' })` in \"s1 >> renders\" (s4udgzc)\n- `.ui-field` from `app.css` (unlayered) no longer sets opacity (was 0, now 1)\n- to restore it: change the rule in `app.css`, or set opacity back to 0 in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c3gywtd`",
+      "key": "k2|rule|app.css|.ui-field|",
       "kind": "rule",
       "level": 0,
       "summary": {

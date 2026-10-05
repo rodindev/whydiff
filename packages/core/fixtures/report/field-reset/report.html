@@ -45,16 +45,16 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>2 causes appear on all 2 changed screenshots, 100% of changed pixels, and account for every changed pixel there:</p>
 <ol>
-<li><a href="#c16qjvd">the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels</a></li>
-<li><a href="#c1xqq06">2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels</a></li>
+<li><a href="#c1aw389">the inner spacing of 4 buttons and text fields shrank by 8 to 24 px, on all 2 changed screenshots, 54% of changed pixels</a></li>
+<li><a href="#c3gywtd">2 text fields become visible, on all 2 changed screenshots, 46% of changed pixels</a></li>
 </ol>
 </section>
 <section class="causes">
-<article class="cause" id="c16qjvd">
-<h2>the inner spacing of 4 buttons and text fields shrank by 8 to 24 px<span class="impact">, on all 2 changed screenshots, 54% of changed pixels</span><span class="id"><code>*</code>, c16qjvd</span></h2>
+<article class="cause" id="c1aw389">
+<h2>the inner spacing of 4 buttons and text fields shrank by 8 to 24 px<span class="impact">, on all 2 changed screenshots, 54% of changed pixels</span><span class="id"><code>*</code>, c1aw389</span></h2>
 <p class="example">for example, the &quot;Notes s1&quot; text field&#x27;s inner spacing shrank by 8 px, at <code>getByRole(&#x27;textbox&#x27;, { name: &#x27;Notes s1&#x27; })</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
-<li><code>*</code> from <code>reset.css</code> (unlayered) now sets padding (all sides, values differ per element: <code>npx whydiff explain c16qjvd</code>)</li>
+<li><code>*</code> from <code>reset.css</code> (unlayered) now sets padding (all sides, values differ per element: <code>npx whydiff explain c1aw389</code>)</li>
 </ul>
 <p class="fix">to restore it: change the rule in <code>reset.css</code>, or set the old values in your own stylesheet if <code>reset.css</code> comes from a dependency</p>
 <details>
@@ -64,10 +64,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 2 elements</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c16qjvd</code></p>
+<p class="handle">all occurrences: <code>npx whydiff explain c1aw389</code></p>
 </article>
-<article class="cause" id="c1xqq06">
-<h2>2 text fields become visible<span class="impact">, on all 2 changed screenshots, 46% of changed pixels</span><span class="id"><code>.ui-field</code>, c1xqq06</span></h2>
+<article class="cause" id="c3gywtd">
+<h2>2 text fields become visible<span class="impact">, on all 2 changed screenshots, 46% of changed pixels</span><span class="id"><code>.ui-field</code>, c3gywtd</span></h2>
 <p class="example">for example, the &quot;Notes s1&quot; text field becomes visible, at <code>getByRole(&#x27;textbox&#x27;, { name: &#x27;Notes s1&#x27; })</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>.ui-field</code> from <code>app.css</code> (unlayered) no longer sets opacity (was 0, now 1)</li>
@@ -80,7 +80,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c1xqq06</code></p>
+<p class="handle">all occurrences: <code>npx whydiff explain c3gywtd</code></p>
 </article>
 </section>
 </main>

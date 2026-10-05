@@ -10,18 +10,18 @@ import {
   pixelSummary,
   writeIfChanged,
   type PairIdentity,
+  type TestIdentity,
 } from './pair.js'
 
-const identity: PairIdentity = pairIdentity(
-  {
-    project: 'chromium',
-    testId: 'abc',
-    titles: ['cart', 'pays'],
-    file: 'tests/cart.spec.ts',
-    line: 12,
-  },
-  'total'
-)
+const test: TestIdentity = {
+  project: 'chromium',
+  testId: 'abc',
+  titles: ['cart', 'pays'],
+  file: 'tests/cart.spec.ts',
+  line: 12,
+  repeat: 0,
+}
+const identity: PairIdentity = pairIdentity(test, 'total')
 
 /** A white image with black squares of `size` px at the given corners. */
 function image(width: number, height: number, squares: readonly [number, number, number][]) {
@@ -35,14 +35,22 @@ function image(width: number, height: number, squares: readonly [number, number,
 }
 
 describe('pairIdentity', () => {
-  it('keys the pair by project, test and name and titles it with the screenshot name', () => {
+  it('keys the pair by project, file and title, not by the test id, and titles it with the screenshot name', () => {
     expect(identity).toEqual({
-      screen: 'chromium|abc|total',
+      screen: 'chromium\x1etests/cart.spec.ts\x1ecart > pays > total',
       title: 'cart > pays > total',
       file: 'tests/cart.spec.ts',
       line: 12,
       project: 'chromium',
     })
+    expect(pairIdentity({ ...test, testId: 'tests-cart-pays-chromium' }, 'total')).toEqual(identity)
+  })
+
+  it('keys each repeat of --repeat-each apart, the first as a run without it', () => {
+    expect(pairIdentity({ ...test, repeat: 2 }, 'total').screen).toBe(
+      'chromium\x1etests/cart.spec.ts\x1ecart > pays > total (repeat:2)'
+    )
+    expect(pairIdentity({ ...test, repeat: 0 }, 'total').screen).toBe(identity.screen)
   })
 })
 

@@ -73,7 +73,8 @@ export async function whydiffCapture(
   await onOwnTime(asserted, async () => {
     const root = outputRoot(settings.use)
     if (root !== null) {
-      await recordCapture(call, root, ordinal, await comparedPng(testInfo, args, cursor))
+      const compared = await comparedPng(testInfo, args, cursor)
+      await recordCapture(call, root, ordinal, compared, await nameIfFailed(testInfo, cursor))
     }
     if (!settings.enabled || testInfo.project.ignoreSnapshots) return
     await explainCall(call)
@@ -87,12 +88,13 @@ export function nextOrdinal(testInfo: TestInfo): number {
   return state.ordinal
 }
 
-/** The two-run record of one call, shared with the matcher: snapshot file, attachment, compared PNG, manifest line. */
+/** The two-run record of one call, shared with the matcher: snapshot file, attachment, compared PNG, manifest line; `failedName` is the name of the built-in's images when the assertion failed. */
 export async function recordCapture(
   call: Recorded,
   root: string,
   ordinal: number,
-  compared: string | null
+  compared: string | null,
+  failedName: string | null
 ): Promise<void> {
   const { testInfo, receiver } = call
   const { name } = parseArgs(call.args)
@@ -107,7 +109,9 @@ export async function recordCapture(
     line: testInfo.line,
     ordinal,
     name: fileName,
+    ...(failedName === null ? {} : { failedName }),
     retry: testInfo.retry,
+    repeat: testInfo.repeatEachIndex,
     receiver: isLocator(receiver) ? 'locator' : 'page',
     screenshot: name === null ? null : predictBaseline(testInfo, name),
     snapshot: relativeTo(root, path),
@@ -156,6 +160,16 @@ async function comparedPng(
   if (name === null) return null
   const baseline = predictBaseline(testInfo, name)
   return (await stampOf(baseline)) === null ? null : baseline
+}
+
+// A baseline the built-in wrote is attached as its expected and its actual, the same bytes, and its
+// assertion passed. A file that cannot be read counts as a failure rather than fail the test.
+async function nameIfFailed(testInfo: TestInfo, cursor: number): Promise<string | null> {
+  const attached = attachedImages(testInfo.attachments, cursor)
+  if (attached === null) return null
+  const { name, actual, expected } = attached
+  if (actual === undefined || expected === undefined) return name
+  return (await sameBytes(actual, expected).catch(() => false)) ? null : name
 }
 
 function stateOf(testInfo: TestInfo): TestState {

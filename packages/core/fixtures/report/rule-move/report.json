@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,12 +22,12 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "cfnwmqa"
+        "c1spoxu"
       ],
       "screenshots": 4,
       "settled": 4,
       "pixels": 9600,
-      "text": "1 cause appears on all 4 changed screenshots, 100% of changed pixels, and accounts for every changed pixel there:\n- the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, cfnwmqa)"
+      "text": "1 cause appears on all 4 changed screenshots, 100% of changed pixels, and accounts for every changed pixel there:\n- the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, c1spoxu)"
     }
   },
   "screenshots": [
@@ -41,7 +41,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "cfnwmqa"
+        "c1spoxu"
       ],
       "unexplained": []
     },
@@ -55,7 +55,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "cfnwmqa"
+        "c1spoxu"
       ],
       "unexplained": []
     },
@@ -69,7 +69,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "cfnwmqa"
+        "c1spoxu"
       ],
       "unexplained": []
     },
@@ -83,17 +83,17 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "cfnwmqa"
+        "c1spoxu"
       ],
       "unexplained": []
     }
   ],
   "causes": [
     {
-      "id": "cfnwmqa",
+      "id": "c1spoxu",
       "headline": "the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels",
-      "text": "## the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, cfnwmqa)\n- for example, the \"Col\" element's inner spacing shrank by 12 px, at `getByText('Col')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-col` from `framework-*.css` (layer `framework.components`) now sets font-weight (was 400, now 700); changed its declaration of color (was #0000ff, now #ff0000); no longer sets padding-left (values differ per element: `npx whydiff explain cfnwmqa`)\n- it moved from unlayered into layer `framework.components`: its declarations now lose to any declaration of the same property outside a layer, whatever the selectors' specificity\n- to restore it: change the rule in the source file that builds `framework-*.css`, or set the old values in your own stylesheet if the rule comes from a dependency; whydiff cannot tell from a built sheet which it is\n- all occurrences: `npx whydiff explain cfnwmqa`",
-      "key": "k1|rule|framework-*.css|.ui-col|",
+      "text": "## the inner spacing of 2 of 4 `<div>` elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels (`.ui-col`, c1spoxu)\n- for example, the \"Col\" element's inner spacing shrank by 12 px, at `getByText('Col')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-col` from `framework-*.css` (layer `framework.components`) now sets font-weight (was 400, now 700); changed its declaration of color (was #0000ff, now #ff0000); no longer sets padding-left (values differ per element: `npx whydiff explain c1spoxu`)\n- it moved from unlayered into layer `framework.components`: its declarations now lose to any declaration of the same property outside a layer, whatever the selectors' specificity\n- to restore it: change the rule in the source file that builds `framework-*.css`, or set the old values in your own stylesheet if the rule comes from a dependency; whydiff cannot tell from a built sheet which it is\n- all occurrences: `npx whydiff explain c1spoxu`",
+      "key": "k2|rule|framework-*.css|.ui-col|",
       "kind": "rule",
       "level": 0,
       "summary": {

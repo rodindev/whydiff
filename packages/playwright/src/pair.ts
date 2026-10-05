@@ -7,6 +7,7 @@ import {
   diffMask,
   diffRegions,
   parseSnapshot,
+  screenKey,
   type ComparedV1,
   type Region,
   type ReportV1,
@@ -34,7 +35,7 @@ export interface PairIdentity {
   readonly project: string
 }
 
-/** A test as a screenshot's identity takes it: project, test id, titles, file and line. */
+/** A test as a screenshot's identity takes it: project, test id, titles, file, line and repeat index. */
 export interface TestIdentity {
   readonly project: string
   readonly testId: string
@@ -42,6 +43,8 @@ export interface TestIdentity {
   readonly titles: readonly string[]
   readonly file: string
   readonly line: number
+  /** `--repeat-each` index, 0 for the first run and without the flag. */
+  readonly repeat: number
 }
 
 export interface PixelSummary {
@@ -52,9 +55,10 @@ export interface PixelSummary {
 }
 
 export function pairIdentity(test: TestIdentity, name: string): PairIdentity {
+  const title = [...test.titles, name].join(' > ')
   return {
-    screen: `${test.project}|${test.testId}|${name}`,
-    title: [...test.titles, name].join(' > '),
+    screen: screenKey(test, title),
+    title,
     file: test.file,
     line: test.line,
     project: test.project,

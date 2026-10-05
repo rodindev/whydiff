@@ -27,23 +27,23 @@ Three screens of a small app, captured before and after an update of its UI kit 
 compared: before -> after | chromium 153.0.8010.12 480x320
 
 2 causes appear on all 3 changed screenshots, 87% of changed pixels; they account for every changed pixel on 2 of them:
-- 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c2vj1pk)
-- the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c2iikap)
+- 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c35ew6y)
+- the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c29t82f)
 
 1 unexplained region on 1 screenshot holds 13% of changed pixels.
 
-## 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c2vj1pk)
+## 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c35ew6y)
 - for example, the "Help" button is 8 px wider (was 55, now 63), at `getByRole('button', { name: 'Help' })` in "items" (sy77idc)
 - `.ui-button` from `ui-kit.css` (unlayered) changed its declaration of padding-left, padding-right (was 12px, now 16px)
 - to restore it: change the rule in `ui-kit.css`, or set padding-left, padding-right back to 12px in your own stylesheet if `ui-kit.css` comes from a dependency
-- all occurrences: `npx whydiff explain c2vj1pk`
+- all occurrences: `npx whydiff explain c35ew6y`
 
-## the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c2iikap)
+## the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c29t82f)
 - for example, the "First item" element's corners are rounder, at `locator('div.app-list').locator('div.ui-card').nth(0)` in "items" (sy77idc)
 - `:root` from `ui-kit.css` (unlayered) changed its declaration of --ui-radius (was 4px, now 10px)
 - --ui-radius is read by border-radius (all corners)
 - to restore it: change the rule in `ui-kit.css`, or set --ui-radius back to 4px in your own stylesheet if `ui-kit.css` comes from a dependency
-- all occurrences: `npx whydiff explain c2iikap`
+- all occurrences: `npx whydiff explain c29t82f`
 
 ## Unexplained regions (1)
 Pixels changed, no DOM, style or geometry change found under the region.
@@ -57,7 +57,13 @@ Both changes in `ui-kit.css` are named with their rule and values. The chart is 
 
 ## Replaying a real upgrade: ComfyUI_frontend
 
-In September 2025, [ComfyUI_frontend](https://github.com/Comfy-Org/ComfyUI_frontend) moved from Tailwind CSS 3 to 4 in [pull request #5246](https://github.com/Comfy-Org/ComfyUI_frontend/pull/5246). That was before whydiff existed, so nobody there used it. To see what it would have said, we took their Playwright suite, added whydiff, and ran it on the commit before the upgrade (`caee3832`) and again on the merge (`85017dbb`). 128 of 132 screenshots changed, and whydiff traced them to 4 causes. The top one: "1,373 buttons are 2 px taller, on 125 of 128 changed screenshots, 92% of changed pixels"; its rule line says `.comfy-btn` and 4 more now set border-width "(all sides, was 2px, now 3px) in place of the browser's default `button { border-width: 2px }`". Replayed on 2026-10-04 with a pre-release build of whydiff. To reproduce it, raise their `@playwright/test` to 1.53 or later, wrap their fixtures with `withWhydiff`, record the baselines at `caee3832`, then run the suite at `85017dbb` with `@whydiff/playwright/reporter` listed before `html`.
+In September 2025, [ComfyUI_frontend](https://github.com/Comfy-Org/ComfyUI_frontend) moved from Tailwind CSS 3 to 4 in [pull request #5246](https://github.com/Comfy-Org/ComfyUI_frontend/pull/5246). That was before whydiff existed, so nobody there used it. To see what it would have said, we took their Playwright suite, added whydiff, and ran it on the commit before the upgrade (`caee3832`) and again on the merge (`85017dbb`). 128 of 132 screenshots changed, and whydiff traced them to 4 causes. The top one: "1,373 buttons are 2 px taller, on 125 of 128 changed screenshots, 92% of changed pixels"; its rule line says `.comfy-btn` and 4 more now set border-width "(all sides, was 2px, now 3px) in place of the browser's default `button { border-width: 2px }`". Replayed on 2026-10-05 with a release candidate of whydiff 0.2.0, whose run page is below. To reproduce it, raise their `@playwright/test` to 1.53 or later, wrap their fixtures with `withWhydiff`, record the baselines at `caee3832`, then run the suite at `85017dbb` with `@whydiff/playwright/reporter` listed before `html`.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/comfyui-run-page-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/comfyui-run-page-light.png">
+  <img alt="whydiff's run page for the ComfyUI_frontend replay: 128 of 132 screenshots changed, 4 causes and 35 unexplained regions. The summary lists the 4 causes, the last a button with the p-button class that moved 19 px up. Then the first cause, 1,373 buttons 2 px taller on 125 of 128 screenshots, with its rule line: .comfy-btn and 4 more from index-*.css now set border-width from 2px to 3px in place of the browser's default button border, then how to restore it and the command that lists all its occurrences." src="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/comfyui-run-page-light.png">
+</picture>
 
 ComfyUI_frontend belongs to its authors and is licensed under GPL-3.0, and none of its code is in this repository. Thanks to its maintainers for a public suite to test against.
 
@@ -70,6 +76,8 @@ npm i -D @whydiff/playwright whydiff
 npx whydiff init
 npx whydiff doctor
 ```
+
+A project whose `.npmrc` sets `min-release-age` cannot install a release of whydiff younger than that many days; npm then stops with `notarget` and a date, without naming the setting.
 
 `init` shows each edit as a diff and asks before it writes:
 
@@ -126,7 +134,7 @@ The run page of the same run, its summary and first cause:
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-dark.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
-  <img alt="whydiff's run page: 3 of 3 screenshots changed, a summary that lists 2 causes and 1 unexplained region, then the first cause, 9 buttons 8 px wider on all 3 screenshots, with the .ui-button rule from ui-kit.css that changed padding-left and padding-right from 12px to 16px, how to restore it, and the command that lists every member." src="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
+  <img alt="whydiff's run page: 3 of 3 screenshots changed, a summary that lists 2 causes and 1 unexplained region, then the first cause, 9 buttons 8 px wider on all 3 screenshots, with the .ui-button rule from ui-kit.css that changed padding-left and padding-right from 12px to 16px, how to restore it, and the command that lists all its occurrences." src="https://raw.githubusercontent.com/rodindev/whydiff/main/docs/images/run-page-light.png">
 </picture>
 
 Listed before `html`, the reporter also attaches the run page to every test with a failed screenshot and puts the run's description in place of the test's own. The cause ids in Playwright's HTML report then match `report.json`, and its search `annot:<cause id>` lists every test with that cause. On GitHub Actions, when a screenshot failed, the reporter adds a short summary to the job summary. `whydiff-report/` is not part of `playwright-report/`; upload it as an artifact of its own to keep it after a CI run.
@@ -160,7 +168,7 @@ npx whydiff snap http://localhost:3000 --name after
 npx whydiff diff before after
 ```
 
-`snap` needs `@playwright/test` or `playwright-core` in the project. It opens the page in Playwright's Chromium headless shell (`npx playwright install chromium-headless-shell`, or `npx playwright-core install chromium-headless-shell` with only `playwright-core` installed), or in the Chromium that `WHYDIFF_CHROMIUM` or `--executable` names. `npx whydiff report --from test-results` rebuilds the report of a run the reporter did not see, and `npx whydiff report --merge` joins the reports of shards. `npx whydiff --help` lists every command and `npx whydiff <command> --help` its options.
+`snap` needs `@playwright/test` or `playwright-core` in the project. It opens the page in Playwright's Chromium headless shell (`npx playwright install chromium-headless-shell`, or `npx playwright-core install chromium-headless-shell` with only `playwright-core` installed), or in the Chromium that `WHYDIFF_CHROMIUM` or `--executable` names. `npx whydiff report --from test-results` rebuilds the report of a run the reporter did not see, from its failed screenshots alone, since test-results keep nothing of a passed one, and `npx whydiff report --merge` joins the reports of shards into the report one run would have written. `npx whydiff --help` lists every command and `npx whydiff <command> --help` its options.
 
 ## For coding agents
 

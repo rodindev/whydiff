@@ -75,8 +75,8 @@ const kindOf = (spec: TreeSpec): string => {
 }
 
 /** The kind of every element under the body of a page. */
-function kinds(snapshot: SnapshotV1, won: readonly number[] = []): string[] {
-  return snapshot.nodes.slice(1).map((node) => componentKind(node, snapshot, won))
+function kinds(snapshot: SnapshotV1): string[] {
+  return snapshot.nodes.slice(1).map((node) => componentKind(node, snapshot))
 }
 
 describe('componentKind', () => {
@@ -126,17 +126,6 @@ describe('componentKind', () => {
       buildSnapshot([{ tag: 'body', children: [field] }]),
     ]
     expect(pages.map((page) => kinds(page)[0])).toEqual(['ui-label', 'ui-label'])
-  })
-
-  it('prefers the class naming the element that a rule behind the changed longhands styles it through', () => {
-    const sheet = { 'div.ui-title': ['color'], '.x__name': ['font-weight'], '.stack': ['display'] }
-    const page = styledPage(sheet, [
-      { cls: ['ui-title', 'x__name', 'stack'], by: ['div.ui-title', '.x__name', '.stack'] },
-    ])
-    expect(kinds(page)).toEqual(['x'])
-    expect(kinds(page, [0])).toEqual(['ui-title'])
-    expect(kinds(page, [1])).toEqual(['x'])
-    expect(kinds(page, [2])).toEqual(['x'])
   })
 
   it('groups an element no class names by the classes setting its box but not a colour, else by any styling it, states and unstyled classes left out', () => {

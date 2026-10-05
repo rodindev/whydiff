@@ -284,12 +284,12 @@ describe('whydiffCapture after the built-in ran', () => {
       /^What changed on this screen:\n[^\n]+\n\n# whydiff: named failure > card \| 1 cause \| 0 unexplained regions\n/
     )
     expect(markdown).toContain(
-      '\n- padding-left: was 0, now 24px; the children were laid out again\n'
+      '\n- `#card` from `<style> #1` (unlayered) changed its declaration of padding-left (was 0px, now 24px)\n'
     )
     const actual = parseSnapshot(await attachmentText(result, 'whydiff/card/snapshot-actual'))
     expect(actual.tool.capturedAfterMs).toBeGreaterThanOrEqual(0)
     expect(whydiffAnnotations(only(second, 'named failure').test)).toEqual([
-      'a <div> is 24 px wider (was 200, now 224) (c1dsr5a)',
+      'a <div> is 24 px wider (was 200, now 224) (c61lcoz)',
     ])
     // The built-in recorded its error before whydiffCapture ran, so the message stays its own.
     expect(result.errors[0]?.message).not.toContain('whydiff, expected -> actual')
@@ -401,6 +401,26 @@ describe('whydiffCapture after the built-in ran', () => {
       ['explicit-missing-style', 'injected failure on a pass', 'injected-pass', false, true],
       ['explicit-budget', 'over budget', 'over-budget', true, true],
     ])
+  })
+
+  it("records a failed call under the name of the built-in's images, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['named failure', 'card'],
+      ['backfill on a pass', undefined],
+      ['stale sidecar on a pass', undefined],
+      ['unnamed call', undefined],
+      // The built-in wrote the baseline and passed the assertion; the test fails on its soft error.
+      ['missing baseline', undefined],
+      ['no baseline snapshot', 'bare'],
+      ['heavy page captured once', undefined],
+      ['injected failure on a mismatch', 'injected'],
+      ['injected failure on a pass', undefined],
+      ['over budget', undefined],
+    ])
+    for (const line of manifest.filter((l) => l.failedName !== undefined)) {
+      const { result } = only(second, line.title)
+      expect(result.attachments.map((a) => a.name)).toContain(`${line.failedName ?? ''}-actual.png`)
+    }
   })
 
   it('copies the actual of a failure and the baseline of a pass next to the snapshot', async () => {

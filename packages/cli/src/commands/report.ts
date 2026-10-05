@@ -84,9 +84,11 @@ async function rebuild(dir: string, out: string, ctx: Context): Promise<Built> {
   const listed: FullConfig['reporter'] = []
   reporter.onBegin({ rootDir: ctx.cwd, shard: null, reporter: listed } as FullConfig) // the reporter reads rootDir, configFile, shard and reporter only
   for (const run of runs) reporter.onTestEnd(testCase(run, ctx.cwd), testResult(run))
-  const done = ctx.ui.start(`rebuilding the report of ${count(runs.length, 'test')}`)
+  // The attempts of one test share its id; only how many there are is read.
+  const tests = count(new Set(runs.map((run) => run.identity.testId)).size, 'test')
+  const done = ctx.ui.start(`rebuilding the report of ${tests}`)
   await withLogsOnStderr(ctx, () => reporter.onEnd())
-  done(`${count(runs.length, 'test')} read from ${relative(ctx.cwd, dir) || '.'}`)
+  done(`${tests} read from ${relative(ctx.cwd, dir) || '.'}`)
   if (skipped > 0) {
     ctx.ui.warn(
       `${count(skipped, 'test')} skipped: test-results hold no whydiff description and no Playwright error context that names ${skipped === 1 ? 'it' : 'them'}`
@@ -118,13 +120,14 @@ function testCase(run: TestRun, rootDir: string): TestCase {
     id: identity.testId,
     titlePath: () => ['', identity.project, identity.file, ...identity.titles],
     location: { file: join(rootDir, identity.file), line: identity.line, column: 1 },
+    repeatEachIndex: identity.repeat,
     parent: { project: () => ({ name: identity.project }) },
   }
   return fake as unknown as TestCase // the reporter reads only these fields
 }
 
 function testResult(run: TestRun): TestResult {
-  const fake = { attachments: run.attachments, steps: [], annotations: run.annotations }
+  const fake = { attachments: run.attachments, steps: [], annotations: run.annotations, errors: [] }
   return fake as unknown as TestResult // the reporter reads only these fields
 }
 
@@ -155,7 +158,7 @@ async function mergeShards(paths: readonly string[], out: string, ctx: Context):
   return { report, markdown, markdownPath: files.markdown }
 }
 
-/** Deterministic union of shard reports; members follow the merged screenshot order, since the reports carry no screen keys. */
+/** Deterministic union of shard reports; members follow the order of their screenshots' project, file and title, the fields a screen key sorts by, and on one screenshot the order of their shard. */
 export function mergeReports(shards: readonly ReportV1[]): ReportV1 {
   const [first] = shards
   if (first === undefined)
@@ -179,7 +182,7 @@ export function mergeReports(shards: readonly ReportV1[]): ReportV1 {
   const screenshots = [...screenshotMap.values()].sort(compareScreenshots)
   const order = new Map(screenshots.map((s, index) => [s.id, index]))
   const causes = [...causeMap.values()]
-    .map((parts) => mergeCause(parts, screenshots, order))
+    .map((parts) => mergeCause(parts, screenshots, screenshotMap))
     .sort(compareCauses)
   const unexplained = [...unexplainedMap.values()].sort(
     (a, b) => (order.get(a.screenshot) ?? 0) - (order.get(b.screenshot) ?? 0)
@@ -209,17 +212,27 @@ export function mergeReports(shards: readonly ReportV1[]): ReportV1 {
 function mergeCause(
   parts: readonly CauseV1[],
   screenshots: readonly ScreenshotV1[],
-  order: ReadonlyMap<string, number>
+  byId: ReadonlyMap<string, ScreenshotV1>
 ): CauseDraft {
   const [first] = parts
   if (first === undefined) throw new Error('a cause without parts')
+  // A screenshot belongs to one shard, whose report already orders its members as the run's
+  // reporter does (by their cause on that screen), so their place there decides among them.
   const members = parts
-    .flatMap((part) => part.members)
-    .sort(
-      (a, b) =>
-        (order.get(a.screenshot) ?? 0) - (order.get(b.screenshot) ?? 0) ||
-        compareText(a.locator, b.locator)
-    )
+    .flatMap((part) => part.members.map((member, place) => ({ member, place })))
+    .sort((a, b) => {
+      const x = byId.get(a.member.screenshot)
+      const y = byId.get(b.member.screenshot)
+      return (
+        compareText(x?.project ?? '', y?.project ?? '') ||
+        compareText(x?.file ?? '', y?.file ?? '') ||
+        compareText(x?.title ?? '', y?.title ?? '') ||
+        compareText(a.member.screenshot, b.member.screenshot) ||
+        a.place - b.place ||
+        compareText(a.member.locator, b.member.locator)
+      )
+    })
+    .map(({ member }) => member)
   const screens = new Set(members.map((m) => m.screenshot))
   const files = new Set(
     members

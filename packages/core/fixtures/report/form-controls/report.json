@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,12 +22,12 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c1ur4wc"
+        "c3o2sjh"
       ],
       "screenshots": 1,
       "settled": 0,
       "pixels": 912,
-      "text": "1 cause appears on the changed screenshot, 60% of changed pixels; that screenshot has other changes too:\n- the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels (c1ur4wc)\n\n2 unexplained regions on 1 screenshot hold 40% of changed pixels."
+      "text": "1 cause appears on the changed screenshot, 60% of changed pixels; that screenshot has other changes too:\n- the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels (c3o2sjh)\n\n2 unexplained regions on 1 screenshot hold 40% of changed pixels."
     }
   },
   "screenshots": [
@@ -43,7 +43,7 @@
       "pixels": 1519,
       "massChange": false,
       "causes": [
-        "c1ur4wc"
+        "c3o2sjh"
       ],
       "unexplained": [
         "uaq6iqj",
@@ -53,10 +53,10 @@
   ],
   "causes": [
     {
-      "id": "c1ur4wc",
+      "id": "c3o2sjh",
       "headline": "the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels",
-      "text": "## the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels, only in tests/forms.spec.ts (c1ur4wc)\n- at `getByRole('textbox', { name: 'Notes' })` in \"s1 >> renders\" (s4udgzc)\n- color: was #000000, now #090909",
-      "key": "k1|ui-field|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "text": "## the \"Notes\" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels, only in tests/forms.spec.ts (c3o2sjh)\n- at `getByRole('textbox', { name: 'Notes' })` in \"s1 >> renders\" (s4udgzc)\n- color: was #000000, now #090909",
+      "key": "k2|ui-field|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
       "kind": "ui-field",
       "level": 1,
       "summary": {

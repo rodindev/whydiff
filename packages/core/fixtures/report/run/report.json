@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -24,14 +24,14 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c257ja7",
-        "c1h66kd",
-        "c2u6o6c"
+        "c3ln8mq",
+        "c2esjnt",
+        "c1m5c6x"
       ],
       "screenshots": 4,
       "settled": 3,
       "pixels": 9600,
-      "text": "3 causes appear on all 4 changed screenshots, 79% of changed pixels; they account for every changed pixel on 3 of them:\n- the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels (c257ja7)\n- the \"Lonely one\" button's label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels (c1h66kd)\n- the \"Reset it\" button's inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels (c2u6o6c)\n\n1 unexplained region on 1 screenshot holds 21% of changed pixels."
+      "text": "3 causes appear on all 4 changed screenshots, 79% of changed pixels; they account for every changed pixel on 3 of them:\n- the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels (c3ln8mq)\n- the \"Lonely one\" button's label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels (c2esjnt)\n- the \"Reset it\" button's inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels (c1m5c6x)\n\n1 unexplained region on 1 screenshot holds 21% of changed pixels."
     }
   },
   "screenshots": [
@@ -47,7 +47,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c257ja7"
+        "c3ln8mq"
       ],
       "unexplained": []
     },
@@ -63,7 +63,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c257ja7"
+        "c3ln8mq"
       ],
       "unexplained": []
     },
@@ -79,7 +79,7 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c2u6o6c"
+        "c1m5c6x"
       ],
       "unexplained": []
     },
@@ -96,7 +96,7 @@
       "pixels": 4900,
       "massChange": false,
       "causes": [
-        "c1h66kd"
+        "c2esjnt"
       ],
       "unexplained": [
         "uuc6ba1"
@@ -117,10 +117,10 @@
   ],
   "causes": [
     {
-      "id": "c257ja7",
+      "id": "c3ln8mq",
       "headline": "the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels",
-      "text": "## the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels (c257ja7)\n- for example, the \"Save it\" button's inner spacing grew by 8 px, at `getByText('Save it')` in \"s1 >> renders\" (s4udgzc)\n- padding-left: was 0, now 8px\n- all occurrences: `npx whydiff explain c257ja7`",
-      "key": "k1|ui-btn|style|padding-left=0>8px",
+      "text": "## the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels (c3ln8mq)\n- for example, the \"Save it\" button's inner spacing grew by 8 px, at `getByText('Save it')` in \"s1 >> renders\" (s4udgzc)\n- padding-left: was 0, now 8px\n- all occurrences: `npx whydiff explain c3ln8mq`",
+      "key": "k2|ui-btn|style|padding-left=0>8px",
       "kind": "ui-btn",
       "level": 1,
       "summary": {
@@ -232,10 +232,10 @@
       ]
     },
     {
-      "id": "c1h66kd",
+      "id": "c2esjnt",
       "headline": "the \"Lonely one\" button's label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels",
-      "text": "## the \"Lonely one\" button's label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/hero.spec.ts (c1h66kd)\n- at `getByText('Lonely one')` in \"s4 >> renders\" (s4udi5f)\n- color: was #000000, now #090909",
-      "key": "k1|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "text": "## the \"Lonely one\" button's label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/hero.spec.ts (c2esjnt)\n- at `getByText('Lonely one')` in \"s4 >> renders\" (s4udi5f)\n- color: was #000000, now #090909",
+      "key": "k2|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
       "kind": "ui-btn",
       "level": 1,
       "summary": {
@@ -306,10 +306,10 @@
       ]
     },
     {
-      "id": "c2u6o6c",
+      "id": "c1m5c6x",
       "headline": "the \"Reset it\" button's inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels",
-      "text": "## the \"Reset it\" button's inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/buttons.spec.ts (c2u6o6c)\n- at `getByText('Reset it')` in \"s3 >> renders\" (s4udg7a)\n- padding-left: was 0, now 12px",
-      "key": "k1|ui-btn|style|padding-left=0>12px",
+      "text": "## the \"Reset it\" button's inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/buttons.spec.ts (c1m5c6x)\n- at `getByText('Reset it')` in \"s3 >> renders\" (s4udg7a)\n- padding-left: was 0, now 12px",
+      "key": "k2|ui-btn|style|padding-left=0>12px",
       "kind": "ui-btn",
       "level": 1,
       "summary": {

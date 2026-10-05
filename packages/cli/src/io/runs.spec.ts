@@ -39,9 +39,18 @@ async function testDir(root: string, name: string, files: Record<string, string>
 interface Line {
   readonly ordinal: number
   readonly retry?: number
+  readonly testId?: string
+  readonly name?: string
+  readonly failedName?: string
+  readonly repeat?: number
   readonly snapshot: string | null
   readonly screenshot: string | null
   readonly png: string | null
+}
+
+/** The key the run's reporter gives a screenshot of `tests/a.spec.ts` in project chromium. */
+function reported(title: string): string {
+  return ['chromium', 'tests/a.spec.ts', title].join('\x1e')
 }
 
 async function manifest(dir: string, lines: readonly Line[]): Promise<void> {
@@ -124,6 +133,92 @@ describe('runSides', () => {
     const sides = await runSides(join(dir, 'run'))
     expect(sides.get('chromium|t1|1')?.png).toBe(join(dir, 'run', 'chromium/t1/1-card-retry1.png'))
   })
+
+  it("keys the id of a screenshot that failed as the run's reporter does, by the name the built-in gave its images", async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        name: 'home_page',
+        failedName: 'home-page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      {
+        ordinal: 2,
+        name: 'screenshot',
+        failedName: 'test-t1-1',
+        repeat: 0,
+        snapshot: '2.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      {
+        ordinal: 1,
+        testId: 't1-repeat2',
+        failedName: 'card',
+        repeat: 2,
+        snapshot: '3.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect([...sides.values()].map((side) => [side.key, side.screen, side.title])).toEqual([
+      ['chromium|t1|1', reported('test t1 > home-page'), 'test t1 > home-page'],
+      ['chromium|t1|2', reported('test t1 > test-t1-1'), 'test t1 > test-t1-1'],
+      ['chromium|t1-repeat2|1', reported('test t1 > card (repeat:2)'), 'test t1 > card'],
+    ])
+  })
+
+  it('keeps the name of a failed attempt when a retry passed, and the files of the retry', async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        retry: 1,
+        name: 'home_page',
+        repeat: 0,
+        snapshot: '1-retry1.whydiff.json',
+        screenshot: null,
+        png: '1-retry1.png',
+      },
+      {
+        ordinal: 1,
+        name: 'home_page',
+        failedName: 'home-page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: '1.png',
+      },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect(sides.get('chromium|t1|1')).toMatchObject({
+      screen: reported('test t1 > home-page'),
+      title: 'test t1 > home-page',
+      png: join(dir, 'run', '1-retry1.png'),
+    })
+  })
+
+  it('keeps the key of 0.1 as the id of a screenshot that passed, in a line 0.1 recorded too', async () => {
+    await manifest(join(dir, 'run'), [
+      {
+        ordinal: 1,
+        name: 'home_page',
+        repeat: 0,
+        snapshot: '1.whydiff.json',
+        screenshot: null,
+        png: null,
+      },
+      { ordinal: 2, name: 'home_page', snapshot: '2.whydiff.json', screenshot: null, png: null },
+    ])
+    const sides = await runSides(join(dir, 'run'))
+    expect([...sides.values()].map((side) => [side.key, side.screen, side.title])).toEqual([
+      ['chromium|t1|1', undefined, 'test t1 > home_page'],
+      ['chromium|t1|2', undefined, 'test t1 > home_page'],
+    ])
+  })
 })
 
 describe('listTestResults', () => {
@@ -171,6 +266,7 @@ describe('listTestResults', () => {
         titles: ['bare'],
         file: 'tests/matcher.spec.ts',
         line: 34,
+        repeat: 0,
       },
       {
         project: 'matcher',
@@ -178,6 +274,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
       {
         project: 'matcher',
@@ -185,6 +282,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
     ])
     const first = runs[1]
@@ -213,6 +311,54 @@ describe('listTestResults', () => {
     ])
   })
 
+  it('lists the attempts of a test in the order they ran, the tenth retry after the second', async () => {
+    const attempts = ['', '-retry1', '-retry10', '-retry2'].map((suffix) => `matcher-card${suffix}`)
+    for (const name of attempts) await testDir(dir, name, { 'card-whydiff.md': MARKDOWN })
+    const { runs } = await listTestResults(dir)
+    expect(runs.map((r) => r.attachments[0]?.path)).toEqual(
+      ['', '-retry1', '-retry2', '-retry10'].map((suffix) =>
+        join(dir, `matcher-card${suffix}`, 'card-whydiff.md')
+      )
+    )
+  })
+
+  it('folds the retries of a test into it and keeps each repeat a test of its own, as Playwright names their directories', async () => {
+    for (const suffix of ['', '-retry1', '-repeat1', '-retry1-repeat1']) {
+      await testDir(dir, `matcher-card-matcher${suffix}`, { 'card-whydiff.md': MARKDOWN })
+    }
+    const { runs } = await listTestResults(dir)
+    expect(runs.map((r) => [r.identity.testId, r.identity.repeat])).toEqual([
+      ['matcher-card-matcher', 0],
+      ['matcher-card-matcher-repeat1', 1],
+      ['matcher-card-matcher', 0],
+      ['matcher-card-matcher-repeat1', 1],
+    ])
+  })
+
+  it("finds the project of a repeat's error context past its suffixes, and counts a skipped test once however often it ran", async () => {
+    const context = [
+      '# Test info',
+      '',
+      '- Name: tests/matcher.spec.ts >> past the limit >> capped one',
+      '- Location: tests/matcher.spec.ts:41:3',
+      '',
+    ].join('\n')
+    await testDir(dir, 'matcher-named-failure-matcher', { 'card-whydiff.md': MARKDOWN })
+    await testDir(dir, 'matcher-capped-one-matcher-retry1-repeat2', {
+      'card-whydiff.md': POINTER,
+      'error-context.md': context,
+    })
+    for (const suffix of ['', '-retry1']) {
+      await testDir(dir, `matcher-off-matcher${suffix}`, { 'card-diff.png': '' })
+    }
+    const { runs, skipped } = await listTestResults(dir)
+    expect(runs.map((r) => [r.identity.project, r.identity.testId, r.identity.repeat])).toEqual([
+      ['matcher', 'matcher-named-failure-matcher', 0],
+      ['matcher', 'matcher-capped-one-matcher-repeat2', 2],
+    ])
+    expect(skipped).toBe(1)
+  })
+
   it('reads a title and a file out of the code spans that keep their markup', async () => {
     await testDir(dir, 'matcher-marked-matcher', {
       'card-whydiff.md': [
@@ -231,6 +377,7 @@ describe('listTestResults', () => {
         titles: ['renders <ui-card>'],
         file: 'tests/__main__/card.spec.ts',
         line: 7,
+        repeat: 0,
       },
     ])
   })
@@ -297,6 +444,7 @@ describe('listTestResults', () => {
         titles: ['past the limit', 'capped one'],
         file: 'tests/matcher.spec.ts',
         line: 41,
+        repeat: 0,
       },
     ])
     expect(runs[1]?.attachments.map((a) => a.name)).toEqual([
@@ -328,6 +476,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
       {
         project: '',
@@ -335,6 +484,7 @@ describe('listTestResults', () => {
         titles: ['past the limit', 'capped one'],
         file: 'tests/matcher.spec.ts',
         line: 41,
+        repeat: 0,
       },
     ])
     expect(skipped).toBe(0)

@@ -40,7 +40,7 @@ describe('clusterCauses', () => {
         [[10, 10, 80, 30]]
       ),
     ])
-    expect(rulesVersion).toBe('k1')
+    expect(rulesVersion).toBe('k2')
     expect(clusters.map((c) => [c.alias, c.level, c.kind, c.members.map((m) => m.screen)])).toEqual(
       [
         ['c01', 1, 'ui-btn', ['s1', 's2']],
@@ -62,8 +62,8 @@ describe('clusterCauses', () => {
       padded('s4', 'Other one', '16px'),
     ])
     expect(clusters.map((c) => [c.level, c.key, c.members.length])).toEqual([
-      [3, 'k1|ui-btn|style|padding-left', 2],
-      [1, 'k1|ui-btn|style|padding-left=0>12px', 2],
+      [3, 'k2|ui-btn|style|padding-left', 2],
+      [1, 'k2|ui-btn|style|padding-left=0>12px', 2],
     ])
   })
 
@@ -139,8 +139,8 @@ describe('clusterCauses', () => {
       retexted('s3', ['chip', 'ink-x'], [-1, 0, 2, -1]),
     ])
     expect(clusters.map((c) => [c.key, c.members.map((m) => m.screen)])).toEqual([
-      ['k1|div.chip|content:text', ['s1', 's3']],
-      ['k1|div.head|content:text', ['s2']],
+      ['k2|div.chip|content:text', ['s1', 's3']],
+      ['k2|div.head|content:text', ['s2']],
     ])
   })
 
@@ -170,47 +170,15 @@ describe('clusterCauses', () => {
       recolored('s3', ['ui-list-title', 'brand']),
     ])
     expect(clusters.map((c) => [c.key, c.members.map((m) => m.screen)])).toEqual([
-      ['k1|ui-list-title|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', ['s1', 's2', 's3']],
-    ])
-  })
-
-  it('names a member by the class the rule behind its changed longhands styled it through', () => {
-    const before: Attributed = {
-      sheets: [{ href: 'http://app.test/app.css', hash: 'app1' }],
-      rules: [{ sheet: 0, selector: 'div.ui-title' }],
-      attributions: [styleRow().map(() => -1), styleRow().map((_, i) => (i === 2 ? 0 : -1))],
-    }
-    const recolored = (name: string, cls: string[], selector: string): ScreenCauses => {
-      const title = (color: string): TreeSpec => ({
-        tag: 'div',
-        cls,
-        text: 'Title',
-        box: [10, 10, 80, 30],
-        style: styleRow({ color }),
-        a: 1,
-      })
-      return screenOf(
-        name,
-        page([title('rgb(0, 0, 0)')]),
-        page([title('rgb(9, 9, 9)')]),
-        [[10, 10, 80, 30]],
-        { before, after: { ...before, rules: [{ sheet: 0, selector }] } }
-      )
-    }
-    const { clusters } = clusterCauses([
-      recolored('s1', ['ui-title', 'x__name'], '.x__name'),
-      recolored('s2', ['ui-title'], '.ui-accent'),
-    ])
-    expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [1, 'k1|ui-title|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', ['s1', 's2']],
+      ['k2|ui-list-title|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', ['s1', 's2', 's3']],
     ])
   })
 
   it('groups causes by the rule that wins at level 0, across component kinds and values', () => {
     const { clusters } = clusterCauses(ruleFamilies())
     expect(clusters.map((c) => [c.level, c.kind, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'rule', 'k1|rule|reset.css|*|', ['s1', 's2', 's3']],
-      [0, 'rule', 'k1|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|', ['s4', 's5']],
+      [0, 'rule', 'k2|rule|reset.css|*|', ['s1', 's2', 's3']],
+      [0, 'rule', 'k2|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|', ['s4', 's5']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -241,7 +209,7 @@ describe('clusterCauses', () => {
   it('files removed declarations under the rule that set them, across a rebuilt sheet and a layer move', () => {
     const { clusters } = clusterCauses(ruleMove())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3', 's4']],
+      [0, 'k2|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3', 's4']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -262,7 +230,7 @@ describe('clusterCauses', () => {
   it('keeps one cause for a rule that now sets a longhand on some screens and no longer sets it on another, across a rebuild of two sheets that read the same', () => {
     const { clusters } = clusterCauses(hoverRebuild())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|index-*.css|.ui-btn:hover|', ['s1', 's2', 's3']],
+      [0, 'k2|rule|index-*.css|.ui-btn:hover|', ['s1', 's2', 's3']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -317,7 +285,7 @@ describe('clusterCauses', () => {
     ])
     expect(clusters.map((c) => [c.key, c.summary])).toEqual([
       [
-        'k1|rule|framework.css|.ui-btn|',
+        'k2|rule|framework.css|.ui-btn|',
         {
           kind: 'rule',
           selector: '.ui-btn',
@@ -341,7 +309,7 @@ describe('clusterCauses', () => {
     expect(clusterCauses([s1, s2]).clusters.map((c) => [c.level, c.key, c.summary])).toEqual([
       [
         0,
-        'k1|rule|framework-*.css|.ui-col|',
+        'k2|rule|framework-*.css|.ui-col|',
         {
           kind: 'rule',
           selector: '.ui-col',
@@ -475,7 +443,7 @@ describe('clusterCauses', () => {
   it('keeps apart a selector the sheet holds in a layer and unlayered, so the unlayered rule wins over the layered one', () => {
     const { clusters } = clusterCauses(ruleTwoLayers())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|app.css|body||unlayered', ['s1', 's2']],
+      [0, 'k2|rule|app.css|body||unlayered', ['s1', 's2']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -492,7 +460,7 @@ describe('clusterCauses', () => {
   it('names the rule as an after side has it, the first layer by name, and no move members disagree on', () => {
     const { clusters } = clusterCauses(ruleLayerMix())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3']],
+      [0, 'k2|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -568,7 +536,7 @@ describe('clusterCauses', () => {
     expect(summaryOf([screen('s1'), screen('s2', 'base')])).not.toHaveProperty('over')
   })
 
-  it('reads the same rule on both sides as a changed declaration and leaves a lone rule at level 1', () => {
+  it('reads the same rule on both sides as a changed declaration and names a lone rule in a cluster of its own', () => {
     const side: Attributed = {
       sheets: [{ href: 'http://app.test/app.css', hash: 'app1' }],
       rules: [{ sheet: 0, selector: '.ui-btn' }],
@@ -589,8 +557,8 @@ describe('clusterCauses', () => {
       padded('s4', 'Other one', '12px'),
     ])
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|app.css|.ui-btn|', ['s1', 's2']],
-      [1, 'k1|ui-btn|style|padding-left=0>12px', ['s3', 's4']],
+      [0, 'k2|rule|app.css|.ui-btn|', ['s1', 's2']],
+      [1, 'k2|ui-btn|style|padding-left=0>12px', ['s3', 's4']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -615,9 +583,11 @@ describe('clusterCauses', () => {
         { before: display, after: display }
       ),
     ])
-    expect(lone.clusters.map((c) => [c.level, c.key])).toEqual([
-      [1, 'k1|button.ui-btn|style|padding-left=0>8px'],
+    expect(lone.clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
+      [1, 'k2|button.ui-btn|style|padding-left=0>8px', ['s2']],
+      [0, 'k2|rule|app.css|.ui-btn|', ['s1']],
     ])
+    expect(lone.clusters[1]?.id).toBe(clusters[0]?.id)
   })
 
   it('reads letter-spacing in em that followed a new font-size as no change of its rule', () => {
@@ -663,7 +633,7 @@ describe('clusterCauses', () => {
     const { clusters } = clusterCauses([label('s1', 'Team'), label('s2', 'Pricing')])
     expect(clusters.map((c) => [c.key, c.summary])).toEqual([
       [
-        'k1|rule|inline||',
+        'k2|rule|inline||',
         {
           kind: 'rule',
           selector: '',
@@ -706,7 +676,7 @@ describe('clusterCauses', () => {
         clusters.map((c) => [c.key, c.summary, c.members.map((m) => [m.screen, m.pixels])])
       ).toEqual([
         [
-          'k1|rule|app.css|.ui-btn|',
+          'k2|rule|app.css|.ui-btn|',
           {
             kind: 'rule',
             selector: '.ui-btn',
@@ -722,7 +692,7 @@ describe('clusterCauses', () => {
           ],
         ],
         [
-          'k1|rule|reset.css|*|',
+          'k2|rule|reset.css|*|',
           {
             kind: 'rule',
             selector: '*',
@@ -740,7 +710,7 @@ describe('clusterCauses', () => {
       ])
     })
 
-    it('keys the changes of a rule that does not repeat at the levels below, beside the rule that does', () => {
+    it('names a rule that does not repeat in a cluster of its own, beside the rule that does', () => {
       const { clusters } = clusterCauses([
         screen('s1', 'button', 'ui-btn', 'Save it', 2, {}, changed),
         screen('s2', 'button', 'ui-btn', 'Cancel it', 3, {}, { 'padding-left': '8px' }),
@@ -756,21 +726,15 @@ describe('clusterCauses', () => {
         clusters.map((c) => [c.level, c.key, c.members.map((m) => [m.screen, m.pixels])])
       ).toEqual([
         [
-          1,
-          'k1|button|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)',
-          [
-            ['s1', 1200],
-            ['s3', 2400],
-          ],
-        ],
-        [
           0,
-          'k1|rule|reset.css|*|',
+          'k2|rule|reset.css|*|',
           [
             ['s1', 1200],
             ['s2', 2400],
           ],
         ],
+        [1, 'k2|button|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', [['s3', 2400]]],
+        [0, 'k2|rule|app.css|.ui-tone|', [['s1', 1200]]],
       ])
     })
 
@@ -942,6 +906,30 @@ describe('clusterCauses', () => {
       )
     })
 
+    it('puts a member under the same rule causes whether the run is clustered whole or in shards united by id', () => {
+      const ruled = (screens: readonly ScreenCauses[]): Map<string, string[]> => {
+        const out = new Map<string, string[]>()
+        for (const c of clusterCauses(screens).clusters.filter((c) => c.level === 0)) {
+          for (const m of c.members) {
+            const key = occurrence(m.screen, m.cause)
+            out.set(key, [...(out.get(key) ?? []), c.id].sort())
+          }
+        }
+        return out
+      }
+      fc.assert(
+        fc.property(run, fc.integer({ min: 2, max: 3 }), ([picks], shards) => {
+          const screens = screensOf(picks)
+          const united = new Map(
+            Array.from({ length: shards }, (_, i) =>
+              screens.filter((_, j) => j % shards === i)
+            ).flatMap((part) => [...ruled(part)])
+          )
+          expect(united).toEqual(ruled(screens))
+        })
+      )
+    })
+
     it('does not change with the order of screens or of the causes on a screen', () => {
       fc.assert(
         fc.property(run, ([picks, order, causeOrders]) => {
@@ -1081,7 +1069,7 @@ describe('clusterCauses', () => {
         [[0, 0, 112, 20]]
       ),
     ])
-    expect(clusters[0]?.key).toBe('k1|note|content:font-metrics|Inter-Regular>NotoSans-Regular')
+    expect(clusters[0]?.key).toBe('k2|note|content:font-metrics|Inter-Regular>NotoSans-Regular')
     expect(clusters[0]?.summary).toEqual({
       kind: 'content',
       detail: 'font-metrics',

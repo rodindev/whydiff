@@ -1,11 +1,11 @@
 {
-  "rulesVersion": "k1",
+  "rulesVersion": "k2",
   "clusters": [
     {
-      "id": "c257ja7",
+      "id": "c3ln8mq",
       "alias": "c01",
       "level": 1,
-      "key": "k1|ui-btn|style|padding-left=0>8px",
+      "key": "k2|ui-btn|style|padding-left=0>8px",
       "kind": "ui-btn",
       "summary": {
         "kind": "style",
@@ -35,10 +35,10 @@
       "pixels": 4800
     },
     {
-      "id": "c1h66kd",
+      "id": "c2esjnt",
       "alias": "c02",
       "level": 1,
-      "key": "k1|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
+      "key": "k2|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)",
       "kind": "ui-btn",
       "summary": {
         "kind": "style",
@@ -62,10 +62,10 @@
       "pixels": 2400
     },
     {
-      "id": "c2u6o6c",
+      "id": "c1m5c6x",
       "alias": "c03",
       "level": 1,
-      "key": "k1|ui-btn|style|padding-left=0>12px",
+      "key": "k2|ui-btn|style|padding-left=0>12px",
       "kind": "ui-btn",
       "summary": {
         "kind": "style",

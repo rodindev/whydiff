@@ -188,7 +188,7 @@ describe('withWhydiff in a Playwright run', () => {
 
     it('says what changed in one annotation and after the pixel count of the message, the status kept', () => {
       const { test, result } = only(second, 'named failure')
-      const line = 'a <div> is 24 px wider (was 200, now 224) (c1dsr5a)'
+      const line = 'a <div> is 24 px wider (was 200, now 224) (c61lcoz)'
       expect(result.status).toBe('failed')
       expect(whydiffAnnotations(test)).toEqual([line])
       const message = stripVTControlCharacters(result.errors[0]?.message ?? '')
@@ -337,6 +337,30 @@ describe('withWhydiff in a Playwright run', () => {
       expect(await recorded(line)).toEqual(
         await readFile(join(snapshots, 'matcher.spec.ts', `unnamed-calls-${String(index + 1)}.png`))
       )
+    }
+  })
+
+  it("records a failed call under the name of the built-in's images, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['named failure', 'card'],
+      ['unnamed calls', undefined],
+      ['unnamed calls', undefined],
+      ['negated on a mismatch', undefined],
+      ['soft failure keeps the test running', 'soft'],
+      ['backfill on a pass', undefined],
+      ['without backfill > no backfill on a pass', undefined],
+      // The built-in wrote the baseline and passed the assertion; the test fails on its soft error.
+      ['missing baseline', undefined],
+      ['no baseline snapshot', 'bare'],
+      ['with a style path that does not exist > injected failure on a mismatch', 'injected'],
+      ['with a style path that does not exist > injected failure on a pass', undefined],
+      ['without attachments > unattached failure', 'unattached'],
+      ['without a budget > over budget', undefined],
+      ['taller by a blank strip', 'taller'],
+    ])
+    for (const line of manifest.filter((l) => l.failedName !== undefined)) {
+      const { result } = only(second, line.title.split(' > ').at(-1) ?? '')
+      expect(result.attachments.map((a) => a.name)).toContain(`${line.failedName ?? ''}-actual.png`)
     }
   })
 
@@ -602,7 +626,7 @@ describe('every failure of a run accounted for', () => {
     const { test, result } = only(second, 'retried in a loop')
     expect(result.status).toBe('failed')
     expect(whydiffAnnotations(test)).toEqual([
-      'the column-gap and row-gap properties of 1 element changed (c3oc5ni)',
+      'the column-gap and row-gap properties of 1 element changed (c2iwj2e)',
       expect.stringMatching(/^The explanation of this screenshot is in .+\/s[0-9a-z]{6}\.md\.$/),
     ])
     const names = ['loop', 'loop-1', 'loop-2', 'after']
@@ -682,6 +706,18 @@ describe('every failure of a run accounted for', () => {
     ])
   })
 
+  it("records a failure without an actual image under the name of its expected image, which the run's reporter keys it by", () => {
+    expect(manifest.map((l) => [l.title, l.failedName])).toEqual([
+      ['missing locator', 'row'],
+      ['missing locator through the explicit call', 'explicit-row'],
+    ])
+    for (const line of manifest) {
+      const names = only(twoRun, line.title).result.attachments.map((a) => a.name)
+      expect(names).toContain(`${line.failedName ?? ''}-expected.png`)
+      expect(names).not.toContain(`${line.failedName ?? ''}-actual.png`)
+    }
+  })
+
   it('skips the capture of a locator gone after the assertion, and the test keeps its pass', () => {
     for (const run of [first, second]) {
       const { test, result } = only(run, 'locator gone before the capture')
@@ -698,7 +734,7 @@ describe('every failure of a run accounted for', () => {
     expect(result.status).toBe('failed')
     expect(pairAttachments(result)).toEqual([])
     expect(whydiffAnnotations(test)).toEqual([
-      'the column-gap and row-gap properties of 1 element changed (c3oc5ni)',
+      'the column-gap and row-gap properties of 1 element changed (c2iwj2e)',
     ])
     const markdown = await readFile(
       join(
@@ -720,6 +756,132 @@ describe('every failure of a run accounted for', () => {
     expect(runDir(first)).toBe('')
     expect(runDir(second).startsWith(join(tmpdir(), 'whydiff-'))).toBe(true)
     expect(existsSync(runDir(second))).toBe(false)
+  })
+})
+
+describe('a run whose tests are retried or time out', () => {
+  let tmp: string
+  let tests: Map<string, Test>
+  let report: string
+  let pages: string[]
+  let output: string
+  const at = (...names: string[]): string => join(tmp, ...names)
+
+  beforeAll(async () => {
+    if (!existsSync(dist)) throw new Error('build @whydiff/playwright first: pnpm build')
+    tmp = await mkdtemp(join(tmpdir(), 'whydiff-attempts-'))
+    const projects = ['--project', 'retries', '--project', 'timeouts']
+    await playwright(['test', ...projects, '--update-snapshots'], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-1'),
+      WHYDIFF_FIXTURE_REPORT: at('first.json'),
+    })
+    output = await playwright(['test', ...projects], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_VARIANT: 'changed',
+      WHYDIFF_FIXTURE_OUTPUT: at('out-2'),
+      WHYDIFF_FIXTURE_REPORT: at('second.json'),
+      WHYDIFF_FIXTURE_WHYDIFF_REPORT: at('report'),
+    })
+    tests = await readTests(at('second.json'))
+    report = await readFile(at('report', 'report.md'), 'utf8')
+    const files = (await readdir(at('report', 'screenshots'))).sort()
+    pages = await Promise.all(
+      files.map((file) => readFile(at('report', 'screenshots', file), 'utf8'))
+    )
+  }, 300_000)
+
+  afterAll(async () => {
+    await rm(tmp, { recursive: true, force: true })
+  })
+
+  it('runs each retried test twice, as the fixture means to', () => {
+    const statuses = (title: string): string[] =>
+      tests.get(title)?.results.map((r) => r.status) ?? []
+    expect(
+      [
+        'timed out',
+        'passed on retry',
+        'another difference on retry',
+        'a retry that reaches only the first screenshot',
+      ].map(statuses)
+    ).toEqual([
+      ['failed', 'timedOut'],
+      ['failed', 'passed'],
+      ['failed', 'failed'],
+      ['failed', 'failed'],
+    ])
+  })
+
+  it('keeps every screenshot as the last attempt that failed it left it, those a retry passed or never reached included', () => {
+    expect(report).toMatch(/^# whydiff: 5 of 5 screenshots changed \| 1 cause \| /)
+    expect(output).toContain(
+      'whydiff: 5 of 5 screenshots changed, 4 more failed but not explained\n'
+    )
+    expect(pages.map((page) => page.split(' | ')[0]).sort()).toEqual([
+      '# whydiff: a retry that reaches only the first screenshot > first',
+      '# whydiff: a retry that reaches only the first screenshot > second',
+      '# whydiff: a retry that times out before its screenshot > timed out > timed-out',
+      '# whydiff: another difference on retry > other',
+      '# whydiff: passed on retry > flaky',
+    ])
+    const other = pages.find((page) => page.startsWith('# whydiff: another difference on retry'))
+    expect(other).toContain('now 20px')
+  })
+
+  it('writes the run page back to the attempt the report took each screenshot from', async () => {
+    /** The page an attempt wrote next to its actual image of `name`. */
+    const copy = (title: string, retry: number, name: string): Promise<string> => {
+      const actual = tests
+        .get(title)
+        ?.results[retry]?.attachments.find((a) => a.name === `${name}-actual.png`)?.path
+      if (actual === undefined) throw new Error(`no actual image of ${name}`)
+      return readFile(actual.replace(/-actual\.png$/, '-whydiff.md'), 'utf8')
+    }
+    const partial = 'a retry that reaches only the first screenshot'
+    const written = await Promise.all([
+      copy('timed out', 0, 'timed-out'),
+      copy('passed on retry', 0, 'flaky'),
+      copy('another difference on retry', 1, 'other'),
+      copy(partial, 1, 'first'),
+      copy(partial, 0, 'second'),
+    ])
+    expect(written.filter((text) => pages.includes(text))).toHaveLength(5)
+    const superseded = await copy('another difference on retry', 0, 'other')
+    expect(pages).not.toContain(superseded)
+    expect(superseded).toContain('now 12px')
+  })
+
+  it("gives a screenshot the test's own timeout as the reason when the test timed out during it", () => {
+    for (const title of [
+      'timed out in its screenshot',
+      'timed out in its screenshot through the explicit call',
+    ]) {
+      const { result } = only(tests, title)
+      expect(result.status).toBe('timedOut')
+      expect(result.errors.length).toBeGreaterThan(1)
+    }
+    // The soft failure, not the timeout, sets the status, and the test times out later.
+    expect(only(tests, 'timed out in its screenshot after a soft failure').result.status).toBe(
+      'failed'
+    )
+    // 1.55 to 1.59 attach the expected image of an assertion the timeout cut, which names it; 1.53
+    // rejects the assertion before it attaches one, and 1.60 and later lose it with the result.
+    expect(report.slice(report.indexOf('\n## Not explained')).split('\n').slice(3)).toEqual([
+      expect.stringMatching(
+        /^- timed out in its screenshot(?: > slow)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
+      ),
+      expect.stringMatching(
+        /^- timed out in its screenshot through the explicit call(?: > explicit-slow)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
+      ),
+      expect.stringMatching(
+        /^- timed out in its screenshot after a soft failure(?: > later)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of \d+ms exceeded\.$/
+      ),
+      expect.stringMatching(
+        /^- timed out in its screenshot after a soft failure > own \| timeouts\.spec\.ts:\d+ \| timeouts \| the assertion produced no actual image \((expect\(locator\)\.toHaveScreenshot\(expected\) failed: Timeout 500ms exceeded\.|Timed out 500ms waiting for expect\(locator\)\.toHaveScreenshot\(expected\))\)$/
+      ),
+      '',
+    ])
   })
 })
 

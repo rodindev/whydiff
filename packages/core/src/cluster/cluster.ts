@@ -1,7 +1,7 @@
 import { CLUSTER_MIN_MEMBERS, CLUSTER_RULES_VERSION } from '../constants.js'
 import type { Cause, RegionExplanation } from '../causes/types.js'
 import { ruleTables, type RuleTables } from '../deltas/rules.js'
-import type { PairDelta, StyleChange } from '../deltas/types.js'
+import type { PairDelta } from '../deltas/types.js'
 import { componentKind } from './component.js'
 import { fnv1a64 } from '../hash.js'
 import {
@@ -42,12 +42,6 @@ interface Keyed {
   readonly member: ClusterMember
   readonly kind: string
   readonly keySet: KeySet
-  readonly style: Styled | null
-}
-
-interface Styled {
-  readonly family: StyleFamily
-  readonly changes: readonly StyleChange[]
   readonly rules: readonly RuleCandidate[]
 }
 
@@ -64,7 +58,7 @@ function compare(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0
 }
 
-/** Groups the region-touching causes of every screen at the most specific key level that repeats; a cause joins the cluster of each of its rules that repeats and shares its pixels among its clusters. */
+/** Groups the region-touching causes of every screen: a cause with rules behind its changes joins the cluster of each of them and shares its pixels among its clusters, any other cause the most specific key level that repeats. */
 export function clusterCauses(screens: readonly ScreenCauses[]): Clusters {
   const keyed: Keyed[] = []
   for (const screen of screens) {
@@ -139,31 +133,14 @@ function keyAt(item: Keyed, level: Exclude<ClusterLevel, 0>): string | null {
   return item.keySet.keys[level - 1] ?? null
 }
 
-/** Level 0: a cause joins the cluster of each of its rules that repeats. Returns the causes for the levels below: one without such a rule as it is, one with some keyed by the changes of its other rules. */
+/** Level 0: a cause joins the cluster of each rule behind its changes, alone or not: the cascade names the rule, repetition adds nothing to it. Returns the causes without one for the levels below. */
 function byRule(groups: Map<string, Group>, keyed: readonly Keyed[]): Keyed[] {
-  const counts = new Map<string, number>()
-  for (const item of keyed) {
-    for (const rule of item.style?.rules ?? [])
-      counts.set(rule.key, (counts.get(rule.key) ?? 0) + 1)
-  }
   const pending: Keyed[] = []
   for (const item of keyed) {
-    const { style } = item
-    const rules = style?.rules ?? []
-    const alone = rules.filter((r) => (counts.get(r.key) ?? 0) < CLUSTER_MIN_MEMBERS)
-    for (const rule of rules) if (!alone.includes(rule)) add(groups, rule.key, 0, item, rule)
-    if (style === null || alone.length === rules.length) pending.push(item)
-    else if (alone.length > 0) pending.push(restOf(item, style, alone))
+    for (const rule of item.rules) add(groups, rule.key, 0, item, rule)
+    if (item.rules.length === 0) pending.push(item)
   }
   return pending
-}
-
-function restOf(item: Keyed, style: Styled, rules: readonly RuleCandidate[]): Keyed {
-  const props = new Set(
-    rules.flatMap((r) => [...r.sets, ...r.changed, ...r.unsets, ...r.vars.flatMap((v) => v.readBy)])
-  )
-  const changes = style.changes.filter((c) => props.has(c.prop))
-  return { ...item, keySet: styleKeys(item.kind, style.family, changes) }
 }
 
 /** Each cause's pixels of one screen: every region split evenly among its causes, rounded once by largest remainder with ties to the lower cause id, so they add up to the pixels of the regions with a cause. */
@@ -370,11 +347,7 @@ function keyOf(screen: ScreenCauses, tables: RuleTables, cause: Cause, pixels: n
     'before' in node ? screen.deltas.pairs.find((p) => p.before === node.before) : undefined
   const changes =
     family === undefined ? [] : (pair?.style ?? []).filter((c) => c.derived === undefined)
-  const won = changes.flatMap((c) => {
-    const from = c.rule?.from ?? null
-    return from === null ? [] : [from]
-  })
-  const kind = target === undefined ? '?' : componentKind(target, snapshot, won)
+  const kind = target === undefined ? '?' : componentKind(target, snapshot)
   const member: ClusterMember = {
     screen: screen.screen,
     cause: cause.id,
@@ -386,18 +359,14 @@ function keyOf(screen: ScreenCauses, tables: RuleTables, cause: Cause, pixels: n
       member,
       kind,
       keySet: styleKeys(kind, family, changes),
-      style: {
-        family,
-        changes,
-        rules: ruleCandidates(screen.before, screen.after, tables, changes),
-      },
+      rules: ruleCandidates(screen.before, screen.after, tables, changes),
     }
   }
   return {
     member,
     kind,
     keySet: plainKeys(kind, plainSummary(cause.kind, pair?.font)),
-    style: null,
+    rules: [],
   }
 }
 

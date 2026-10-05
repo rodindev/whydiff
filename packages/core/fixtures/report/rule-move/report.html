@@ -45,15 +45,15 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>1 cause appears on all 4 changed screenshots, 100% of changed pixels, and accounts for every changed pixel there:</p>
 <ol>
-<li><a href="#cfnwmqa">the inner spacing of 2 of 4 <code>&lt;div&gt;</code> elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels</a></li>
+<li><a href="#c1spoxu">the inner spacing of 2 of 4 <code>&lt;div&gt;</code> elements shrank by 12 to 16 px, on all 4 changed screenshots, 100% of changed pixels</a></li>
 </ol>
 </section>
 <section class="causes">
-<article class="cause" id="cfnwmqa">
-<h2>the inner spacing of 2 of 4 <code>&lt;div&gt;</code> elements shrank by 12 to 16 px<span class="impact">, on all 4 changed screenshots, 100% of changed pixels</span><span class="id"><code>.ui-col</code>, cfnwmqa</span></h2>
+<article class="cause" id="c1spoxu">
+<h2>the inner spacing of 2 of 4 <code>&lt;div&gt;</code> elements shrank by 12 to 16 px<span class="impact">, on all 4 changed screenshots, 100% of changed pixels</span><span class="id"><code>.ui-col</code>, c1spoxu</span></h2>
 <p class="example">for example, the &quot;Col&quot; element&#x27;s inner spacing shrank by 12 px, at <code>getByText(&#x27;Col&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
-<li><code>.ui-col</code> from <code>framework-*.css</code> (layer <code>framework.components</code>) now sets font-weight (was 400, now 700); changed its declaration of color (was #0000ff, now #ff0000); no longer sets padding-left (values differ per element: <code>npx whydiff explain cfnwmqa</code>)</li>
+<li><code>.ui-col</code> from <code>framework-*.css</code> (layer <code>framework.components</code>) now sets font-weight (was 400, now 700); changed its declaration of color (was #0000ff, now #ff0000); no longer sets padding-left (values differ per element: <code>npx whydiff explain c1spoxu</code>)</li>
 <li>it moved from unlayered into layer <code>framework.components</code>: its declarations now lose to any declaration of the same property outside a layer, whatever the selectors&#x27; specificity</li>
 </ul>
 <p class="fix">to restore it: change the rule in the source file that builds <code>framework-*.css</code>, or set the old values in your own stylesheet if the rule comes from a dependency; whydiff cannot tell from a built sheet which it is</p>
@@ -66,7 +66,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s4 &gt;&gt; renders <span class="id">s4udi5f, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain cfnwmqa</code></p>
+<p class="handle">all occurrences: <code>npx whydiff explain c1spoxu</code></p>
 </article>
 </section>
 </main>

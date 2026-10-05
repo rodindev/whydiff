@@ -19,7 +19,11 @@ export interface ManifestLine {
   readonly line: number
   readonly ordinal: number
   readonly name: string
+  /** The name the built-in gave the screenshot's images when its assertion failed, which the run's reporter keys it by; absent when it passed, and in a run recorded by 0.1. */
+  readonly failedName?: string
   readonly retry: number
+  /** `--repeat-each` index, 0 for the first run and without the flag; absent in a run recorded by 0.1. */
+  readonly repeat?: number
   readonly receiver: 'page' | 'locator'
   /** The baseline PNG on the machine that ran the tests; kept for reference. */
   readonly screenshot: string | null

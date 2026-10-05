@@ -6,6 +6,7 @@ import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { promisify } from 'node:util'
+import { screenshotId } from '@whydiff/core'
 import { PNG } from 'pngjs'
 
 const execute = promisify(execFile)
@@ -130,25 +131,6 @@ function playwrightTests(
   return report.suites.flatMap(visit)
 }
 
-/** Screenshot ids and the cause's example depend on the run; this strips them. */
-function normalized(markdown: string, report: ReportJson): string {
-  return report.screenshots
-    .reduce((text, s) => text.split(s.id).join('SID'), markdown)
-    .split('\n')
-    .filter((line) => !line.startsWith('- for example, '))
-    .join('\n')
-}
-
-function sortedMembers(report: ReportJson): ReportJson {
-  return {
-    ...report,
-    causes: report.causes.map((cause) => ({
-      ...cause,
-      members: [...cause.members].sort((a, b) => (a.screenshot < b.screenshot ? -1 : 1)),
-    })),
-  }
-}
-
 beforeAll(() => {
   if (!existsSync(dist)) throw new Error('build whydiff first: pnpm build')
 })
@@ -188,7 +170,7 @@ describe('snap, diff and explain on a page', { timeout: 120_000 }, () => {
     )
     expect(diff.stdout).toContain('at `locator(\'#card\')` in "before -> after" (')
     expect(diff.stdout).toContain(
-      '\n- padding-left: was 0, now 16px; the children were laid out again\n- as a result, 1 element moved 16 px right\n'
+      '\n- `#card` from `<style> #1` (unlayered) changed its declaration of padding-left (was 0px, now 16px)\n- as a result, 1 element moved 16 px right\n- to restore it: change the rule where `<style> #1` comes from, or set padding-left back to 0px in your own stylesheet if a dependency injects it; whydiff cannot tell which\n'
     )
     expect(diff.stdout).toContain(
       ": 1 under `<canvas>`; around `locator('#chart')`; every region with its candidates: `npx whydiff explain s"
@@ -253,6 +235,26 @@ describe('snap, diff and explain on a page', { timeout: 120_000 }, () => {
     expect(bad.code).toBe(2)
     expect(bad.stderr).toMatch(/^opening http:\/\/127\.0\.0\.1:1\/\nwhydiff: [^\n]+\n$/)
     expect(bad.stdout).toBe('')
+  })
+
+  it('fails with one line that says what to do when a selector names several elements or the Chromium named is not there', async () => {
+    const url = `${server.url}/card-before.html`
+    const several = await whydiff(['snap', url, '--name', 'y', '--selector', 'div'], tmp)
+    expect(several.code).toBe(2)
+    expect(several.stderr).toBe(
+      `opening ${url}\nwhydiff: --selector div matches 2 elements and snap captures one. Narrow it to one, for example --selector "div >> nth=0" for the first.\n`
+    )
+    const missing = '/nonexistent/chromium'
+    const flag = await whydiff(['snap', url, '--name', 'y', '--executable', missing], tmp)
+    expect([flag.code, flag.stderr]).toEqual([
+      2,
+      `whydiff: --executable names ${missing}, which does not exist. Point it at a Chromium binary, or leave it out to use Playwright's headless shell.\n`,
+    ])
+    const env = await whydiff(['snap', url, '--name', 'y'], tmp, { WHYDIFF_CHROMIUM: missing })
+    expect([env.code, env.stderr]).toEqual([
+      2,
+      `whydiff: WHYDIFF_CHROMIUM names ${missing}, which does not exist. Point it at a Chromium binary, or leave it out to use Playwright's headless shell.\n`,
+    ])
   })
 })
 
@@ -349,11 +351,11 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     )
     const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
     const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
-    // The passed screenshot, Playwright's test ids and the error of the test whydiff was off in exist
-    // only inside the reporter; test-results name that test in Playwright's error context.
-    expect(normalized(result.stdout, rebuilt)).toBe(
-      normalized(full, reported)
-        .replace('2 of 3 screenshots changed', '2 of 2 screenshots changed')
+    // The passed screenshot and the error of the test whydiff was off in exist only inside the
+    // reporter; test-results name that test in Playwright's error context.
+    expect(result.stdout).toBe(
+      full
+        .replace('2 of 3 screenshots changed', '2 screenshots changed')
         .replace('Unchanged: 1 screenshot is pixel-identical and not listed.\n', '')
         .replace(
           /\| reporter \| expect\(page\)\.toHaveScreenshot\(expected\) failed: .*$/m,
@@ -364,19 +366,25 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
       '\n- switched off > unexplained > unexplained | reporter.spec.ts:42 | reporter | '
     )
     expect(result.stdout).toContain('\n## No baseline snapshot (1)\n')
+    expect(await readFile(join(tmp, 'from', 'report.html'), 'utf8')).toContain(
+      '<h1>2 screenshots changed</h1>'
+    )
+    expect(result.stderr).toContain(
+      'whydiff: 2 screenshots changed, 1 more without a baseline snapshot, 1 more failed but not explained\n'
+    )
     expect(rebuilt.causes.map((c) => c.id)).toEqual(reported.causes.map((c) => c.id))
     const json = await whydiff(['report', '--from', 'test-results', '--out', 'from', '--json'], tmp)
     expect(json.stdout).toBe(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
   })
 
-  it("prints in a failed assertion's message only ids the run's report explains, the test's own cause ids not among them", async () => {
+  it("prints in a failed assertion's message only ids the run's report explains, the test's own cause id among them", async () => {
     const report = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
     const tests = playwrightTests(await readFile(join(tmp, 'full.json'), 'utf8'))
-    // The header's own page saw one banner, an element cause; the run saw it on three, a rule cause.
+    // The header's own page saw one banner, the run saw it on three: both name its rule, by one id.
     const header = tests.find((t) => t.title === 'header')
     const own = /\((c[0-9a-z]{6})\)$/.exec(header?.annotations[0] ?? '')?.[1]
     expect(own).toEqual(expect.any(String))
-    expect(report.causes.map((c) => c.id)).not.toContain(own)
+    expect(report.causes.map((c) => c.id)).toContain(own)
     const blocks = tests.flatMap(({ title, messages }) =>
       messages.flatMap((message) => {
         const start = message.indexOf('whydiff, expected -> actual:')
@@ -421,10 +429,53 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
     expect(result.stdout).toBe(full)
     expect(await readFile(join(tmp, 'merged', 'report.md'), 'utf8')).toBe(full)
-    // Members of one cause follow the screenshot order; the reporter orders them by its private screen key.
-    expect(
-      sortedMembers(readJson(await readFile(join(tmp, 'merged', 'report.json'), 'utf8')))
-    ).toEqual(sortedMembers(readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))))
+    expect(await readFile(join(tmp, 'merged', 'report.json'), 'utf8')).toBe(
+      await readFile(join(tmp, 'full', 'report.json'), 'utf8')
+    )
+  })
+})
+
+describe('report --from over retried and repeated tests', { timeout: 300_000 }, () => {
+  let tmp: string
+  let result: Run
+  const at = (name: string): string => join(tmp, name)
+
+  beforeAll(async () => {
+    tmp = await mkdtemp(join(tmpdir(), 'whydiff-cli-retries-'))
+    await playwright(['test', '--project', 'retries', '--update-snapshots'], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-a'),
+      WHYDIFF_FIXTURE_REPORT: at('a.json'),
+    })
+    await playwright(['test', '--project', 'retries', '--repeat-each', '2'], {
+      WHYDIFF_FIXTURE_VARIANT: 'changed',
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_OUTPUT: at('test-results'),
+      WHYDIFF_FIXTURE_REPORT: at('full.json'),
+      WHYDIFF_FIXTURE_WHYDIFF_REPORT: at('full'),
+    })
+    result = await whydiff(['report', '--from', 'test-results', '--out', 'from'], tmp)
+  }, 300_000)
+
+  afterAll(async () => {
+    await rm(tmp, { recursive: true, force: true })
+  })
+
+  it('takes each screenshot from the same attempt as the reporter did, under the same id', async () => {
+    expect(result.code).toBe(0)
+    const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
+    expect(full).toMatch(/^# whydiff: 10 of 10 screenshots changed \| /)
+    expect(result.stdout).toBe(
+      full.replace('10 of 10 screenshots changed', '10 screenshots changed')
+    )
+    const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
+    const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
+    expect(rebuilt.screenshots).toEqual(reported.screenshots)
+  })
+
+  it('counts the tests it rebuilds, each repeat one and its retries none', () => {
+    expect(result.stderr).toContain('rebuilding the report of 8 tests\n')
+    expect(result.stderr).toContain('8 tests read from test-results\n')
   })
 })
 
@@ -468,7 +519,7 @@ describe('whydiff diff over two run directories on their own', { timeout: 300_00
     const result = await whydiff(['diff', 'before', 'after', '--out', 'report'], tmp)
     expect(result.code).toBe(0)
     expect(result.stderr).toMatch(
-      /^warning: after: explicit\|[^|\n]+\|1 has no counterpart\nanalyzing 5 pairs\n2 of 5 screenshots changed, 1 cause, 0 unexplained regions in \d+ ms\nreport\/report\.md\n$/
+      /^warning: after: missing baseline > fresh has no counterpart\nanalyzing 5 pairs\n2 of 5 screenshots changed, 1 cause, 0 unexplained regions in \d+ ms\nreport\/report\.md\n$/
     )
     expect(result.stdout).toMatch(
       /^# whydiff: 2 of 5 screenshots changed \| 1 cause \| 0 unexplained regions\ncompared: before -> after \| chromium [\d.]+ 800x600\n/
@@ -491,6 +542,75 @@ describe('whydiff diff over two run directories on their own', { timeout: 300_00
       'no baseline snapshot > bare',
       'heavy page captured once > heavy',
     ])
+  })
+})
+
+describe('whydiff diff over a run that passed and a run that failed', { timeout: 300_000 }, () => {
+  let tmp: string
+  let result: Run
+  const at = (name: string): string => join(tmp, name)
+
+  beforeAll(async () => {
+    tmp = await mkdtemp(join(tmpdir(), 'whydiff-cli-names-'))
+    await playwright(['test', '--project', 'names', '--update-snapshots'], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_OUT: at('before'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-before'),
+      WHYDIFF_FIXTURE_REPORT: at('before.json'),
+    })
+    await playwright(['test', '--project', 'names'], {
+      WHYDIFF_FIXTURE_VARIANT: 'changed',
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_OUT: at('after'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-after'),
+      WHYDIFF_FIXTURE_REPORT: at('after.json'),
+      WHYDIFF_FIXTURE_WHYDIFF_REPORT: at('run'),
+    })
+    result = await whydiff(['diff', 'before', 'after', '--out', 'two-run'], tmp)
+  }, 300_000)
+
+  afterAll(async () => {
+    await rm(tmp, { recursive: true, force: true })
+  })
+
+  it("gives a screenshot that failed in the second run the id its test printed and its run's report gives it", async () => {
+    expect(result.code).toBe(0)
+    expect(result.stderr).not.toContain('warning')
+    const screenshots = readJson(await readFile(at('two-run/report.json'), 'utf8')).screenshots
+    // Unnamed calls, a name the built-in sanitizes, a name in segments and a name used twice.
+    expect(screenshots.map((s) => s.title)).toEqual([
+      'unnamed call > unnamed-call-1',
+      'name the built-in rewrites > ui-header',
+      'name in segments > ui/panel',
+      'name used twice > ui-panel',
+      'name used twice > ui-panel-1',
+      'unchanged > ui-stable',
+      'explicit calls > explicit-calls-1',
+      'explicit calls > ui-footer',
+    ])
+    const run = readJson(await readFile(at('run/report.json'), 'utf8'))
+    const ids = new Map(run.screenshots.map((s) => [s.title, s.id]))
+    const failed = screenshots.filter((s) => s.title !== 'unchanged > ui-stable')
+    expect(failed.map((s) => s.id)).toEqual(failed.map((s) => ids.get(s.title)))
+    // Only the matcher adds to the message of an assertion; the explicit calls print no id.
+    const printed = playwrightTests(await readFile(at('after.json'), 'utf8')).flatMap((test) =>
+      test.messages.flatMap(
+        (m) => /details when the run ends: npx whydiff explain (\S+)/.exec(m)?.[1] ?? []
+      )
+    )
+    expect(printed).toEqual(failed.slice(0, 5).map((s) => s.id))
+  })
+
+  it('keeps the id of 0.1 for a screenshot that passed in the second run', async () => {
+    const lines = (await readFile(at('after/manifest.jsonl'), 'utf8'))
+      .trim()
+      .split('\n')
+      .map((line) => JSON.parse(line) as { title: string; testId: string; ordinal: number }) // written by recordCapture
+    const unchanged = lines.find((line) => line.title === 'unchanged')
+    const report = readJson(await readFile(at('two-run/report.json'), 'utf8'))
+    expect(report.screenshots.find((s) => s.title === 'unchanged > ui-stable')?.id).toBe(
+      screenshotId(`names|${unchanged?.testId ?? ''}|${String(unchanged?.ordinal)}`)
+    )
   })
 })
 
