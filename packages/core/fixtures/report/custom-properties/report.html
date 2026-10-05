@@ -45,13 +45,13 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>1 cause appears on all 2 changed screenshots, 14% of changed pixels; every one of those screenshots has other changes too:</p>
 <ol>
-<li><a href="#c2azv0u">the shadows of 2 <code>&lt;div&gt;</code> elements appear, on all 2 changed screenshots, 14% of changed pixels</a></li>
+<li><a href="#cnc3szr">the shadows of 2 <code>&lt;div&gt;</code> elements appear, on all 2 changed screenshots, 14% of changed pixels</a></li>
 </ol>
 <p>The other 6 causes hold 86% of changed pixels.</p>
 </section>
 <section class="causes">
-<article class="cause" id="c2azv0u">
-<h2>the shadows of 2 <code>&lt;div&gt;</code> elements appear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>*</code> and 2 more, c2azv0u</span></h2>
+<article class="cause" id="cnc3szr">
+<h2>the shadows of 2 <code>&lt;div&gt;</code> elements appear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>*</code> and 2 more, cnc3szr</span></h2>
 <p class="example">for example, the &quot;ring s1&quot; element&#x27;s shadow appears, at <code>getByText(&#x27;ring s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>*</code> and 2 more from <code>app.css</code> (layer <code>base</code>) now sets --ui-glow, --ui-ring</li>
@@ -65,10 +65,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c2azv0u</code></p>
+<p class="handle">every member: <code>npx whydiff explain cnc3szr</code></p>
 </article>
-<article class="cause" id="c1rjqha">
-<h2>2 buttons are 2 px wider<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-reset .ui-btn</code>, c1rjqha</span></h2>
+<article class="cause" id="c3th20z">
+<h2>2 buttons are 2 px wider<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-reset .ui-btn</code>, c3th20z</span></h2>
 <p class="example">for example, the &quot;btn s1&quot; button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42), at <code>getByText(&#x27;btn s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>.ui-reset .ui-btn</code> from <code>app.css</code> (unlayered) now sets border-width (all sides, was 2px, now 3px) in place of the browser&#x27;s default <code>button { border-width: 2px }</code></li>
@@ -81,10 +81,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c1rjqha</code></p>
+<p class="handle">every member: <code>npx whydiff explain c3th20z</code></p>
 </article>
-<article class="cause" id="c1i00el">
-<h2>the borders of 2 <code>&lt;div&gt;</code> elements disappear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>@property --ui-border-style</code>, c1i00el</span></h2>
+<article class="cause" id="cohfepo">
+<h2>the borders of 2 <code>&lt;div&gt;</code> elements disappear<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>@property --ui-border-style</code>, cohfepo</span></h2>
 <p class="example">for example, the &quot;frame s1&quot; element&#x27;s border disappears, at <code>getByText(&#x27;frame s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>@property --ui-border-style</code> from <code>app.css</code> no longer registers it (initial value solid)</li>
@@ -98,10 +98,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c1i00el</code></p>
+<p class="handle">every member: <code>npx whydiff explain cohfepo</code></p>
 </article>
-<article class="cause" id="c232xsm">
-<h2>the backgrounds of 2 <code>&lt;div&gt;</code> elements are lighter (was #353535, now #ffffff)<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id">style attribute of an ancestor, c232xsm</span></h2>
+<article class="cause" id="c2quj1k">
+<h2>the backgrounds of 2 <code>&lt;div&gt;</code> elements are lighter (was #353535, now #ffffff)<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id">style attribute of an ancestor, c2quj1k</span></h2>
 <p class="example">for example, the &quot;surface s1&quot; element&#x27;s background is lighter (was #353535, now #ffffff) and its border changes colour, at <code>getByText(&#x27;surface s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li>the style attribute of an ancestor changed its declaration of --ui-surface (was #353535, now #ffffff)</li>
@@ -115,10 +115,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c232xsm</code></p>
+<p class="handle">every member: <code>npx whydiff explain c2quj1k</code></p>
 </article>
-<article class="cause" id="c4acdp1">
-<h2>the shadows of 2 <code>&lt;div&gt;</code> elements change<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-card</code>, c4acdp1</span></h2>
+<article class="cause" id="cs0r7js">
+<h2>the shadows of 2 <code>&lt;div&gt;</code> elements change<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>.ui-card</code>, cs0r7js</span></h2>
 <p class="example">for example, the &quot;card s1&quot; element&#x27;s shadow changes, at <code>getByText(&#x27;card s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>.ui-card</code> from <code>app.css</code> (unlayered) now sets box-shadow (was <code>rgba(0, 0, 0, 0.2) 0px 1px 2px 0px</code>, now <code>rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px</code>) in place of <code>.ui-elevated</code> from <code>app.css</code> (unlayered)</li>
@@ -132,10 +132,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c4acdp1</code></p>
+<p class="handle">every member: <code>npx whydiff explain cs0r7js</code></p>
 </article>
-<article class="cause" id="c32ihgf">
-<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements grew by 4 px<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code> and 1 more, c32ihgf</span></h2>
+<article class="cause" id="c3k09ou">
+<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements grew by 4 px<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code> and 1 more, c3k09ou</span></h2>
 <p class="example">for example, the &quot;panel s1&quot; element&#x27;s inner spacing grew by 4 px, at <code>getByText(&#x27;panel s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>:root</code> and 1 more from <code>app.css</code> (layer <code>theme</code>) changed its declaration of --ui-space (was 4px, now 5px)</li>
@@ -149,10 +149,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c32ihgf</code></p>
+<p class="handle">every member: <code>npx whydiff explain c3k09ou</code></p>
 </article>
-<article class="cause" id="c2jd0t3">
-<h2>the column-gap property of 2 elements changed<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code>, c2jd0t3</span></h2>
+<article class="cause" id="c2okylm">
+<h2>the column-gap property of 2 elements changed<span class="impact">, on all 2 changed screenshots, 14% of changed pixels</span><span class="id"><code>:root</code>, c2okylm</span></h2>
 <p class="example">for example, column-gap (was 4px, now 6px) changed, at <code>getByText(&#x27;row s1&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>:root</code> from <code>app.css</code> (layer <code>theme</code>) no longer sets --ui-gap</li>
@@ -166,7 +166,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c2jd0t3</code></p>
+<p class="handle">every member: <code>npx whydiff explain c2okylm</code></p>
 </article>
 </section>
 </main>

@@ -289,7 +289,7 @@ describe('whydiffCapture after the built-in ran', () => {
     const actual = parseSnapshot(await attachmentText(result, 'whydiff/card/snapshot-actual'))
     expect(actual.tool.capturedAfterMs).toBeGreaterThanOrEqual(0)
     expect(whydiffAnnotations(only(second, 'named failure').test)).toEqual([
-      'a <div> is 24 px wider (was 200, now 224) (cxjwf9h)',
+      'a <div> is 24 px wider (was 200, now 224) (c61lcoz)',
     ])
     // The built-in recorded its error before whydiffCapture ran, so the message stays its own.
     expect(result.errors[0]?.message).not.toContain('whydiff, expected -> actual')

@@ -45,15 +45,15 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>3 causes appear on all 4 changed screenshots, 79% of changed pixels; they account for every changed pixel on 3 of them:</p>
 <ol>
-<li><a href="#c257ja7">the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels</a></li>
-<li><a href="#c1h66kd">the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
-<li><a href="#c2u6o6c">the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
+<li><a href="#c3ln8mq">the inner spacing of 2 buttons grew by 8 px, on 2 of 4 changed screenshots, 40% of changed pixels</a></li>
+<li><a href="#c2esjnt">the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909), on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
+<li><a href="#c1m5c6x">the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px, on 1 of 4 changed screenshots, 20% of changed pixels</a></li>
 </ol>
 <p>1 unexplained region on 1 screenshot holds 21% of changed pixels.</p>
 </section>
 <section class="causes">
-<article class="cause" id="c257ja7">
-<h2>the inner spacing of 2 buttons grew by 8 px<span class="impact">, on 2 of 4 changed screenshots, 40% of changed pixels</span><span class="id">c257ja7</span></h2>
+<article class="cause" id="c3ln8mq">
+<h2>the inner spacing of 2 buttons grew by 8 px<span class="impact">, on 2 of 4 changed screenshots, 40% of changed pixels</span><span class="id">c3ln8mq</span></h2>
 <p class="example">for example, the &quot;Save it&quot; button&#x27;s inner spacing grew by 8 px, at <code>getByText(&#x27;Save it&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li>padding-left: was 0, now 8px</li>
@@ -65,10 +65,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s2 &gt;&gt; renders <span class="where">tests/buttons.spec.ts, chromium</span> <span class="id">s4udft9, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c257ja7</code></p>
+<p class="handle">every member: <code>npx whydiff explain c3ln8mq</code></p>
 </article>
-<article class="cause" id="c1h66kd">
-<h2>the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909)<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/hero.spec.ts</span><span class="id">c1h66kd</span></h2>
+<article class="cause" id="c2esjnt">
+<h2>the &quot;Lonely one&quot; button&#x27;s label is lighter (was #000000, now #090909)<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/hero.spec.ts</span><span class="id">c2esjnt</span></h2>
 <p class="example">at <code>getByText(&#x27;Lonely one&#x27;)</code> in &quot;s4 &gt;&gt; renders&quot; (s4udi5f)</p>
 <ul class="why">
 <li>color: was #000000, now #090909</li>
@@ -79,10 +79,10 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s4 &gt;&gt; renders <span class="where">tests/hero.spec.ts:40, chromium</span> <span class="id">s4udi5f, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c1h66kd</code></p>
+<p class="handle">every member: <code>npx whydiff explain c2esjnt</code></p>
 </article>
-<article class="cause" id="c2u6o6c">
-<h2>the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/buttons.spec.ts</span><span class="id">c2u6o6c</span></h2>
+<article class="cause" id="c1m5c6x">
+<h2>the &quot;Reset it&quot; button&#x27;s inner spacing grew by 12 px<span class="impact">, on 1 of 4 changed screenshots, 20% of changed pixels, only in tests/buttons.spec.ts</span><span class="id">c1m5c6x</span></h2>
 <p class="example">at <code>getByText(&#x27;Reset it&#x27;)</code> in &quot;s3 &gt;&gt; renders&quot; (s4udg7a)</p>
 <ul class="why">
 <li>padding-left: was 0, now 12px</li>
@@ -93,7 +93,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s3 &gt;&gt; renders <span class="where">tests/buttons.spec.ts, chromium</span> <span class="id">s4udg7a, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c2u6o6c</code></p>
+<p class="handle">every member: <code>npx whydiff explain c1m5c6x</code></p>
 </article>
 </section>
 <details class="tail">

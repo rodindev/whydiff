@@ -40,7 +40,7 @@ describe('clusterCauses', () => {
         [[10, 10, 80, 30]]
       ),
     ])
-    expect(rulesVersion).toBe('k1')
+    expect(rulesVersion).toBe('k2')
     expect(clusters.map((c) => [c.alias, c.level, c.kind, c.members.map((m) => m.screen)])).toEqual(
       [
         ['c01', 1, 'ui-btn', ['s1', 's2']],
@@ -62,8 +62,8 @@ describe('clusterCauses', () => {
       padded('s4', 'Other one', '16px'),
     ])
     expect(clusters.map((c) => [c.level, c.key, c.members.length])).toEqual([
-      [3, 'k1|ui-btn|style|padding-left', 2],
-      [1, 'k1|ui-btn|style|padding-left=0>12px', 2],
+      [3, 'k2|ui-btn|style|padding-left', 2],
+      [1, 'k2|ui-btn|style|padding-left=0>12px', 2],
     ])
   })
 
@@ -139,8 +139,8 @@ describe('clusterCauses', () => {
       retexted('s3', ['chip', 'ink-x'], [-1, 0, 2, -1]),
     ])
     expect(clusters.map((c) => [c.key, c.members.map((m) => m.screen)])).toEqual([
-      ['k1|div.chip|content:text', ['s1', 's3']],
-      ['k1|div.head|content:text', ['s2']],
+      ['k2|div.chip|content:text', ['s1', 's3']],
+      ['k2|div.head|content:text', ['s2']],
     ])
   })
 
@@ -170,15 +170,15 @@ describe('clusterCauses', () => {
       recolored('s3', ['ui-list-title', 'brand']),
     ])
     expect(clusters.map((c) => [c.key, c.members.map((m) => m.screen)])).toEqual([
-      ['k1|ui-list-title|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', ['s1', 's2', 's3']],
+      ['k2|ui-list-title|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', ['s1', 's2', 's3']],
     ])
   })
 
   it('groups causes by the rule that wins at level 0, across component kinds and values', () => {
     const { clusters } = clusterCauses(ruleFamilies())
     expect(clusters.map((c) => [c.level, c.kind, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'rule', 'k1|rule|reset.css|*|', ['s1', 's2', 's3']],
-      [0, 'rule', 'k1|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|', ['s4', 's5']],
+      [0, 'rule', 'k2|rule|reset.css|*|', ['s1', 's2', 's3']],
+      [0, 'rule', 'k2|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|', ['s4', 's5']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -209,7 +209,7 @@ describe('clusterCauses', () => {
   it('files removed declarations under the rule that set them, across a rebuilt sheet and a layer move', () => {
     const { clusters } = clusterCauses(ruleMove())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3', 's4']],
+      [0, 'k2|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3', 's4']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -230,7 +230,7 @@ describe('clusterCauses', () => {
   it('keeps one cause for a rule that now sets a longhand on some screens and no longer sets it on another, across a rebuild of two sheets that read the same', () => {
     const { clusters } = clusterCauses(hoverRebuild())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|index-*.css|.ui-btn:hover|', ['s1', 's2', 's3']],
+      [0, 'k2|rule|index-*.css|.ui-btn:hover|', ['s1', 's2', 's3']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -285,7 +285,7 @@ describe('clusterCauses', () => {
     ])
     expect(clusters.map((c) => [c.key, c.summary])).toEqual([
       [
-        'k1|rule|framework.css|.ui-btn|',
+        'k2|rule|framework.css|.ui-btn|',
         {
           kind: 'rule',
           selector: '.ui-btn',
@@ -309,7 +309,7 @@ describe('clusterCauses', () => {
     expect(clusterCauses([s1, s2]).clusters.map((c) => [c.level, c.key, c.summary])).toEqual([
       [
         0,
-        'k1|rule|framework-*.css|.ui-col|',
+        'k2|rule|framework-*.css|.ui-col|',
         {
           kind: 'rule',
           selector: '.ui-col',
@@ -443,7 +443,7 @@ describe('clusterCauses', () => {
   it('keeps apart a selector the sheet holds in a layer and unlayered, so the unlayered rule wins over the layered one', () => {
     const { clusters } = clusterCauses(ruleTwoLayers())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|app.css|body||unlayered', ['s1', 's2']],
+      [0, 'k2|rule|app.css|body||unlayered', ['s1', 's2']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -460,7 +460,7 @@ describe('clusterCauses', () => {
   it('names the rule as an after side has it, the first layer by name, and no move members disagree on', () => {
     const { clusters } = clusterCauses(ruleLayerMix())
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3']],
+      [0, 'k2|rule|framework-*.css|.ui-col|', ['s1', 's2', 's3']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -557,8 +557,8 @@ describe('clusterCauses', () => {
       padded('s4', 'Other one', '12px'),
     ])
     expect(clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [0, 'k1|rule|app.css|.ui-btn|', ['s1', 's2']],
-      [1, 'k1|ui-btn|style|padding-left=0>12px', ['s3', 's4']],
+      [0, 'k2|rule|app.css|.ui-btn|', ['s1', 's2']],
+      [1, 'k2|ui-btn|style|padding-left=0>12px', ['s3', 's4']],
     ])
     expect(clusters[0]?.summary).toEqual({
       kind: 'rule',
@@ -584,8 +584,8 @@ describe('clusterCauses', () => {
       ),
     ])
     expect(lone.clusters.map((c) => [c.level, c.key, c.members.map((m) => m.screen)])).toEqual([
-      [1, 'k1|button.ui-btn|style|padding-left=0>8px', ['s2']],
-      [0, 'k1|rule|app.css|.ui-btn|', ['s1']],
+      [1, 'k2|button.ui-btn|style|padding-left=0>8px', ['s2']],
+      [0, 'k2|rule|app.css|.ui-btn|', ['s1']],
     ])
     expect(lone.clusters[1]?.id).toBe(clusters[0]?.id)
   })
@@ -633,7 +633,7 @@ describe('clusterCauses', () => {
     const { clusters } = clusterCauses([label('s1', 'Team'), label('s2', 'Pricing')])
     expect(clusters.map((c) => [c.key, c.summary])).toEqual([
       [
-        'k1|rule|inline||',
+        'k2|rule|inline||',
         {
           kind: 'rule',
           selector: '',
@@ -676,7 +676,7 @@ describe('clusterCauses', () => {
         clusters.map((c) => [c.key, c.summary, c.members.map((m) => [m.screen, m.pixels])])
       ).toEqual([
         [
-          'k1|rule|app.css|.ui-btn|',
+          'k2|rule|app.css|.ui-btn|',
           {
             kind: 'rule',
             selector: '.ui-btn',
@@ -692,7 +692,7 @@ describe('clusterCauses', () => {
           ],
         ],
         [
-          'k1|rule|reset.css|*|',
+          'k2|rule|reset.css|*|',
           {
             kind: 'rule',
             selector: '*',
@@ -727,14 +727,14 @@ describe('clusterCauses', () => {
       ).toEqual([
         [
           0,
-          'k1|rule|reset.css|*|',
+          'k2|rule|reset.css|*|',
           [
             ['s1', 1200],
             ['s2', 2400],
           ],
         ],
-        [1, 'k1|button|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', [['s3', 2400]]],
-        [0, 'k1|rule|app.css|.ui-tone|', [['s1', 1200]]],
+        [1, 'k2|button|style|color=rgb(0, 0, 0)>rgb(9, 9, 9)', [['s3', 2400]]],
+        [0, 'k2|rule|app.css|.ui-tone|', [['s1', 1200]]],
       ])
     })
 
@@ -1069,7 +1069,7 @@ describe('clusterCauses', () => {
         [[0, 0, 112, 20]]
       ),
     ])
-    expect(clusters[0]?.key).toBe('k1|note|content:font-metrics|Inter-Regular>NotoSans-Regular')
+    expect(clusters[0]?.key).toBe('k2|note|content:font-metrics|Inter-Regular>NotoSans-Regular')
     expect(clusters[0]?.summary).toEqual({
       kind: 'content',
       detail: 'font-metrics',

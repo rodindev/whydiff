@@ -13,9 +13,9 @@ describe('styleKeys', () => {
       { prop: 'font-weight', from: 'bold', to: '500' },
     ])
     expect(keys).toEqual([
-      'k1|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9);font-weight=700>500;padding-left=16px>0',
-      'k1|ui-btn|style|color:<color>;font-weight:<num -200>;padding-left:<len -16px>',
-      'k1|ui-btn|style|color;font-weight;padding-left',
+      'k2|ui-btn|style|color=rgb(0, 0, 0)>rgb(9, 9, 9);font-weight=700>500;padding-left=16px>0',
+      'k2|ui-btn|style|color:<color>;font-weight:<num -200>;padding-left:<len -16px>',
+      'k2|ui-btn|style|color;font-weight;padding-left',
     ])
     expect(summaries[2]).toEqual({
       kind: 'style',
@@ -38,15 +38,15 @@ describe('parameter', () => {
 describe('plainKeys', () => {
   it('uses one key for all levels', () => {
     expect(plainKeys('ui-badge', { kind: 'added' }).keys).toEqual([
-      'k1|ui-badge|added',
-      'k1|ui-badge|added',
-      'k1|ui-badge|added',
+      'k2|ui-badge|added',
+      'k2|ui-badge|added',
+      'k2|ui-badge|added',
     ])
   })
 
   it('keeps the content detail in the key', () => {
     const { keys, summaries } = plainKeys('ui-btn', { kind: 'content', detail: 'font-metrics' })
-    expect(keys[0]).toBe('k1|ui-btn|content:font-metrics')
+    expect(keys[0]).toBe('k2|ui-btn|content:font-metrics')
     expect(summaries[0]).toEqual({ kind: 'content', detail: 'font-metrics' })
   })
 })
@@ -96,7 +96,7 @@ describe('ruleCandidates', () => {
       ])
     ).toEqual([
       {
-        key: 'k1|rule|app.css|.new|',
+        key: 'k2|rule|app.css|.new|',
         rule: { selector: '.new', sheet: 'app.css', layer: 'base' },
         after: true,
         sets: ['color', 'padding-left'],
@@ -114,7 +114,7 @@ describe('ruleCandidates', () => {
         ],
       },
       {
-        key: 'k1|rule|inline||!',
+        key: 'k2|rule|inline||!',
         rule: { selector: '', sheet: 'style attribute', important: true },
         after: true,
         sets: ['font-weight'],
@@ -137,7 +137,7 @@ describe('ruleCandidates', () => {
       change('font-weight', 1, 0),
       change('padding-left', null, 0),
     ])
-    expect(candidate?.key).toBe('k1|rule|app.css|.new|')
+    expect(candidate?.key).toBe('k2|rule|app.css|.new|')
     expect(candidate?.sets).toEqual(['font-weight', 'padding-left'])
     expect(candidate?.loser).toBeNull()
     expect(candidate?.loserRef).toBeNull()
@@ -145,7 +145,7 @@ describe('ruleCandidates', () => {
 
   it('orders rules with as many longhands by key, whatever the order of the changes', () => {
     const tie = [change('color', 0, 1), change('font-weight', 1, 0)]
-    const keys = ['k1|rule|app.css|.new|', 'k1|rule|inline||!']
+    const keys = ['k2|rule|app.css|.new|', 'k2|rule|inline||!']
     expect(candidateOf(before, after, tie).map((c) => c.key)).toEqual(keys)
     expect(candidateOf(before, after, [...tie].reverse()).map((c) => c.key)).toEqual(keys)
   })
@@ -158,8 +158,8 @@ describe('ruleCandidates', () => {
         change('color', 0, null),
       ])
     ).toMatchObject([
-      { key: 'k1|rule|app.css|.old|', unsets: ['color', 'padding-left'] },
-      { key: 'k1|rule|app.css|.new|', sets: ['font-weight'] },
+      { key: 'k2|rule|app.css|.old|', unsets: ['color', 'padding-left'] },
+      { key: 'k2|rule|app.css|.new|', sets: ['font-weight'] },
     ])
   })
 
@@ -178,7 +178,7 @@ describe('ruleCandidates', () => {
     ])
     expect(candidateOf(one, two, [change('font-weight', 0, 0)])).toMatchObject([
       {
-        key: 'k1|rule|app.css|body||layer base',
+        key: 'k2|rule|app.css|body||layer base',
         sets: [],
         changed: ['font-weight'],
         loser: null,
@@ -190,7 +190,7 @@ describe('ruleCandidates', () => {
   it('reads the same rule on both sides as a changed declaration', () => {
     expect(candidateOf(before, after, [change('padding-left', 0, 2)])).toMatchObject([
       {
-        key: 'k1|rule|app.css|.old|',
+        key: 'k2|rule|app.css|.old|',
         rule: { selector: '.old', sheet: 'app.css' },
         sets: [],
         changed: ['padding-left'],
@@ -205,7 +205,7 @@ describe('ruleCandidates', () => {
       candidateOf(before, after, [change('padding-left', 0, null), change('color', 0, null)])
     ).toEqual([
       {
-        key: 'k1|rule|app.css|.old|',
+        key: 'k2|rule|app.css|.old|',
         rule: { selector: '.old', sheet: 'app.css' },
         after: true,
         sets: [],
@@ -236,7 +236,7 @@ describe('ruleCandidates', () => {
       candidateOf(before, moved, [change('padding-left', 0, 0), change('color', 0, null)])
     ).toEqual([
       {
-        key: 'k1|rule|app.css|.old|',
+        key: 'k2|rule|app.css|.old|',
         rule: { selector: '.old', sheet: 'app.css', layer: 'base' },
         after: true,
         sets: [],
@@ -259,7 +259,7 @@ describe('ruleCandidates', () => {
   it('names a rule that is gone by its before side', () => {
     expect(candidateOf(before, after, [change('color', 1, null)])).toMatchObject([
       {
-        key: 'k1|rule|<style> #1|.other|',
+        key: 'k2|rule|<style> #1|.other|',
         rule: { selector: '.other', sheet: '<style> #1' },
         after: false,
         unsets: ['color'],
@@ -280,7 +280,7 @@ describe('ruleCandidates', () => {
     })
     expect(candidateOf(unlayered, after, [change('color', 0, 0)])).toMatchObject([
       {
-        key: 'k1|rule|app.css|.new|',
+        key: 'k2|rule|app.css|.new|',
         rule: { selector: '.new', sheet: 'app.css', layer: 'base' },
         sets: ['color'],
         loser: 'app.css|.old|',
@@ -336,7 +336,7 @@ describe('ruleCandidates through custom properties', () => {
     ]
     expect(walked(side(1, tokens('4px')), side(1, tokens('5px')))).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|:root, :host|',
+        key: 'k2|rule|app.css|:root, :host|',
         rule: { selector: ':root, :host', sheet: 'app.css', layer: 'theme' },
         sets: [],
         changed: ['--ui-space'],
@@ -358,7 +358,7 @@ describe('ruleCandidates through custom properties', () => {
     )
     for (const candidates of [changed, same]) {
       expect(candidates).toEqual([
-        expect.objectContaining({ key: 'k1|rule|app.css|.ui-card|', changed: ['padding-left'] }),
+        expect.objectContaining({ key: 'k2|rule|app.css|.ui-card|', changed: ['padding-left'] }),
       ])
     }
     expect(changed[0]?.vars).toEqual([])
@@ -371,7 +371,7 @@ describe('ruleCandidates through custom properties', () => {
     ]
     expect(walked(side(1, gap('4px')), side(1, gap()))).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|:root, :host|',
+        key: 'k2|rule|app.css|:root, :host|',
         unsets: ['--ui-gap'],
         vars: [{ name: '--ui-gap', from: '4px', readBy: ['padding-left'], missing: 'fallback' }],
       }),
@@ -382,7 +382,7 @@ describe('ruleCandidates through custom properties', () => {
     ]
     expect(walked(side(1, ring()), side(1, ring(2)))).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|*, ::before, ::after|',
+        key: 'k2|rule|app.css|*, ::before, ::after|',
         sets: ['--ui-ring'],
         loser: null,
         vars: [
@@ -401,7 +401,7 @@ describe('ruleCandidates through custom properties', () => {
     ]
     expect(walked(side(1, style(true)), side(1, style(false)))).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|@property --ui-border-style|',
+        key: 'k2|rule|app.css|@property --ui-border-style|',
         unsets: ['--ui-border-style'],
         vars: [
           {
@@ -421,7 +421,7 @@ describe('ruleCandidates through custom properties', () => {
       walked(side(1, surface('#353535'), 'color'), side(1, surface('#ffffff'), 'color'), 'color')
     ).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|inline|||ancestor',
+        key: 'k2|rule|inline|||ancestor',
         rule: { selector: '', sheet: 'style attribute of an ancestor' },
         changed: ['--ui-surface'],
       }),
@@ -433,7 +433,7 @@ describe('ruleCandidates through custom properties', () => {
     const after = side(1, [{ prop: '--ui-pad', rule: 4, value: '8px' }, card('var(--ui-pad)', [0])])
     expect(walked(before, after)).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|.ui-card|',
+        key: 'k2|rule|app.css|.ui-card|',
         sets: ['padding-left'],
         loser: 'app.css|.ui-elevated|',
         via: [
@@ -452,7 +452,7 @@ describe('ruleCandidates through custom properties', () => {
     const before = side(-1, [{ prop: 'padding-left', rule: 5, value: '6px' }])
     expect(walked(before, side(1, []))).toEqual([
       expect.objectContaining({
-        key: 'k1|rule|app.css|.ui-card|',
+        key: 'k2|rule|app.css|.ui-card|',
         sets: ['padding-left'],
         loser: 'user agent|button|',
         loserRef: { selector: 'button', sheet: 'user agent stylesheet', userAgent: true },
@@ -482,7 +482,7 @@ describe('styleKeys families', () => {
   it('separates a container change from an own change with the same properties', () => {
     const changes = [{ prop: 'padding-left', from: '0px', to: '8px' }]
     expect(styleKeys('ui-row', 'container', changes).keys[0]).toBe(
-      'k1|ui-row|container|padding-left=0>8px'
+      'k2|ui-row|container|padding-left=0>8px'
     )
     expect(styleKeys('ui-row', 'paint-order', changes).summaries[0].kind).toBe('paint-order')
   })

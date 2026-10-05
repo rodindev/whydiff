@@ -1,11 +1,11 @@
 {
-  "rulesVersion": "k1",
+  "rulesVersion": "k2",
   "clusters": [
     {
-      "id": "cfnwmqa",
+      "id": "c1spoxu",
       "alias": "c01",
       "level": 0,
-      "key": "k1|rule|framework-*.css|.ui-col|",
+      "key": "k2|rule|framework-*.css|.ui-col|",
       "kind": "rule",
       "summary": {
         "kind": "rule",

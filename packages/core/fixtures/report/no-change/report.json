@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {

@@ -1,11 +1,11 @@
 {
-  "rulesVersion": "k1",
+  "rulesVersion": "k2",
   "clusters": [
     {
-      "id": "c16qjvd",
+      "id": "c1aw389",
       "alias": "c01",
       "level": 0,
-      "key": "k1|rule|reset.css|*|",
+      "key": "k2|rule|reset.css|*|",
       "kind": "rule",
       "summary": {
         "kind": "rule",
@@ -60,10 +60,10 @@
       "pixels": 7200
     },
     {
-      "id": "c13w2jg",
+      "id": "c8hd8de",
       "alias": "c02",
       "level": 0,
-      "key": "k1|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|",
+      "key": "k2|rule|framework.css|.ui-col-12, .ui-col-6, .ui-col|",
       "kind": "rule",
       "summary": {
         "kind": "rule",

@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,12 +22,12 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c2azv0u"
+        "cnc3szr"
       ],
       "screenshots": 2,
       "settled": 0,
       "pixels": 16842,
-      "text": "1 cause appears on all 2 changed screenshots, 14% of changed pixels; every one of those screenshots has other changes too:\n- the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, c2azv0u)\n\nThe other 6 causes hold 86% of changed pixels."
+      "text": "1 cause appears on all 2 changed screenshots, 14% of changed pixels; every one of those screenshots has other changes too:\n- the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, cnc3szr)\n\nThe other 6 causes hold 86% of changed pixels."
     }
   },
   "screenshots": [
@@ -41,13 +41,13 @@
       "pixels": 58884,
       "massChange": false,
       "causes": [
-        "c2azv0u",
-        "c1rjqha",
-        "c1i00el",
-        "c232xsm",
-        "c4acdp1",
-        "c32ihgf",
-        "c2jd0t3"
+        "cnc3szr",
+        "c3th20z",
+        "cohfepo",
+        "c2quj1k",
+        "cs0r7js",
+        "c3k09ou",
+        "c2okylm"
       ],
       "unexplained": []
     },
@@ -61,23 +61,23 @@
       "pixels": 58884,
       "massChange": false,
       "causes": [
-        "c2azv0u",
-        "c1rjqha",
-        "c1i00el",
-        "c232xsm",
-        "c4acdp1",
-        "c32ihgf",
-        "c2jd0t3"
+        "cnc3szr",
+        "c3th20z",
+        "cohfepo",
+        "c2quj1k",
+        "cs0r7js",
+        "c3k09ou",
+        "c2okylm"
       ],
       "unexplained": []
     }
   ],
   "causes": [
     {
-      "id": "c2azv0u",
+      "id": "cnc3szr",
       "headline": "the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, c2azv0u)\n- for example, the \"ring s1\" element's shadow appears, at `getByText('ring s1')` in \"s1 >> renders\" (s4udgzc)\n- `*` and 2 more from `app.css` (layer `base`) now sets --ui-glow, --ui-ring\n- --ui-glow, --ui-ring are read by box-shadow, which was invalid without them\n- to restore it: change the rule in `app.css`, or set the old values in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c2azv0u`",
-      "key": "k1|rule|app.css|*, ::before, ::after|",
+      "text": "## the shadows of 2 `<div>` elements appear, on all 2 changed screenshots, 14% of changed pixels (`*` and 2 more, cnc3szr)\n- for example, the \"ring s1\" element's shadow appears, at `getByText('ring s1')` in \"s1 >> renders\" (s4udgzc)\n- `*` and 2 more from `app.css` (layer `base`) now sets --ui-glow, --ui-ring\n- --ui-glow, --ui-ring are read by box-shadow, which was invalid without them\n- to restore it: change the rule in `app.css`, or set the old values in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain cnc3szr`",
+      "key": "k2|rule|app.css|*, ::before, ::after|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -208,10 +208,10 @@
       ]
     },
     {
-      "id": "c1rjqha",
+      "id": "c3th20z",
       "headline": "2 buttons are 2 px wider, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## 2 buttons are 2 px wider, on all 2 changed screenshots, 14% of changed pixels (`.ui-reset .ui-btn`, c1rjqha)\n- for example, the \"btn s1\" button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42), at `getByText('btn s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-reset .ui-btn` from `app.css` (unlayered) now sets border-width (all sides, was 2px, now 3px) in place of the browser's default `button { border-width: 2px }`\n- to restore it: change the rule in `app.css`, or set border-width (all sides) back to 2px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1rjqha`",
-      "key": "k1|rule|app.css|.ui-reset .ui-btn|",
+      "text": "## 2 buttons are 2 px wider, on all 2 changed screenshots, 14% of changed pixels (`.ui-reset .ui-btn`, c3th20z)\n- for example, the \"btn s1\" button is 2 px wider (was 200, now 202) and 2 px taller (was 40, now 42), at `getByText('btn s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-reset .ui-btn` from `app.css` (unlayered) now sets border-width (all sides, was 2px, now 3px) in place of the browser's default `button { border-width: 2px }`\n- to restore it: change the rule in `app.css`, or set border-width (all sides) back to 2px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c3th20z`",
+      "key": "k2|rule|app.css|.ui-reset .ui-btn|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -411,10 +411,10 @@
       ]
     },
     {
-      "id": "c1i00el",
+      "id": "cohfepo",
       "headline": "the borders of 2 `<div>` elements disappear, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the borders of 2 `<div>` elements disappear, on all 2 changed screenshots, 14% of changed pixels (`@property --ui-border-style`, c1i00el)\n- for example, the \"frame s1\" element's border disappears, at `getByText('frame s1')` in \"s1 >> renders\" (s4udgzc)\n- `@property --ui-border-style` from `app.css` no longer registers it (initial value solid)\n- --ui-border-style is read by border-style (all sides), which is invalid without it\n- to restore it: change the rule in `app.css`, or set --ui-border-style back to solid in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c1i00el`",
-      "key": "k1|rule|app.css|@property --ui-border-style|",
+      "text": "## the borders of 2 `<div>` elements disappear, on all 2 changed screenshots, 14% of changed pixels (`@property --ui-border-style`, cohfepo)\n- for example, the \"frame s1\" element's border disappears, at `getByText('frame s1')` in \"s1 >> renders\" (s4udgzc)\n- `@property --ui-border-style` from `app.css` no longer registers it (initial value solid)\n- --ui-border-style is read by border-style (all sides), which is invalid without it\n- to restore it: change the rule in `app.css`, or set --ui-border-style back to solid in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain cohfepo`",
+      "key": "k2|rule|app.css|@property --ui-border-style|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -568,10 +568,10 @@
       ]
     },
     {
-      "id": "c232xsm",
+      "id": "c2quj1k",
       "headline": "the backgrounds of 2 `<div>` elements are lighter (was #353535, now #ffffff), on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the backgrounds of 2 `<div>` elements are lighter (was #353535, now #ffffff), on all 2 changed screenshots, 14% of changed pixels (style attribute of an ancestor, c232xsm)\n- for example, the \"surface s1\" element's background is lighter (was #353535, now #ffffff) and its border changes colour, at `getByText('surface s1')` in \"s1 >> renders\" (s4udgzc)\n- the style attribute of an ancestor changed its declaration of --ui-surface (was #353535, now #ffffff)\n- --ui-surface is read by background-color, border-color (all sides)\n- to restore it: change the style attribute where the markup or a script sets it\n- all occurrences: `npx whydiff explain c232xsm`",
-      "key": "k1|rule|inline|||ancestor",
+      "text": "## the backgrounds of 2 `<div>` elements are lighter (was #353535, now #ffffff), on all 2 changed screenshots, 14% of changed pixels (style attribute of an ancestor, c2quj1k)\n- for example, the \"surface s1\" element's background is lighter (was #353535, now #ffffff) and its border changes colour, at `getByText('surface s1')` in \"s1 >> renders\" (s4udgzc)\n- the style attribute of an ancestor changed its declaration of --ui-surface (was #353535, now #ffffff)\n- --ui-surface is read by background-color, border-color (all sides)\n- to restore it: change the style attribute where the markup or a script sets it\n- all occurrences: `npx whydiff explain c2quj1k`",
+      "key": "k2|rule|inline|||ancestor",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -746,10 +746,10 @@
       ]
     },
     {
-      "id": "c4acdp1",
+      "id": "cs0r7js",
       "headline": "the shadows of 2 `<div>` elements change, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the shadows of 2 `<div>` elements change, on all 2 changed screenshots, 14% of changed pixels (`.ui-card`, c4acdp1)\n- for example, the \"card s1\" element's shadow changes, at `getByText('card s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-card` from `app.css` (unlayered) now sets box-shadow (was `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px`, now `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px`) in place of `.ui-elevated` from `app.css` (unlayered)\n- box-shadow reads --ui-shadow, set by `.ui-elevated` from `app.css` (unlayered)\n- to restore it: change the rule in `app.css`, or set box-shadow back to `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px` in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c4acdp1`",
-      "key": "k1|rule|app.css|.ui-card|",
+      "text": "## the shadows of 2 `<div>` elements change, on all 2 changed screenshots, 14% of changed pixels (`.ui-card`, cs0r7js)\n- for example, the \"card s1\" element's shadow changes, at `getByText('card s1')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-card` from `app.css` (unlayered) now sets box-shadow (was `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px`, now `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px, rgb(0, 0, 0) 0px 0px 0px 1px`) in place of `.ui-elevated` from `app.css` (unlayered)\n- box-shadow reads --ui-shadow, set by `.ui-elevated` from `app.css` (unlayered)\n- to restore it: change the rule in `app.css`, or set box-shadow back to `rgba(0, 0, 0, 0.2) 0px 1px 2px 0px` in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain cs0r7js`",
+      "key": "k2|rule|app.css|.ui-card|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -882,10 +882,10 @@
       ]
     },
     {
-      "id": "c32ihgf",
+      "id": "c3k09ou",
       "headline": "the inner spacing of 2 `<div>` elements grew by 4 px, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the inner spacing of 2 `<div>` elements grew by 4 px, on all 2 changed screenshots, 14% of changed pixels (`:root` and 1 more, c32ihgf)\n- for example, the \"panel s1\" element's inner spacing grew by 4 px, at `getByText('panel s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` and 1 more from `app.css` (layer `theme`) changed its declaration of --ui-space (was 4px, now 5px)\n- --ui-space is read by padding (all sides), row-gap\n- to restore it: change the rule in `app.css`, or set --ui-space back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c32ihgf`",
-      "key": "k1|rule|app.css|:root, :host|",
+      "text": "## the inner spacing of 2 `<div>` elements grew by 4 px, on all 2 changed screenshots, 14% of changed pixels (`:root` and 1 more, c3k09ou)\n- for example, the \"panel s1\" element's inner spacing grew by 4 px, at `getByText('panel s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` and 1 more from `app.css` (layer `theme`) changed its declaration of --ui-space (was 4px, now 5px)\n- --ui-space is read by padding (all sides), row-gap\n- to restore it: change the rule in `app.css`, or set --ui-space back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c3k09ou`",
+      "key": "k2|rule|app.css|:root, :host|",
       "kind": "rule",
       "level": 0,
       "summary": {
@@ -1051,10 +1051,10 @@
       ]
     },
     {
-      "id": "c2jd0t3",
+      "id": "c2okylm",
       "headline": "the column-gap property of 2 elements changed, on all 2 changed screenshots, 14% of changed pixels",
-      "text": "## the column-gap property of 2 elements changed, on all 2 changed screenshots, 14% of changed pixels (`:root`, c2jd0t3)\n- for example, column-gap (was 4px, now 6px) changed, at `getByText('row s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` from `app.css` (layer `theme`) no longer sets --ui-gap\n- --ui-gap is read by column-gap, which now uses its var() fallback\n- to restore it: change the rule in `app.css`, or set --ui-gap back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c2jd0t3`",
-      "key": "k1|rule|app.css|:root|",
+      "text": "## the column-gap property of 2 elements changed, on all 2 changed screenshots, 14% of changed pixels (`:root`, c2okylm)\n- for example, column-gap (was 4px, now 6px) changed, at `getByText('row s1')` in \"s1 >> renders\" (s4udgzc)\n- `:root` from `app.css` (layer `theme`) no longer sets --ui-gap\n- --ui-gap is read by column-gap, which now uses its var() fallback\n- to restore it: change the rule in `app.css`, or set --ui-gap back to 4px in your own stylesheet if `app.css` comes from a dependency\n- all occurrences: `npx whydiff explain c2okylm`",
+      "key": "k2|rule|app.css|:root|",
       "kind": "rule",
       "level": 0,
       "summary": {

@@ -159,9 +159,9 @@ describe('mergeReports', () => {
   })
 
   it('refuses shards written with different cluster rules', () => {
-    const other = { ...fixture, tool: { ...fixture.tool, rules: { cluster: 'k2' } } }
+    const other = { ...fixture, tool: { ...fixture.tool, rules: { cluster: 'k1' } } }
     expect(() => mergeReports([fixture, other])).toThrow(
-      'the shards were written with different cluster rules (k1 and k2). Rebuild them with one whydiff version.'
+      'the shards were written with different cluster rules (k2 and k1). Rebuild them with one whydiff version.'
     )
   })
 })

@@ -4,7 +4,7 @@
     "name": "whydiff",
     "version": "0.0.1",
     "rules": {
-      "cluster": "k1"
+      "cluster": "k2"
     }
   },
   "compared": {
@@ -22,12 +22,12 @@
     "massChange": 0,
     "lead": {
       "causes": [
-        "c6npvfg"
+        "c2m60cz"
       ],
       "screenshots": 1,
       "settled": 1,
       "pixels": 2400,
-      "text": "1 cause appears on the changed screenshot, 100% of changed pixels, and accounts for every changed pixel there:\n- the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels (`.ui-btn`, c6npvfg)"
+      "text": "1 cause appears on the changed screenshot, 100% of changed pixels, and accounts for every changed pixel there:\n- the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels (`.ui-btn`, c2m60cz)"
     }
   },
   "screenshots": [
@@ -43,17 +43,17 @@
       "pixels": 2400,
       "massChange": false,
       "causes": [
-        "c6npvfg"
+        "c2m60cz"
       ],
       "unexplained": []
     }
   ],
   "causes": [
     {
-      "id": "c6npvfg",
+      "id": "c2m60cz",
       "headline": "the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels",
-      "text": "## the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels, only in tests/settings.spec.ts (`.ui-btn`, c6npvfg)\n- at `getByText('Help')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-btn` from `ui-kit.css` (unlayered) changed its declaration of padding-left (was 12px, now 16px)\n- to restore it: change the rule in `ui-kit.css`, or set padding-left back to 12px in your own stylesheet if `ui-kit.css` comes from a dependency",
-      "key": "k1|rule|ui-kit.css|.ui-btn|",
+      "text": "## the \"Help\" button's inner spacing grew by 4 px, on the changed screenshot, 100% of changed pixels, only in tests/settings.spec.ts (`.ui-btn`, c2m60cz)\n- at `getByText('Help')` in \"s1 >> renders\" (s4udgzc)\n- `.ui-btn` from `ui-kit.css` (unlayered) changed its declaration of padding-left (was 12px, now 16px)\n- to restore it: change the rule in `ui-kit.css`, or set padding-left back to 12px in your own stylesheet if `ui-kit.css` comes from a dependency",
+      "key": "k2|rule|ui-kit.css|.ui-btn|",
       "kind": "rule",
       "level": 0,
       "summary": {

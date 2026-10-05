@@ -45,13 +45,13 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <section class="summary">
 <p>2 causes appear on all 5 changed screenshots, 100% of changed pixels, and account for every changed pixel there:</p>
 <ol>
-<li><a href="#c16qjvd">the color, font-weight and padding properties of 3 <code>&lt;div&gt;</code> elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels</a></li>
-<li><a href="#c13w2jg">the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels</a></li>
+<li><a href="#c1aw389">the color, font-weight and padding properties of 3 <code>&lt;div&gt;</code> elements, buttons and links changed, on 3 of 5 changed screenshots, 60% of changed pixels</a></li>
+<li><a href="#c8hd8de">the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 8 to 10 px, on 2 of 5 changed screenshots, 40% of changed pixels</a></li>
 </ol>
 </section>
 <section class="causes">
-<article class="cause" id="c16qjvd">
-<h2>the color, font-weight and padding properties of 3 <code>&lt;div&gt;</code> elements, buttons and links changed<span class="impact">, on 3 of 5 changed screenshots, 60% of changed pixels</span><span class="id"><code>*</code>, c16qjvd</span></h2>
+<article class="cause" id="c1aw389">
+<h2>the color, font-weight and padding properties of 3 <code>&lt;div&gt;</code> elements, buttons and links changed<span class="impact">, on 3 of 5 changed screenshots, 60% of changed pixels</span><span class="id"><code>*</code>, c1aw389</span></h2>
 <p class="example">for example, the &quot;Save&quot; button&#x27;s inner spacing shrank by 8 px, at <code>getByText(&#x27;Save&#x27;)</code> in &quot;s1 &gt;&gt; renders&quot; (s4udgzc)</p>
 <ul class="why">
 <li><code>*</code> from <code>reset.css</code> (unlayered) now sets color (was #0000ff, now #000000), font-weight (was 700, now 400), padding-left (was 8px, now 0px)</li>
@@ -65,13 +65,13 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s3 &gt;&gt; renders <span class="id">s4udg7a, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c16qjvd</code></p>
+<p class="handle">every member: <code>npx whydiff explain c1aw389</code></p>
 </article>
-<article class="cause" id="c13w2jg">
-<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 8 to 10 px<span class="impact">, on 2 of 5 changed screenshots, 40% of changed pixels</span><span class="id"><code>.ui-col</code> and 2 more, c13w2jg</span></h2>
+<article class="cause" id="c8hd8de">
+<h2>the inner spacing of 2 <code>&lt;div&gt;</code> elements shrank by 8 to 10 px<span class="impact">, on 2 of 5 changed screenshots, 40% of changed pixels</span><span class="id"><code>.ui-col</code> and 2 more, c8hd8de</span></h2>
 <p class="example">for example, the &quot;Col&quot; element&#x27;s inner spacing shrank by 8 px, at <code>getByText(&#x27;Col&#x27;)</code> in &quot;s4 &gt;&gt; renders&quot; (s4udi5f)</p>
 <ul class="why">
-<li><code>.ui-col</code> and 2 more from <code>framework.css</code> (layer <code>framework.components</code>) now sets padding-left (values differ per element: <code>npx whydiff explain c13w2jg</code>) in place of <code>.ui-col</code> from <code>app.css</code> (unlayered)</li>
+<li><code>.ui-col</code> and 2 more from <code>framework.css</code> (layer <code>framework.components</code>) now sets padding-left (values differ per element: <code>npx whydiff explain c8hd8de</code>) in place of <code>.ui-col</code> from <code>app.css</code> (unlayered)</li>
 </ul>
 <p class="fix">to restore it: change the rule in <code>framework.css</code>, or set the old values in your own stylesheet if <code>framework.css</code> comes from a dependency</p>
 <details>
@@ -81,7 +81,7 @@ footer{border-top:1px solid var(--line);margin-top:2.5rem;padding-top:1rem;font-
 <li>s5 &gt;&gt; renders <span class="id">s4udijg, 1 element</span></li>
 </ul>
 </details>
-<p class="handle">every member: <code>npx whydiff explain c13w2jg</code></p>
+<p class="handle">every member: <code>npx whydiff explain c8hd8de</code></p>
 </article>
 </section>
 </main>

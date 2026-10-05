@@ -390,7 +390,7 @@ describe('WhydiffReporter', () => {
     // What the test wrote for the same pair explained alone, here the same as the run's line.
     const own = ended(
       '# whydiff: own card > card\n',
-      "a <section>'s inner spacing grew by 24 px (c365v0c)"
+      "a <section>'s inner spacing grew by 24 px (c2k0l43)"
     )
     const markdownOf = (test: TestResult): ReportedAttachment | undefined =>
       test.attachments.find((a) => a.name === 'whydiff/card/markdown')
@@ -413,7 +413,7 @@ describe('WhydiffReporter', () => {
       expect(written).toContain(markdownOf(test)?.body?.toString('utf8'))
       expect(test.annotations.map((a) => a.description)).toEqual([
         'card: something else',
-        "a <section>'s inner spacing grew by 24 px (c365v0c)",
+        "a <section>'s inner spacing grew by 24 px (c2k0l43)",
       ])
     }
     expect(markdownOf(past)).toBe(markdown)
@@ -511,7 +511,7 @@ describe('WhydiffReporter', () => {
     await run(null)
     const summary = await readFile(file, 'utf8')
     expect(summary).toMatch(
-      /^# earlier step\n## whydiff\n- 1 of 2 screenshots changed, 1 more without a baseline snapshot, 5 more failed but not explained\n- 1 cause, 0 unexplained regions\n\n1 cause appears on the changed screenshot, 100% of changed pixels, [^\n]+:\n- a `<section>`'s inner spacing grew by 24 px, [^\n]+ \(c365v0c\)\n\n/
+      /^# earlier step\n## whydiff\n- 1 of 2 screenshots changed, 1 more without a baseline snapshot, 5 more failed but not explained\n- 1 cause, 0 unexplained regions\n\n1 cause appears on the changed screenshot, 100% of changed pixels, [^\n]+:\n- a `<section>`'s inner spacing grew by 24 px, [^\n]+ \(c2k0l43\)\n\n/
     )
     expect(summary).toMatch(
       /\nThe whole run in `[^`]*\/report\/report\.md`; the page of each changed screenshot in `[^`]*\/report\/screenshots\/`\.\n$/

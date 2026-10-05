@@ -41,7 +41,7 @@ describe('explain', () => {
 
   it('prints a cause as the run report renders it, then its members grouped by identical changes', async () => {
     const p = fakeProcess(fixture)
-    expect(await run(['explain', 'c257ja7', '--report', 'report.json'], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', 'report.json'], p)).toBe(0)
     expect(p.text.stderr).toBe('')
     await expect(p.text.stdout).toMatchFileSnapshot('../../fixtures/explain/cause.md')
   })
@@ -60,15 +60,15 @@ describe('explain', () => {
       .split('\n\n')
       .filter((block) => block.startsWith('## ') && !block.startsWith('## Unexplained'))
     expect(blocks.map((block) => / \((c[0-9a-z]+)\)\n/.exec(block)?.[1])).toEqual([
-      'c257ja7',
-      'c1h66kd',
-      'c2u6o6c',
+      'c3ln8mq',
+      'c2esjnt',
+      'c1m5c6x',
     ])
     expect(p.text.stdout).toBe(`report: report.json\n\n${blocks.join('\n\n')}\n`)
     const json = fakeProcess(fixture)
     expect(await run(['explain', '--all', '--report', 'report.json', '--json'], json)).toBe(0)
     const parsed = JSON.parse(json.text.stdout) as { causes: { id: string }[] }
-    expect(parsed.causes.map((c) => c.id)).toEqual(['c257ja7', 'c1h66kd', 'c2u6o6c'])
+    expect(parsed.causes.map((c) => c.id)).toEqual(['c3ln8mq', 'c2esjnt', 'c1m5c6x'])
     const none = fakeProcess(fixture)
     expect(await run(['explain', '--report', 'report.json'], none)).toBe(2)
     expect(none.text.stderr).toBe(
@@ -79,7 +79,7 @@ describe('explain', () => {
   it('takes several ids and prints the subset as JSON under --json', async () => {
     const p = fakeProcess(fixture)
     expect(
-      await run(['explain', 's4udijg', 'c2u6o6c', '--report', 'report.json', '--json'], p)
+      await run(['explain', 's4udijg', 'c1m5c6x', '--report', 'report.json', '--json'], p)
     ).toBe(0)
     const parsed = JSON.parse(p.text.stdout) as {
       report: string
@@ -89,7 +89,7 @@ describe('explain', () => {
       crops: unknown[]
     }
     expect(parsed.report).toBe('report.json')
-    expect(parsed.causes.map((c) => c.id)).toEqual(['c2u6o6c'])
+    expect(parsed.causes.map((c) => c.id)).toEqual(['c1m5c6x'])
     expect(parsed.screenshots).toEqual([
       expect.objectContaining({ id: 's4udijg', status: 'identical' }),
     ])
@@ -123,19 +123,19 @@ describe('explain', () => {
       [],
     ])
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', file], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', file], p)).toBe(0)
     await expect(p.text.stdout).toMatchFileSnapshot('../../fixtures/explain/grouped.md')
   })
 
   it('prints at most ten groups, and every member with its changes under --all', async () => {
     const file = await withMembers(Array.from({ length: 11 }, (_, i) => padding(`${String(i)}px`)))
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', file], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', file], p)).toBe(0)
     const lines = p.text.stdout.split('\n')
     expect(lines.filter((line) => line.startsWith('- 1 member on 1 screenshot: ')).length).toBe(10)
-    expect(lines).toContain('+ 1 more change set on 1 member: npx whydiff explain c257ja7 --all')
+    expect(lines).toContain('+ 1 more change set on 1 member: npx whydiff explain c3ln8mq --all')
     const all = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', file, '--all'], all)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', file, '--all'], all)).toBe(0)
     const listed = all.text.stdout.split('\n')
     expect(listed).toContain('### members (11)')
     expect(listed.filter((line) => line.startsWith('  - padding-left 0px -> ')).length).toBe(11)
@@ -164,7 +164,7 @@ describe('explain', () => {
     ]
     await writeFile(join(dir, 'two.json'), JSON.stringify(report))
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', 'two.json', '--all'], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', 'two.json', '--all'], p)).toBe(0)
     expect(p.text.stdout).toContain(
       [
         "- s4udgzc | s1 >> renders | getByText('Save 0') | 3 elements",
@@ -178,7 +178,7 @@ describe('explain', () => {
   it('lists members flat when none carries style changes, and names --all at the cut', async () => {
     const file = await withMembers(Array.from({ length: 12 }, () => []))
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', file], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', file], p)).toBe(0)
     const lines = p.text.stdout.split('\n')
     const start = lines.indexOf('### members (12)')
     expect(lines.slice(start + 1, start + 3)).toEqual([
@@ -186,19 +186,19 @@ describe('explain', () => {
       "- s4udft9 | s2 >> renders | getByText('Save 1') | 1 element",
     ])
     expect(lines.filter((line) => line.startsWith('- s4ud')).length).toBe(10)
-    expect(lines).toContain('+ 2 more members: npx whydiff explain c257ja7 --all')
+    expect(lines).toContain('+ 2 more members: npx whydiff explain c3ln8mq --all')
     expect(p.text.stdout).not.toContain('no own style changes')
   })
 
   it('separates thousands in member counts', async () => {
     const file = await withMembers(Array.from({ length: 1204 }, () => padding('8px')))
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7', '--report', file], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq', '--report', file], p)).toBe(0)
     const lines = p.text.stdout.split('\n')
     expect(lines).toContain('### members (1,204) by identical changes')
     expect(lines).toContain('- 1,204 members on 3 screenshots: padding-left 0px -> 8px')
     expect(lines).toContain(
-      '  + 1,201 more members with these changes: npx whydiff explain c257ja7 --all'
+      '  + 1,201 more members with these changes: npx whydiff explain c3ln8mq --all'
     )
   })
 
@@ -209,8 +209,8 @@ describe('explain', () => {
       expect(await run(['explain', ...args, '--report', 'report.json'], p)).toBe(0)
       return p.text.stdout
     }
-    const reset = await explained('c16qjvd')
-    const gone = await explained('c1xqq06')
+    const reset = await explained('c1aw389')
+    const gone = await explained('c3gywtd')
     for (const text of [reset, gone]) {
       expect(text).toContain("| getByRole('textbox', { name: 'Notes s1' }) | 1 element\n")
     }
@@ -220,7 +220,7 @@ describe('explain', () => {
     expect(gone).toContain(
       '- 2 members on 2 screenshots: opacity 0 -> 1; padding (all sides) 2px -> 0px\n'
     )
-    const all = await explained('c16qjvd', '--all')
+    const all = await explained('c1aw389', '--all')
     expect(all).toContain('  - padding-top 2px -> 0px\n  - opacity 0 -> 1\n')
   })
 
@@ -231,17 +231,17 @@ describe('explain', () => {
       expect(await run(['explain', ...args, '--report', 'report.json'], p)).toBe(0)
       return p.text.stdout
     }
-    const grid = await explained('c13w2jg')
+    const grid = await explained('c8hd8de')
     expect(grid).toContain(
-      '\n- `.ui-col` and 2 more from `framework.css` (layer `framework.components`) now sets padding-left (values differ per element: `npx whydiff explain c13w2jg`) in place of `.ui-col` from `app.css` (unlayered)\n'
+      '\n- `.ui-col` and 2 more from `framework.css` (layer `framework.components`) now sets padding-left (values differ per element: `npx whydiff explain c8hd8de`) in place of `.ui-col` from `app.css` (unlayered)\n'
     )
     expect(grid).toContain(
-      '\n+ 2 more selectors: npx whydiff explain c13w2jg --all\n### members (2)'
+      '\n+ 2 more selectors: npx whydiff explain c8hd8de --all\n### members (2)'
     )
-    expect(await explained('c13w2jg', '--all')).toContain(
+    expect(await explained('c8hd8de', '--all')).toContain(
       '\n- selectors: .ui-col-12, .ui-col-6, .ui-col\n### members (2)'
     )
-    expect(await explained('c16qjvd', '--all')).not.toContain('selector')
+    expect(await explained('c1aw389', '--all')).not.toContain('selector')
   })
 
   it('refuses an unknown id and a word that is not an id', async () => {
@@ -263,7 +263,7 @@ describe('explain', () => {
     const old = new Date(Date.now() - 60_000)
     await utimes(join(dir, 'whydiff-report', 'report.json'), old, old)
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'c257ja7'], p)).toBe(0)
+    expect(await run(['explain', 'c3ln8mq'], p)).toBe(0)
     expect(p.text.stdout.split('\n')[0]).toBe('report: whydiff-report/report.shard-1-of-2.json')
   })
 

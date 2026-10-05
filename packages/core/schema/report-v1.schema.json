@@ -277,7 +277,7 @@
             "type": "string"
           },
           "key": {
-            "description": "The cluster key: rules version, kind, family and the change, as k1|ui-btn|style|padding-left=0>8px. A rule cause's key is k1|rule|<sheet>|<selector>|<! when important>, ending in |layer <name> or |unlayered when that selector sits in more than one layer of the sheet.",
+            "description": "The cluster key: rules version, kind, family and the change, as k2|ui-btn|style|padding-left=0>8px. A rule cause's key is k2|rule|<sheet>|<selector>|<! when important>, ending in |layer <name> or |unlayered when that selector sits in more than one layer of the sheet.",
             "type": "string"
           },
           "kind": {

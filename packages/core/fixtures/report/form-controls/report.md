@@ -2,11 +2,11 @@
 compared: main -> feat/form-reset
 
 1 cause appears on the changed screenshot, 60% of changed pixels; that screenshot has other changes too:
-- the "Notes" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels (c1ur4wc)
+- the "Notes" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels (c3o2sjh)
 
 2 unexplained regions on 1 screenshot hold 40% of changed pixels.
 
-## the "Notes" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels, only in tests/forms.spec.ts (c1ur4wc)
+## the "Notes" text field's text is lighter (was #000000, now #090909), on the changed screenshot, 60% of changed pixels, only in tests/forms.spec.ts (c3o2sjh)
 - at `getByRole('textbox', { name: 'Notes' })` in "s1 >> renders" (s4udgzc)
 - color: was #000000, now #090909
 

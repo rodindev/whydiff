@@ -21,9 +21,9 @@ describe('leadsOf', () => {
     expect(leadsOf(report, 's4udgzc')).toEqual([
       {
         text: 'the "Total *" button\'s label is lighter (was #000000, now #090909)',
-        causes: ['c3hhw9m'],
+        causes: ['c3p6wov'],
       },
-      { text: "a <div>'s inner spacing shrank by 12 px", causes: ['c1g6bij'] },
+      { text: "a <div>'s inner spacing shrank by 12 px", causes: ['c13u1c7'] },
     ])
     expect(explanationOf(report, 's4udgzc').page).toBe(
       readFileSync(new URL('markdown/screenshot.md', FIXTURES), 'utf8')
@@ -42,19 +42,19 @@ describe('leadsOf', () => {
     const [lead] = leadsOf(together, 's4udgzc')
     expect(lead).toEqual({
       text: 'the "Save it" button\'s inner spacing grew by 8 px, and 1 more element changed with it',
-      causes: ['c257ja7'],
+      causes: ['c3ln8mq'],
     })
     expect(annotationOf(explanationOf(together, 's4udgzc'))).toBe(
-      'the "Save it" button\'s inner spacing grew by 8 px, and 1 more element changed with it (c257ja7)'
+      'the "Save it" button\'s inner spacing grew by 8 px, and 1 more element changed with it (c3ln8mq)'
     )
   })
 
   it("takes each cause's headline without its share of the run, in report order, when nothing on the screen is observed", () => {
     expect(leadsOf(fixture('markdown', 'observation'), 's4udgzc')).toEqual([
-      { text: 'the inner spacing of 2 <div> elements shrank by 12 px', causes: ['c1g6bij'] },
+      { text: 'the inner spacing of 2 <div> elements shrank by 12 px', causes: ['c13u1c7'] },
       {
         text: 'the labels of 2 buttons are lighter (was #000000, now #090909)',
-        causes: ['c3hhw9m'],
+        causes: ['c3p6wov'],
       },
     ])
   })

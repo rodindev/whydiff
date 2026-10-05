@@ -27,23 +27,23 @@ Three screens of a small app, captured before and after an update of its UI kit 
 compared: before -> after | chromium 153.0.8010.12 480x320
 
 2 causes appear on all 3 changed screenshots, 87% of changed pixels; they account for every changed pixel on 2 of them:
-- 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c2vj1pk)
-- the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c2iikap)
+- 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c35ew6y)
+- the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c29t82f)
 
 1 unexplained region on 1 screenshot holds 13% of changed pixels.
 
-## 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c2vj1pk)
+## 9 buttons are 8 px wider, on all 3 changed screenshots, 69% of changed pixels (`.ui-button`, c35ew6y)
 - for example, the "Help" button is 8 px wider (was 55, now 63), at `getByRole('button', { name: 'Help' })` in "items" (sy77idc)
 - `.ui-button` from `ui-kit.css` (unlayered) changed its declaration of padding-left, padding-right (was 12px, now 16px)
 - to restore it: change the rule in `ui-kit.css`, or set padding-left, padding-right back to 12px in your own stylesheet if `ui-kit.css` comes from a dependency
-- all occurrences: `npx whydiff explain c2vj1pk`
+- all occurrences: `npx whydiff explain c35ew6y`
 
-## the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c2iikap)
+## the corners of 3 `<div>` elements are rounder, on 1 of 3 changed screenshots, 18% of changed pixels (`:root`, c29t82f)
 - for example, the "First item" element's corners are rounder, at `locator('div.app-list').locator('div.ui-card').nth(0)` in "items" (sy77idc)
 - `:root` from `ui-kit.css` (unlayered) changed its declaration of --ui-radius (was 4px, now 10px)
 - --ui-radius is read by border-radius (all corners)
 - to restore it: change the rule in `ui-kit.css`, or set --ui-radius back to 4px in your own stylesheet if `ui-kit.css` comes from a dependency
-- all occurrences: `npx whydiff explain c2iikap`
+- all occurrences: `npx whydiff explain c29t82f`
 
 ## Unexplained regions (1)
 Pixels changed, no DOM, style or geometry change found under the region.

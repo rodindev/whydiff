@@ -36,8 +36,8 @@ async function writeProject(dir: string): Promise<void> {
   const text = await readFile(join(fixtures, 'report/run/report.json'), 'utf8')
   const report = JSON.parse(text.split('s4udi5f').join(screenshotId('main|feat/buttons'))) as Report // a report fixture of the core
   const rules = await readJson(join(fixtures, 'report/rules/report.json'))
-  const rule = rules.causes.find((cause) => cause.id === 'c13w2jg')
-  if (rule === undefined) throw new Error('the rules fixture lost c13w2jg')
+  const rule = rules.causes.find((cause) => cause.id === 'c8hd8de')
+  if (rule === undefined) throw new Error('the rules fixture lost c8hd8de')
   for (let i = report.causes.length; i < PADDED_CAUSES; i++) {
     report.causes.push({
       ...rule,

@@ -181,7 +181,7 @@ export const PAINT_ORDER_PROPS: readonly string[] = [
 export const FLOW_START_JUSTIFY: readonly string[] = ['normal', 'flex-start', 'start']
 
 /** Bumped whenever a cluster key rule or the component chain changes; part of every key. */
-export const CLUSTER_RULES_VERSION = 'k1'
+export const CLUSTER_RULES_VERSION = 'k2'
 
 /** Causes needed under one key of levels 1 to 3 before it becomes a cluster at that level; a rule at level 0 needs one. */
 export const CLUSTER_MIN_MEMBERS = 2
