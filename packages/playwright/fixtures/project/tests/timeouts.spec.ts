@@ -17,6 +17,8 @@ const BOXES = `
 const ROW = changed ? '.ui-missing' : '.ui-row'
 const SCREENSHOT_MS = 10_000
 const TEST_MS = 2000
+// A soft failure of its own, well within the test's time.
+const SOFT_MS = 500
 
 test.beforeEach(() => {
   if (changed) test.setTimeout(TEST_MS)
@@ -33,4 +35,10 @@ test('timed out in its screenshot through the explicit call', async ({ page }) =
     timeout: SCREENSHOT_MS,
   })
   await whydiffCapture(page.locator(ROW), 'explicit-slow.png', { timeout: SCREENSHOT_MS })
+})
+
+test('timed out in its screenshot after a soft failure', async ({ page }) => {
+  await page.setContent(BOXES)
+  await expect.soft(page.locator(ROW)).toHaveScreenshot('own.png', { timeout: SOFT_MS })
+  await expect(page.locator(ROW)).toHaveScreenshot('later.png', { timeout: SCREENSHOT_MS })
 })

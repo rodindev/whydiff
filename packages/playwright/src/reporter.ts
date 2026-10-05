@@ -27,6 +27,7 @@ import {
   listScreenshots,
   readImageAttachment,
   readWhydiffAttachment,
+  timeoutOf,
   type Listed,
   type ReportedAttachment,
 } from './attachments.js'
@@ -171,7 +172,7 @@ export default class WhydiffReporter implements Reporter {
           result.attachments,
           result.steps,
           result.annotations,
-          result.status === 'timedOut' ? (result.errors[0]?.message ?? null) : null
+          timeoutOf(result)
         ),
       }))
       const listed = acrossAttempts(

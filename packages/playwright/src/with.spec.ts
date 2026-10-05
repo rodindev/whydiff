@@ -816,7 +816,7 @@ describe('a run whose tests are retried or time out', () => {
   it('keeps every screenshot as the last attempt that failed it left it, those a retry passed or never reached included', () => {
     expect(report).toMatch(/^# whydiff: 5 of 5 screenshots changed \| 1 cause \| /)
     expect(output).toContain(
-      'whydiff: 5 of 5 screenshots changed, 2 more failed but not explained\n'
+      'whydiff: 5 of 5 screenshots changed, 4 more failed but not explained\n'
     )
     expect(pages.map((page) => page.split(' | ')[0]).sort()).toEqual([
       '# whydiff: a retry that reaches only the first screenshot > first',
@@ -861,12 +861,24 @@ describe('a run whose tests are retried or time out', () => {
       expect(result.status).toBe('timedOut')
       expect(result.errors.length).toBeGreaterThan(1)
     }
+    // The soft failure, not the timeout, sets the status, and the test times out later.
+    expect(only(tests, 'timed out in its screenshot after a soft failure').result.status).toBe(
+      'failed'
+    )
+    // 1.55 to 1.59 attach the expected image of an assertion the timeout cut, which names it; 1.53
+    // rejects the assertion before it attaches one, and 1.60 and later lose it with the result.
     expect(report.slice(report.indexOf('\n## Not explained')).split('\n').slice(3)).toEqual([
       expect.stringMatching(
-        /^- timed out in its screenshot \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
+        /^- timed out in its screenshot(?: > slow)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
       ),
       expect.stringMatching(
-        /^- timed out in its screenshot through the explicit call \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
+        /^- timed out in its screenshot through the explicit call(?: > explicit-slow)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of 2000ms exceeded\.$/
+      ),
+      expect.stringMatching(
+        /^- timed out in its screenshot after a soft failure(?: > later)? \| timeouts\.spec\.ts:\d+ \| timeouts \| Test timeout of \d+ms exceeded\.$/
+      ),
+      expect.stringMatching(
+        /^- timed out in its screenshot after a soft failure > own \| timeouts\.spec\.ts:\d+ \| timeouts \| the assertion produced no actual image \((expect\(locator\)\.toHaveScreenshot\(expected\) failed: Timeout 500ms exceeded\.|Timed out 500ms waiting for expect\(locator\)\.toHaveScreenshot\(expected\))\)$/
       ),
       '',
     ])

@@ -17,6 +17,7 @@ const causes = (file: string): URL =>
 const step = (title: string, attachments: ReportedAttachment[] = [], error?: string): StepLike => ({
   category: 'expect',
   title,
+  duration: 1,
   attachments,
   steps: [],
   ...(error === undefined ? {} : { error: { message: error } }),
@@ -54,7 +55,7 @@ describe('WhydiffReporter', () => {
     attachments: ReportedAttachment[],
     steps: StepLike[] = [],
     annotations: AnnotationLike[] = []
-  ): TestResult => ({ attachments, steps, annotations }) as unknown as TestResult // only these fields are read
+  ): TestResult => ({ attachments, steps, annotations, errors: [] }) as unknown as TestResult // only these fields are read
 
   async function run(shard: FullConfig['shard']): Promise<void> {
     const expected = await png('expected.png', false)

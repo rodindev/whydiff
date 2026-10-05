@@ -127,7 +127,7 @@ function testCase(run: TestRun, rootDir: string): TestCase {
 }
 
 function testResult(run: TestRun): TestResult {
-  const fake = { attachments: run.attachments, steps: [], annotations: run.annotations }
+  const fake = { attachments: run.attachments, steps: [], annotations: run.annotations, errors: [] }
   return fake as unknown as TestResult // the reporter reads only these fields
 }
 

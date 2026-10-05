@@ -46,8 +46,16 @@ export interface StepLike {
   readonly category: string
   readonly title: string
   readonly error?: { readonly message?: string }
+  readonly duration: number
   readonly attachments: readonly AttachmentLike[]
   readonly steps: readonly StepLike[]
+}
+
+/** The test's timeout as one attempt recorded it. */
+export interface Timeout {
+  readonly message: string
+  /** The errors recorded after the timeout's, those of the assertions it cut among them. */
+  readonly after: readonly string[]
 }
 
 /** One screenshot of the run before analysis; `files` is null for a passed one, listed by title only, and for a failed one whydiff attached nothing to, which carries `notExplained`. */
@@ -65,6 +73,8 @@ const IMAGE = /^(.+)-(expected|actual|diff)\.png$/
 const OTHER_BROWSER = ' screenshots are not explained: '
 // A matcher header ends with ` failed` or a colon on recent releases and is the bare call on older ones, 1.53 among them.
 const HEADER = /(?: failed|:)$|^expect\(.*\)$/
+// How Playwright words the test's own timeout, in the test body, a hook or a fixture setup alike.
+const TEST_TIMEOUT = /^Test timeout of \d+ms exceeded/
 const NO_REASON =
   'no whydiff annotation names it: whydiff was switched off or attaches nothing, no whydiffCapture followed the assertion, or the test ended first'
 
@@ -148,34 +158,37 @@ export function collectPairs<A extends AttachmentLike>(attachments: readonly A[]
   return pairs.map((pair) => ({ ...pair, images: images.get(pair.name) ?? {} }))
 }
 
-/** The screenshots of one attempt: pairs whydiff attached to, failed ones without a pair, then one title-only entry per passed assertion. `timedOut` is the attempt's first error when the attempt timed out: the reason of a failed assertion that attached no image, which the timeout cut. */
+/** The screenshots of one attempt: pairs whydiff attached to, failed ones without a pair, then one title-only entry per passed assertion. `timeout` is the attempt's, as `timeoutOf` reads it: the reason of every assertion it cut. */
 export function listScreenshots(
   test: TestIdentity,
   attachments: readonly ReportedAttachment[],
   steps: readonly StepLike[],
   annotations: readonly AnnotationLike[],
-  timedOut: string | null = null
+  timeout: Timeout | null = null
 ): Listed[] {
   const pairs = collectPairs(attachments)
   const shots = screenshotSteps(steps)
-  const failed = failedScreenshots(shots, attachments, timedOut).filter(
+  const failed = failedScreenshots(shots, attachments, timeout).filter(
     ({ name }) => name === null || !pairs.some((p) => p.name === name)
   )
-  const passed = shots.filter((step) => step.error === undefined).length
+  const passed = shots.filter(
+    (step) => step.error === undefined && cutBy(step, timeout) === null
+  ).length
   const listed: Listed[] = pairs.map((files, ordinal) => ({
     identity: pairIdentity(test, files.name),
     ordinal,
     files,
     notExplained: null,
   }))
-  for (const { name, error } of failed) {
+  for (const { name, error, cut } of failed) {
     const ordinal = listed.length
     listed.push({
       identity: name === null ? titleIdentity(test, ordinal) : pairIdentity(test, name),
       ordinal,
       files: null,
       notExplained:
-        notExplainedReason(name, annotations) ?? (error === null ? NO_REASON : errorLine(error)),
+        (cut ? null : notExplainedReason(name, annotations)) ??
+        (error === null ? NO_REASON : errorLine(error)),
     })
   }
   for (let n = 0; n < passed; n++) {
@@ -253,34 +266,58 @@ export function errorLine(message: string): string {
   return detail === undefined ? first : `${first.replace(/:$/, '')}: ${detail.trim()}`
 }
 
+/** The test's timeout among an attempt's errors: the one that made it `timedOut`, else, once a soft failure made it `failed`, the first that reads as one; null when it ran into none. */
+export function timeoutOf(result: {
+  readonly status: string
+  readonly errors: readonly { readonly message?: string }[]
+}): Timeout | null {
+  const messages = result.errors.map((error) => error.message ?? '')
+  const at =
+    result.status === 'timedOut'
+      ? 0
+      : messages.findIndex((message) => TEST_TIMEOUT.test(stripVTControlCharacters(message)))
+  const message = messages[at]
+  return at < 0 || message === undefined ? null : { message, after: messages.slice(at + 1) }
+}
+
 interface Failed {
   readonly name: string | null
   readonly error: string | null
+  readonly cut: boolean
 }
 
 // A failed step is named by the images the built-in attached to it, and by nothing when it attached
 // none. The built-in attaches a diff only for a comparison that failed, so a diff no step names is
 // a failed screenshot too: all that a run rebuilt from test-results, without steps, can go on.
-// Playwright records a timeout as the attempt's first error; an assertion the timeout cut ends while
-// the page is torn down, with the error that teardown throws, so it takes the timeout's.
 function failedScreenshots(
   steps: readonly StepLike[],
   attachments: readonly AttachmentLike[],
-  timedOut: string | null
+  timeout: Timeout | null
 ): Failed[] {
   const failed: Failed[] = steps.flatMap((step) => {
-    if (step.error === undefined) return []
-    const name = imagesName(step.attachments)
-    const error = name === null && timedOut !== null ? timedOut : (step.error.message ?? null)
-    return [{ name, error }]
+    const cut = cutBy(step, timeout)
+    if (cut === null && step.error === undefined) return []
+    const error = cut ?? step.error?.message ?? null
+    return [{ name: imagesName(step.attachments), error, cut: cut !== null }]
   })
   for (const attachment of attachments) {
     const image = readImageAttachment(attachment)
     if (image?.kind === 'diff' && !failed.some((f) => f.name === image.name)) {
-      failed.push({ name: image.name, error: null })
+      failed.push({ name: image.name, error: null, cut: false })
     }
   }
   return failed
+}
+
+// Playwright records an attempt's errors in the order they happen, the test's timeout among them. An
+// assertion the timeout cut ends as the page is torn down, with an error recorded after the
+// timeout's, or never ends; its reason is the timeout, not the teardown or an annotation made of it.
+// One whose error was recorded before the timeout, or caught by a toPass, failed on its own.
+function cutBy(step: StepLike, timeout: Timeout | null): string | null {
+  if (timeout === null) return null
+  const error = step.error?.message
+  const cut = error === undefined ? step.duration < 0 : timeout.after.includes(error)
+  return cut ? timeout.message : null
 }
 
 function imagesName(attachments: readonly AttachmentLike[]): string | null {
