@@ -334,7 +334,7 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     // reporter; test-results name that test in Playwright's error context.
     expect(result.stdout).toBe(
       full
-        .replace('2 of 3 screenshots changed', '2 of 2 screenshots changed')
+        .replace('2 of 3 screenshots changed', '2 screenshots changed')
         .replace('Unchanged: 1 screenshot is pixel-identical and not listed.\n', '')
         .replace(
           /\| reporter \| expect\(page\)\.toHaveScreenshot\(expected\) failed: .*$/m,
@@ -345,6 +345,12 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
       '\n- switched off > unexplained > unexplained | reporter.spec.ts:42 | reporter | '
     )
     expect(result.stdout).toContain('\n## No baseline snapshot (1)\n')
+    expect(await readFile(join(tmp, 'from', 'report.html'), 'utf8')).toContain(
+      '<h1>2 screenshots changed</h1>'
+    )
+    expect(result.stderr).toContain(
+      'whydiff: 2 screenshots changed, 1 more without a baseline snapshot, 1 more failed but not explained\n'
+    )
     expect(rebuilt.causes.map((c) => c.id)).toEqual(reported.causes.map((c) => c.id))
     const json = await whydiff(['report', '--from', 'test-results', '--out', 'from', '--json'], tmp)
     expect(json.stdout).toBe(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
@@ -438,7 +444,9 @@ describe('report --from over retried and repeated tests', { timeout: 300_000 }, 
     expect(result.code).toBe(0)
     const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
     expect(full).toMatch(/^# whydiff: 10 of 10 screenshots changed \| /)
-    expect(result.stdout).toBe(full)
+    expect(result.stdout).toBe(
+      full.replace('10 of 10 screenshots changed', '10 screenshots changed')
+    )
     const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
     const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
     expect(rebuilt.screenshots).toEqual(reported.screenshots)

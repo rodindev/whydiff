@@ -65,7 +65,7 @@ export function renderReport(report: ReportV1, options: RenderOptions = {}): str
   const { summary } = report
   if (summary.screenshots.changed === 0) return renderNoChange(report, options.failed ?? 0)
   const lines: string[] = [
-    `# whydiff: ${count(summary.screenshots.changed)} of ${plural(summary.screenshots.compared, 'screenshot')} changed | ${plural(summary.causes, 'cause')} | ${plural(summary.unexplained, 'unexplained region')}`,
+    `# whydiff: ${changedScreenshots(report, options.totalUnknown ?? false)} | ${plural(summary.causes, 'cause')} | ${plural(summary.unexplained, 'unexplained region')}`,
     comparedLine(report),
     '',
     ...report.summary.lead.text.split('\n'),
@@ -230,6 +230,17 @@ export function runTotals(report: Pick<ReportV1, 'screenshots'>): RunTotals {
     screenshots: changed.length,
     pixels: changed.reduce((sum, s) => sum + s.pixels, 0),
   }
+}
+
+/** How many screenshots of the run changed: `127 of 131 screenshots changed`, or `128 screenshots changed` when the run's total is not known. */
+export function changedScreenshots(
+  report: Pick<ReportV1, 'summary'>,
+  totalUnknown: boolean
+): string {
+  const { changed, compared } = report.summary.screenshots
+  return totalUnknown
+    ? `${plural(changed, 'screenshot')} changed`
+    : `${count(changed)} of ${plural(compared, 'screenshot')} changed`
 }
 
 /** What a run whose failed screenshots the report explains none of opens with: `12 failed screenshots, none explained`. */

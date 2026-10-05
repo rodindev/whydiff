@@ -78,21 +78,21 @@
       "required": ["screenshots", "causes", "unexplained", "massChange", "lead"],
       "properties": {
         "screenshots": {
-          "description": "The compared screenshots, changed or identical.",
+          "description": "The screenshots the report lists, changed or identical. The reporter lists every toHaveScreenshot assertion of the run, a passed one as identical. A report rebuilt from test-results (whydiff report --from) lists only the screenshots it read there, the failed ones, since test-results keep nothing of a passed screenshot: its total is not the run's, and report.md and the run page then say how many changed, not of how many.",
           "type": "object",
           "additionalProperties": false,
           "required": ["compared", "changed", "identical"],
           "properties": {
             "compared": {
-              "description": "Pairs compared.",
+              "description": "Screenshots listed, as many as screenshots holds: the run's total under the reporter, only the screenshots read when the run was rebuilt from test-results.",
               "$ref": "#/$defs/count"
             },
             "changed": {
-              "description": "Pairs with a region of differing pixels.",
+              "description": "Those with a region of differing pixels.",
               "$ref": "#/$defs/count"
             },
             "identical": {
-              "description": "Pairs without one.",
+              "description": "Those without one, the passed screenshots of a run among them.",
               "$ref": "#/$defs/count"
             }
           }
@@ -143,7 +143,7 @@
       }
     },
     "screenshots": {
-      "description": "One entry per compared pair, in run order.",
+      "description": "One entry per compared pair, in run order; the reporter adds each passed assertion by its title alone, width and height 0. A report rebuilt from test-results has no passed one.",
       "type": "array",
       "items": {
         "type": "object",
@@ -273,7 +273,7 @@
             "type": "string"
           },
           "text": {
-            "description": "The cause's block as report.md prints it: Markdown, the heading (the headline, then the rule of a rule cause as its rule line names it and the id, in parentheses) first, then one line each for the example, the rule and what it did, the consequences, the doubt, where a fix goes and the command that lists every member. What whydiff explain <id> prints first. Wording may change between versions.",
+            "description": "The cause's block as report.md prints it: Markdown, the heading (the headline, then the rule of a rule cause as its rule line names it and the id, in parentheses) first, then one line each for the example, the rule and what it did, the consequences, the doubt, where a fix goes and, for a cause of more than one member, the command that lists all its occurrences. What whydiff explain <id> prints first, without that last line, which names the command itself. Wording may change between versions.",
             "type": "string"
           },
           "key": {

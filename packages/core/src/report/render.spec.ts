@@ -87,6 +87,27 @@ describe('renderReport', () => {
     ])
   })
 
+  it('says how many screenshots changed, not of how many, when the total is not known', () => {
+    const same = page([button(10)])
+    const report = buildReport(
+      input([
+        padded('s1', 'Save it', '8px'),
+        padded('s2', 'Cancel it', '8px'),
+        screenOf('s3', same, same, []),
+      ])
+    )
+    expect(renderReport(report, { totalUnknown: true }).split('\n', 1)).toEqual([
+      '# whydiff: 2 screenshots changed | 1 cause | 0 unexplained regions',
+    ])
+    expect(renderReport(report).split('\n', 1)).toEqual([
+      '# whydiff: 2 of 3 screenshots changed | 1 cause | 0 unexplained regions',
+    ])
+    const one = buildReport(input([padded('s1', 'Save it', '8px'), screenOf('s2', same, same, [])]))
+    expect(renderReport(one, { totalUnknown: true }).split('\n', 1)).toEqual([
+      '# whydiff: 1 screenshot changed | 1 cause | 0 unexplained regions',
+    ])
+  })
+
   it('renders the no-change block when nothing differs', () => {
     const same = page([button(10)])
     const report = buildReport(

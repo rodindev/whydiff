@@ -7,6 +7,7 @@ export { parseReport } from './parse.js'
 export {
   bareHeadline,
   changedLines,
+  changedScreenshots,
   describeEffect,
   describeMemberChanges,
   describeRegion,

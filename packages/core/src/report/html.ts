@@ -1,8 +1,9 @@
 import { REPORT_MAX_CLUSTERS } from '../constants.js'
-import { codeSpans, count, plural } from './format.js'
+import { codeSpans, plural } from './format.js'
 import { withoutImpact } from './headline.js'
 import {
   causeParts,
+  changedScreenshots,
   handleOf,
   noneExplained,
   runTotals,
@@ -54,9 +55,7 @@ export function renderRunPage(report: ReportV1, options: RenderOptions = {}): st
   const { summary } = report
   const failed = summary.screenshots.changed === 0 ? (options.failed ?? 0) : 0
   const changed =
-    failed > 0
-      ? noneExplained(failed)
-      : `${count(summary.screenshots.changed)} of ${plural(summary.screenshots.compared, 'screenshot')} changed`
+    failed > 0 ? noneExplained(failed) : changedScreenshots(report, options.totalUnknown ?? false)
   const sections =
     failed > 0
       ? [`<p>${escape(SENTENCES.noneExplained('in report.md'))}</p>`]
@@ -156,7 +155,7 @@ function causeArticle(cause: CauseV1, report: ReportV1): string {
     ...(parts.ambiguous === null ? [] : [`<p>${inline(parts.ambiguous)}</p>`]),
     ...(parts.restore === null ? [] : [`<p class="fix">${inline(parts.restore)}</p>`]),
     screenshotList(cause, report),
-    `<p class="handle">every member: <code>${escape(`${COMMAND} ${cause.id}`)}</code></p>`,
+    ...(parts.occurrences === null ? [] : [`<p class="handle">${inline(parts.occurrences)}</p>`]),
     '</article>',
   ].join('\n')
 }

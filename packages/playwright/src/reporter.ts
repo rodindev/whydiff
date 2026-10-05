@@ -5,6 +5,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import type { FullConfig, Reporter, TestCase, TestResult } from '@playwright/test/reporter'
 import {
   buildReport,
+  changedScreenshots,
   clusterCauses,
   code,
   noneExplained,
@@ -208,8 +209,11 @@ export default class WhydiffReporter implements Reporter {
     })
     const markdown = join(dir, `report${suffix}.md`)
     const failed = missing.length + notExplained.length
+    const totalUnknown = stepless(tests)
     const text =
-      renderReport(report, { failed }) + missingSection(missing) + notExplainedSection(notExplained)
+      renderReport(report, { failed, totalUnknown }) +
+      missingSection(missing) +
+      notExplainedSection(notExplained)
     await mkdir(dir, { recursive: true })
     await writeFile(join(dir, `report${suffix}.json`), serializeReport(report))
     await writeFile(markdown, text)
@@ -226,7 +230,7 @@ export default class WhydiffReporter implements Reporter {
       }
     }
     const page = join(dir, `report${suffix}.html`)
-    await writeFile(page, renderRunPage(report, { failed }))
+    await writeFile(page, renderRunPage(report, { failed, totalUnknown }))
     attachRunPage(
       tests
         .flatMap((test) => test.attempts)
@@ -238,7 +242,7 @@ export default class WhydiffReporter implements Reporter {
     const totals = [
       summary.screenshots.changed === 0 && failed > 0
         ? noneExplained(failed)
-        : `${count(summary.screenshots.changed)} of ${plural(summary.screenshots.compared, 'screenshot')} changed${missing.length > 0 ? `, ${count(missing.length)} more without a baseline snapshot` : ''}${notExplained.length > 0 ? `, ${count(notExplained.length)} more failed but not explained` : ''}`,
+        : `${changedScreenshots(report, totalUnknown)}${missing.length > 0 ? `, ${count(missing.length)} more without a baseline snapshot` : ''}${notExplained.length > 0 ? `, ${count(notExplained.length)} more failed but not explained` : ''}`,
       `${plural(summary.causes, 'cause')}, ${plural(summary.unexplained, 'unexplained region')}`,
     ]
     for (const line of totals) console.log(`whydiff: ${line}`)
@@ -344,6 +348,20 @@ async function rewriteCopy(result: TestResult, name: string, page: string): Prom
   })?.path
   const copy = actual?.replace(/-actual\.png$/, '-whydiff.md')
   if (copy !== undefined && copy !== actual && existsSync(copy)) await writeFile(copy, page)
+}
+
+// Passed screenshots are counted from the steps of each attempt, which test-results do not keep: a
+// run rebuilt from them lists only its failed screenshots, and its total is not known. A live
+// attempt that ran has steps, its hooks at least, so only such a run has none in any attempt of a
+// test that took a screenshot.
+function stepless(
+  tests: readonly { readonly attempts: readonly Attempt[]; readonly listed: readonly Listed[] }[]
+): boolean {
+  const shot = tests.filter((test) => test.listed.length > 0)
+  return (
+    shot.length > 0 &&
+    shot.every((test) => test.attempts.every((attempt) => attempt.result.steps.length === 0))
+  )
 }
 
 /** True when the config lists Playwright's html reporter before this one, which then reads each test's results before this one rewrites them. */

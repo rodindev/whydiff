@@ -324,6 +324,38 @@ describe('WhydiffReporter', () => {
     expect((await readFile(file, 'utf8')).split('\n', 2)).toEqual(['## whydiff', `- ${line}`])
   })
 
+  it('says how many screenshots changed, not of how many, in every place the run is summed up when no test came with steps, as none rebuilt from test-results does', async () => {
+    const file = join(dir, 'step-summary.md')
+    vi.stubEnv('GITHUB_STEP_SUMMARY', file)
+    const reporter = new WhydiffReporter({ outputDir: 'report' })
+    reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read
+    reporter.onTestEnd(
+      testCase('padded card', 20),
+      result([
+        { name: 'card-expected.png', contentType: 'image/png', path: await png('e.png', false) },
+        { name: 'card-actual.png', contentType: 'image/png', path: await png('a.png', true) },
+        {
+          name: 'whydiff/card/snapshot-actual',
+          contentType: 'application/json',
+          path: causes('after.whydiff.json').pathname,
+        },
+        {
+          name: 'whydiff/card/snapshot-expected',
+          contentType: 'application/json',
+          path: causes('before.whydiff.json').pathname,
+        },
+      ])
+    )
+    await reporter.onEnd()
+    const line = '1 screenshot changed'
+    expect((await readFile(join(dir, 'report', 'report.md'), 'utf8')).split('\n', 1)).toEqual([
+      `# whydiff: ${line} | 1 cause | 0 unexplained regions`,
+    ])
+    expect(await readFile(join(dir, 'report', 'report.html'), 'utf8')).toContain(`<h1>${line}</h1>`)
+    expect(lines[0]).toBe(`whydiff: ${line}`)
+    expect((await readFile(file, 'utf8')).split('\n', 2)).toEqual(['## whydiff', `- ${line}`])
+  })
+
   it('hands the workers a fresh run directory and its report directory, and takes both back at the end', async () => {
     const reporter = new WhydiffReporter({ outputDir: 'report' })
     reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read

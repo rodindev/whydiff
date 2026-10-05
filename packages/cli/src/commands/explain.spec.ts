@@ -46,6 +46,19 @@ describe('explain', () => {
     await expect(p.text.stdout).toMatchFileSnapshot('../../fixtures/explain/cause.md')
   })
 
+  it('leaves out of a cause the line that only names the command just run, never a line that says more', async () => {
+    const report = new URL('../../../core/fixtures/report/field-reset/report.json', import.meta.url)
+    const p = fakeProcess(fixture)
+    expect(await run(['explain', 'c1aw389', '--report', report.pathname], p)).toBe(0)
+    expect(p.text.stdout).not.toContain('all occurrences')
+    expect(p.text.stdout).toContain(
+      '(all sides, values differ per element: `npx whydiff explain c1aw389`)\n'
+    )
+    const all = fakeProcess(fixture)
+    expect(await run(['explain', 'c1aw389', '--all', '--report', report.pathname], all)).toBe(0)
+    expect(all.text.stdout).not.toContain('all occurrences')
+  })
+
   it('prints a screenshot in the single-pair form, then the members of its causes', async () => {
     const p = fakeProcess(fixture)
     expect(await run(['explain', 's4udi5f', '--report', 'report.json'], p)).toBe(0)

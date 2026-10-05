@@ -1,5 +1,6 @@
 import { dirname, join, relative, resolve } from 'node:path'
 import {
+  code,
   count,
   describeEffect,
   describeMemberChanges,
@@ -130,11 +131,26 @@ function unknown(id: string, report: string): never {
   )
 }
 
-/** The cause as the run report renders it, then its members grouped by identical changes, or every member under `--all`. */
+/** The cause as the run report renders it, without the line that names this command, then its members grouped by identical changes, or every member under `--all`. */
 function causeSection(report: ReportV1, cause: CauseV1, all: boolean): string {
-  return [cause.text, ...selectorLines(cause, all), ...memberLines(report, cause, all), ''].join(
-    '\n'
-  )
+  return [
+    withoutOwnCommand(cause),
+    ...selectorLines(cause, all),
+    ...memberLines(report, cause, all),
+    '',
+  ].join('\n')
+}
+
+/** The cause's text without a line that holds only a label and `npx whydiff explain <its id>`, the command that printed it. */
+function withoutOwnCommand(cause: CauseV1): string {
+  const own = `: ${code(`npx whydiff explain ${cause.id}`)}`
+  return cause.text
+    .split('\n')
+    .filter(
+      (line) =>
+        !line.startsWith('- ') || !line.endsWith(own) || line.slice(0, -own.length).includes('`')
+    )
+    .join('\n')
 }
 
 /** Every cause as the run report renders it, in its order, none cut. */

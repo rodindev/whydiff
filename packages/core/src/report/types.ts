@@ -216,13 +216,13 @@ export interface ReportV1 {
   readonly compared: ComparedV1
   /** The run in numbers, and the run summary it leads with. */
   readonly summary: {
-    /** The compared screenshots, changed or identical. */
+    /** The screenshots the report lists, changed or identical: every assertion of the run under the reporter, only the failed ones read when rebuilt from test-results. */
     readonly screenshots: {
-      /** Pairs compared. */
+      /** Screenshots listed, as many as `screenshots` holds: the run's total under the reporter, only the screenshots read when rebuilt from test-results. */
       readonly compared: number
-      /** Pairs with a region of differing pixels. */
+      /** Those with a region of differing pixels. */
       readonly changed: number
-      /** Pairs without one. */
+      /** Those without one, the passed screenshots of a run among them. */
       readonly identical: number
     }
     /** Causes of the run. */
@@ -275,4 +275,6 @@ export interface RenderOptions {
   readonly explainCommand?: string
   /** Failed screenshots the report holds no pair for, which its writer lists after it, under No baseline snapshot or Not explained; when no screenshot changed, the page opens with them. */
   readonly failed?: number
+  /** True when the run's total of screenshots is not known, as in a report rebuilt from test-results, which keep nothing of a passed one: the header then says how many changed, not of how many. */
+  readonly totalUnknown?: boolean
 }
