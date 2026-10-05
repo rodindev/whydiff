@@ -40,6 +40,8 @@ try {
         '--no-save',
         '--no-audit',
         '--no-fund',
+        // npm takes no prerelease as satisfying a peer range such as >=1.53.0
+        ...(release.includes('-') ? ['--legacy-peer-deps'] : []),
         `@playwright/test@${release}`,
         ...files.map((file) => join(tarballs, file)),
       ],
