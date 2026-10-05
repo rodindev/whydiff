@@ -91,7 +91,8 @@ jobs:
       - name: Install the release's Chromium headless shell
         env:
           PLAYWRIGHT: ${{ matrix.playwright }}
-        run: npx --yes "playwright-core@$PLAYWRIGHT" install --with-deps chromium-headless-shell
+        # From outside the workspace: inside, npx takes the locked copy of the same version, with no bin.
+        run: cd "$RUNNER_TEMP" && npx --yes "playwright-core@$PLAYWRIGHT" install --with-deps chromium-headless-shell
 
       - name: Run the fixture project against the release
         env:
