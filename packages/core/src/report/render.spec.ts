@@ -1,3 +1,5 @@
+import fc from 'fast-check'
+
 import {
   button,
   fieldReset,
@@ -14,9 +16,11 @@ import type { TreeSpec } from '../testing/snapshots.js'
 import { clusterCauses } from '../cluster/cluster.js'
 import type { RuleSummary } from '../cluster/types.js'
 import { buildReport } from './build.js'
+import { safe } from './format.js'
 import { screenshotId } from './ids.js'
 import {
   bareHeadline,
+  causeParts,
   changedLines,
   describeEffect,
   describeMemberChanges,
@@ -1076,5 +1080,46 @@ describe('describeMemberChanges', () => {
     ).toBe(
       'background-color transparent -> #090909; box-shadow none -> rgb(0, 0, 0) 0px 1px 2px 0px'
     )
+  })
+})
+
+describe('causeParts: a keyword delta of any length', () => {
+  /** The pattern as CodeQL's `js/polynomial-redos` found it, quadratic on its witness: the reference for any delta. */
+  const QUADRATIC_KEYWORDS = /^<kw (.*?)>(.*)>$/
+  /** The quadratic pattern takes seconds on the witness below, the linear one about a millisecond. */
+  const LINEAR_MS = 100
+  const report = buildReport(input([padded('s1', 'Save it', '8px')]))
+  const why = (delta: string): readonly string[] => {
+    const [cause] = report.causes
+    if (cause === undefined) throw new Error('the padding changed')
+    const summary: CauseV1['summary'] = { kind: 'style', changes: [{ prop: 'display', delta }] }
+    return causeParts({ ...cause, level: 2, summary }, report).why
+  }
+
+  it('says any delta as the quadratic pattern read it', () => {
+    const units = fc.constantFrom('<', '>', 'k', 'w', ' ', 'a', '\n', '\r', '\u2028', '\u2029')
+    const text = fc.string({ unit: units, maxLength: 8 })
+    const deltas = fc.oneof(
+      fc.tuple(text, text).map(([from, to]) => `<kw ${from}>${to}>`),
+      text.map((rest) => `<kw ${rest}`),
+      text
+    )
+    fc.assert(
+      fc.property(deltas, (delta) => {
+        const pair = QUADRATIC_KEYWORDS.exec(delta)
+        const said =
+          pair === null ? safe(delta) : `was ${safe(pair[1] ?? '')}, now ${safe(pair[2] ?? '')}`
+        expect(why(delta)).toEqual([`display: ${said}`])
+      }),
+      { numRuns: 2000 }
+    )
+  })
+
+  it("says CodeQL's witness delta in linear time", () => {
+    const delta = `<kw >${'>a'.repeat(30_000)}`
+    const start = performance.now()
+    const said = why(delta)
+    expect(performance.now() - start).toBeLessThan(LINEAR_MS)
+    expect(said).toEqual([`display: ${safe(delta)}`])
   })
 })
