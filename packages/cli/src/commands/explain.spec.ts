@@ -288,16 +288,30 @@ describe('explain', () => {
     )
   })
 
-  it('sends a region of a Playwright run to the images Playwright keeps, never to snap', async () => {
+  it('prints a region of a Playwright run without crops and sends it to the images Playwright keeps, never to snap', async () => {
     const report = JSON.parse(await readFile(join(fixture, 'report.json'), 'utf8')) as {
       compared: { before: string; after: string }
+      unexplained: unknown[]
     }
     report.compared = { before: 'expected', after: 'actual' }
     await writeFile(join(dir, 'report.json'), JSON.stringify(report))
     const p = fakeProcess(dir)
-    expect(await run(['explain', 'uuc6ba1', '--report', 'report.json'], p)).toBe(2)
-    expect(p.text.stderr).toBe(
-      'whydiff: uuc6ba1 is in a screenshot of a Playwright run; whydiff crops only the pairs it diffs. See "s4 >> renders" (tests/hero.spec.ts:40) in Playwright\'s HTML report (npx playwright show-report) or its -diff.png in test-results: the region is 50x50 at (320,320).\n'
-    )
+    expect(await run(['explain', 'uuc6ba1', '--report', 'report.json'], p)).toBe(0)
+    expect(p.text.stdout.split('\n')).toEqual([
+      'report: report.json',
+      '',
+      '## uuc6ba1',
+      expect.stringMatching(
+        /^- uuc6ba1 in "s4 >> renders" \(s4udi5f\) \| region 50x50 at \(320,320\), /
+      ),
+      '- no crops: crops need the pairs on disk that whydiff diff reads, and Playwright keeps this run\'s images; see "s4 >> renders" (tests/hero.spec.ts:40) in its HTML report (npx playwright show-report) or its -diff.png in test-results',
+      '',
+    ])
+    expect(p.text.stderr).toBe('')
+    const json = fakeProcess(dir)
+    expect(await run(['explain', 'uuc6ba1', '--report', 'report.json', '--json'], json)).toBe(0)
+    const parsed = JSON.parse(json.text.stdout) as { unexplained: unknown[]; crops: unknown[] } // explain's --json shape
+    expect(parsed.unexplained).toEqual(report.unexplained)
+    expect(parsed.crops).toEqual([])
   })
 })

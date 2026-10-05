@@ -69,7 +69,8 @@ ${MORE}
 
 Prints what the report holds about each id: a cause (c...) with its members grouped
 by identical changes, a screenshot (s...) in full, an unexplained region (u...) with
-its crops written next to the report. --all alone prints every cause.
+its crops written next to the report; a Playwright run keeps the images of its regions,
+so explain says where they are instead. --all alone prints every cause.
 
 Options:
   --all              alone, every cause; with ids, every member and every selector

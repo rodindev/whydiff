@@ -95,7 +95,7 @@ export async function explain(args: ParsedArgs, ctx: Context): Promise<number> {
       const region = report.unexplained.find((u) => u.id === id) ?? unknown(id, shown)
       const crops = await writeCrops(report, region, path, ctx)
       result.unexplained.push(region)
-      result.crops.push(crops)
+      if (crops !== null) result.crops.push(crops)
       sections.push(regionSection(report, region, crops))
     } else {
       throw new WhydiffError(
@@ -285,12 +285,14 @@ function memberEntry(report: ReportV1, cause: CauseV1, member: MemberV1): string
   return lines
 }
 
-/** The region's own line, as the screenshot page lists it, then where its crops went. */
-function regionSection(report: ReportV1, region: UnexplainedV1, crops: Crops): string {
+/** The region's own line, as the screenshot page lists it, then where its crops went, or where a Playwright run keeps its images. */
+function regionSection(report: ReportV1, region: UnexplainedV1, crops: Crops | null): string {
   return [
     `## ${region.id}`,
     `- ${describeRegion(region, report)}`,
-    `- crops: ${crops.expected}, ${crops.actual}, ${crops.diff} | ${String(crops.width)}x${String(crops.height)} px each`,
+    crops === null
+      ? `- no crops: ${playwrightImages(report, region)}`
+      : `- crops: ${crops.expected}, ${crops.actual}, ${crops.diff} | ${String(crops.width)}x${String(crops.height)} px each`,
     '',
   ].join('\n')
 }
@@ -300,8 +302,9 @@ async function writeCrops(
   region: UnexplainedV1,
   reportPath: string,
   ctx: Context
-): Promise<Crops> {
+): Promise<Crops | null> {
   const pair = await findPair(report, region, ctx.cwd)
+  if (pair === null) return null
   const { after, expected, actual } = await readPairFiles(pair)
   const mask = diffMask(expected, actual, { threshold: after.compare.threshold })
   const rect = padded(region.region, mask.width, mask.height)
@@ -332,8 +335,12 @@ function padded(region: Rect, width: number, height: number): Rect {
   ]
 }
 
-/** The pair behind a region's screenshot, found again through the labels the report was built from. */
-async function findPair(report: ReportV1, region: UnexplainedV1, cwd: string): Promise<InputPair> {
+/** The pair behind a region's screenshot, found again through the labels the report was built from; null for a Playwright run's, which keeps the pair in test-results. */
+async function findPair(
+  report: ReportV1,
+  region: UnexplainedV1,
+  cwd: string
+): Promise<InputPair | null> {
   const { before, after } = report.compared
   let pairs: readonly InputPair[] = []
   let reason: string | null = null
@@ -345,9 +352,7 @@ async function findPair(report: ReportV1, region: UnexplainedV1, cwd: string): P
   }
   const pair = pairs.find((p) => screenshotId(p.screen) === region.screenshot)
   if (pair !== undefined) return pair
-  if (before === PLAYWRIGHT_SIDES.before && after === PLAYWRIGHT_SIDES.after) {
-    throw new WhydiffError('invalid-option', playwrightRegion(report, region))
-  }
+  if (before === PLAYWRIGHT_SIDES.before && after === PLAYWRIGHT_SIDES.after) return null
   throw new WhydiffError(
     'invalid-option',
     reason === null
@@ -356,13 +361,12 @@ async function findPair(report: ReportV1, region: UnexplainedV1, cwd: string): P
   )
 }
 
-/** Where a region of a Playwright run can be seen: Playwright keeps the images, whydiff crops only the pairs it diffs. */
-function playwrightRegion(report: ReportV1, region: UnexplainedV1): string {
+/** Where a region of a Playwright run can be seen: crops need the pairs on disk that whydiff diff reads, and Playwright keeps a run's images. */
+function playwrightImages(report: ReportV1, region: UnexplainedV1): string {
   const entry = report.screenshots.find((s) => s.id === region.screenshot)
   const at =
     entry?.file === undefined
       ? ''
       : ` (${entry.file}${entry.line === undefined ? '' : `:${String(entry.line)}`})`
-  const [x, y, width, height] = region.region
-  return `${region.id} is in a screenshot of a Playwright run; whydiff crops only the pairs it diffs. See "${entry?.title ?? region.screenshot}"${at} in Playwright's HTML report (npx playwright show-report) or its -diff.png in test-results: the region is ${String(width)}x${String(height)} at (${String(x)},${String(y)}).`
+  return `crops need the pairs on disk that whydiff diff reads, and Playwright keeps this run's images; see "${entry?.title ?? region.screenshot}"${at} in its HTML report (npx playwright show-report) or its -diff.png in test-results`
 }
