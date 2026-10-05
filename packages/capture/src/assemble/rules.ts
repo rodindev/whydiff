@@ -13,7 +13,7 @@ import {
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 
-const IMPORTANT = /\s*!\s*important\s*$/i
+const IMPORTANT = /(?<!\s)\s*!\s*important\s*$/i
 const SIDES = /^(margin|padding|border)-(block|inline)-(start|end)(-width|-style|-color)?$/
 const CORNERS = /^border-(start|end)-(start|end)-radius$/
 const AXES = /^overflow-(block|inline)$/

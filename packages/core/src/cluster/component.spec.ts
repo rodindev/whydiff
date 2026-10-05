@@ -1,3 +1,6 @@
+import fc from 'fast-check'
+
+import { normalizeClasses } from '../match/classes.js'
 import type { NodeV1, RuleV1, SnapshotV1 } from '../snapshot/types.js'
 import { buildSnapshot, type TreeSpec } from '../testing/snapshots.js'
 import { blockClass, classContext, componentKind } from './component.js'
@@ -367,5 +370,66 @@ describe('classContext without rules', () => {
   it('is computed once per snapshot', () => {
     const snapshot = page({ tag: 'div', cls: ['ui-card'] })
     expect(classContext(snapshot)).toBe(classContext(snapshot))
+  })
+})
+
+describe('test ids and class names of any length', () => {
+  /** The patterns as CodeQL's `js/polynomial-redos` found them, quadratic on its witnesses: the reference for any input. */
+  const QUADRATIC_TEST_ID_INDEX = /([-_]\d+|\[\d+\]|\d+)$/
+  const QUADRATIC_BEM_ELEMENT = /__[a-z][a-z_-]*$/
+  /** The quadratic patterns take seconds on the witnesses below, the linear ones about a millisecond. */
+  const LINEAR_MS = 100
+  const part = (maxLength: number, ...units: string[]): fc.Arbitrary<string> =>
+    fc.string({ unit: fc.constantFrom(...units), maxLength })
+
+  it('strips from any test id what the quadratic pattern stripped', () => {
+    const ids = part(24, '0', '7', '-', '_', '[', ']', 'a')
+    fc.assert(
+      fc.property(fc.oneof(ids, fc.string()), (testId) => {
+        const stem = testId.replace(QUADRATIC_TEST_ID_INDEX, '')
+        expect(kindOf({ tag: 'div', testId })).toBe(stem === '' ? 'div' : stem)
+      }),
+      { numRuns: 2000 }
+    )
+  })
+
+  it('keeps whole any class the quadratic pattern read as a BEM element', () => {
+    const elements = fc
+      .tuple(part(3, 'a', 'A', 'css-0-', '-'), part(10, 'a', 'z', '_', '-', 'A', '0'))
+      .map(([block, element]) => `${block}__${element}`)
+    const classes = fc.oneof(
+      elements,
+      part(24, '_', '-', 'a', 'z', 'A', '0', '!', 'css-'),
+      fc.string()
+    )
+    fc.assert(
+      fc.property(classes, (name) => {
+        const { node } = only({ tag: 'div', cls: [name] })
+        const normalized = normalizeClasses([name])
+        const names = new Set([name, ...normalized])
+        expect(blockClass(node, { names, blocks: new Set() })).toBe(
+          QUADRATIC_BEM_ELEMENT.test(name) ? name : normalized[0]
+        )
+      }),
+      { numRuns: 2000 }
+    )
+  })
+
+  it("strips the index of CodeQL's witness test id in linear time", () => {
+    const testId = `${'0'.repeat(40_000)}a`
+    const { node, snapshot } = only({ tag: 'div', testId })
+    const start = performance.now()
+    const kind = componentKind(node, snapshot)
+    expect(performance.now() - start).toBeLessThan(LINEAR_MS)
+    expect(kind).toBe(testId)
+  })
+
+  it("reads CodeQL's witness class name in linear time", () => {
+    const name = `${'__a'.repeat(25_000)}!`
+    const { node } = only({ tag: 'div', cls: [name] })
+    const start = performance.now()
+    const block = blockClass(node, { names: new Set([name]), blocks: new Set() })
+    expect(performance.now() - start).toBeLessThan(LINEAR_MS)
+    expect(block).toBe(name)
   })
 })

@@ -1,7 +1,10 @@
+import fc from 'fast-check'
+
 import { computeDeltas } from '../deltas/deltas.js'
 import { matchSnapshots } from '../match/match.js'
 import type { Rect } from '../snapshot/types.js'
 import { buildSnapshot, type TreeSpec } from '../testing/snapshots.js'
+import { code } from './format.js'
 import { observationText, observe } from './observe.js'
 
 const SIDES = ['top', 'right', 'bottom', 'left']
@@ -98,6 +101,37 @@ describe('observationText', () => {
       'the "Send" button\'s label is bolder',
       'the "Send" button\'s label is lighter (was #000000, now #090909)',
     ])
+  })
+})
+
+describe('observationText: the article of a tag of any length', () => {
+  /** The pattern as CodeQL's `js/polynomial-redos` found it, quadratic on its witness: the reference for any tag. */
+  const QUADRATIC_SPELLED_TAG = /^(?:[a-z]{1,2}|[^aeiou-]+)(?:\d+)?(?:-|$)/
+  /** The quadratic pattern takes seconds on the witness below, the linear one about a millisecond. */
+  const LINEAR_MS = 100
+  const appears = (tag: string): string => observationText({ tag }, [{ kind: 'appears' }])
+
+  it('takes the article the quadratic pattern gave any tag', () => {
+    const part = (...units: string[]): fc.Arbitrary<string> =>
+      fc.string({ unit: fc.constantFrom(...units), maxLength: 3 })
+    const tags = fc
+      .tuple(part('a', 'e', 'u', 'h', 's', 'b', ','), part('0', '1'), part('a', 'h', '0', '-', ','))
+      .map((parts) => parts.join(''))
+    fc.assert(
+      fc.property(fc.oneof(tags, fc.string()), (tag) => {
+        const an = (QUADRATIC_SPELLED_TAG.test(tag) ? /^[aefhilmnorsx]/ : /^[aeio]/).test(tag)
+        expect(appears(tag)).toBe(`${an ? 'an' : 'a'} ${code(`<${tag}>`)} appears`)
+      }),
+      { numRuns: 2000 }
+    )
+  })
+
+  it("takes the article of CodeQL's witness tag in linear time", () => {
+    const tag = `,${'00'.repeat(20_000)}a`
+    const start = performance.now()
+    const text = appears(tag)
+    expect(performance.now() - start).toBeLessThan(LINEAR_MS)
+    expect(text).toBe(`a \`<${tag}>\` appears`)
   })
 })
 

@@ -23,11 +23,11 @@ const VALUE_SYNTAX = /[:[\]()/.!@%]|^-/
 // Margin and padding utilities share one shape across utility systems: m or p, a side, a hyphen, a step, auto or a negative step.
 const SPACING = /^[mp][abtrlxyse]?-(?:\d|auto$|n\d)/
 // A BEM element's suffix is lowercase words; a CSS Modules hash after `__` has a capital or a digit.
-const BEM_ELEMENT = /__[a-z][a-z_-]*$/
+const BEM_ELEMENT = /$(?<=__[a-z][a-z_-]*)/
 const SEPARATORS = ['--', '__'] as const
 const NAMESPACE = /^([^-_]+)-/
 const DIGIT = /\d/
-const TEST_ID_INDEX = /([-_]\d+|\[\d+\]|\d+)$/
+const TEST_ID_INDEX = /([-_]\d+|\[\d+\]|(?<!\d)\d+)$/
 // Everything from a class's first hyphen or underscore on; what is left is a library's namespace or a BEM block's own name.
 const AFTER_PREFIX = /[-_].*/
 

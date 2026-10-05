@@ -58,7 +58,7 @@ const BORDER_PARTS = ['width', 'style', 'color'] as const
 const PLAIN_NUMBER = /^\d+(?:\.\d+)?$/
 const VOWEL = /^[aeiou]/
 /** Tags said letter by letter: a first part of one or two letters, digits aside, or without a vowel (`ul`, `h1`, `svg`, `kbd`, `ui-card`). */
-const SPELLED_TAG = /^(?:[a-z]{1,2}|[^aeiou-]+)(?:\d+)?(?:-|$)/
+const SPELLED_TAG = /^(?:[a-z]{1,2}\d*|[^aeiou-]+)(?:-|$)/
 /** Letters whose English name starts with a vowel sound: "an <li>", "an <h1>", "an <svg>". */
 const VOWEL_LETTER = /^[aefhilmnorsx]/
 /** Tags said as a word take "an" before these; `u` reads "you" (`use`). */

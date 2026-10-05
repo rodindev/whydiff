@@ -880,7 +880,7 @@ function describeDelta(delta: string): string {
   const step = /^<(?:len|num) (.*)>$/.exec(delta)?.[1]
   if (step !== undefined) return step
   if (delta === '<color>') return 'another colour'
-  const keywords = /^<kw (.*?)>(.*)>$/.exec(delta)
+  const keywords = /^<kw ([^>\n\r\u2028\u2029]*)>(.*)>$/.exec(delta)
   if (keywords !== null) return `was ${safe(keywords[1] ?? '')}, now ${safe(keywords[2] ?? '')}`
   return safe(delta)
 }
