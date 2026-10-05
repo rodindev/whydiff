@@ -1,6 +1,6 @@
 {
   "name": "@whydiff/capture",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Captures a whydiff render-tree snapshot from Chromium, for Playwright: DOM, layout, computed styles, roles, winning CSS rules.",
   "license": "MIT",
   "type": "module",

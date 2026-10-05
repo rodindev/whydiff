@@ -1,6 +1,6 @@
 {
   "name": "whydiff",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Explains why a screenshot changed: which element, which CSS rule, which tests. The command line for Playwright projects.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@whydiff/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Matches two render-tree snapshots, finds the cause of each changed pixel region and groups causes by CSS rule. No browser, no model, no I/O.",
   "license": "MIT",
   "type": "module",
