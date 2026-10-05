@@ -3,7 +3,7 @@ export const CLASS_RULES_VERSION = 'c1'
 
 const EMOTION = /^css-[a-z0-9]+(-(.+))?$/
 const STYLED_COMPONENTS = /^sc-[a-zA-Z0-9]+$/
-const CSS_MODULES = /^([A-Za-z][\w-]*)__[A-Za-z0-9_-]{5,}$/
+const CSS_MODULES = /^(?=[A-Za-z][\w-]*$)([A-Za-z][\w-]*)__[A-Za-z0-9_-]{5,}$/
 const SCOPED = /^data-v-[a-f0-9]+$/
 
 /** Class names with build hashes removed, sorted and deduplicated; the input order never matters. */

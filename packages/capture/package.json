@@ -62,6 +62,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/pngjs": "catalog:",
+    "fast-check": "catalog:",
     "playwright-core": "catalog:",
     "pngjs": "catalog:",
     "typescript": "catalog:",

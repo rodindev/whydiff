@@ -1,4 +1,5 @@
 import type { RuleV1 } from '@whydiff/core'
+import fc from 'fast-check'
 
 import type {
   MatchedStyles,
@@ -477,6 +478,61 @@ describe('attributeDocument', () => {
     expect([...rowOf]).toEqual([
       [1, 0],
       [2, 1],
+    ])
+  })
+})
+
+describe('importance of a value of any length', () => {
+  /** A quadratic pattern for the same flag, slow on a long run of white space before anything but `!`: the reference for any value. */
+  const QUADRATIC_IMPORTANT = /\s*!\s*important\s*$/i
+  /** The quadratic pattern takes seconds on the value below, the linear one about a millisecond. */
+  const LINEAR_MS = 100
+  const part = (maxLength: number, ...units: string[]): fc.Arbitrary<string> =>
+    fc.string({ unit: fc.constantFrom(...units), maxLength })
+  /** What the attribution records for the browser's own `color` declaration with this value. */
+  const recorded = (value: string): ReturnType<typeof chains> =>
+    attribute({
+      matchedCSSRules: [
+        {
+          rule: {
+            origin: 'user-agent',
+            selectorList: { text: 'button' },
+            style: { cssProperties: [{ name: 'color', value }] },
+          },
+        },
+      ],
+    }).uses
+
+  it('reads the flag and the text of any value as the quadratic pattern did', () => {
+    const space = part(3, ' ', '\t', '\n', '\u00a0')
+    const word = fc.constantFrom('important', 'IMPORTANT', 'Important', 'importan')
+    const flagged = fc
+      .tuple(part(3, 'red', ' ', '\t', '!'), space, space, word, space)
+      .map(([head, before, after, flag, end]) => `${head}${before}!${after}${flag}${end}`)
+    const values = fc.oneof(flagged, part(12, ' ', '\t', '!', 'x', 'important'), fc.string())
+    fc.assert(
+      fc.property(values, (value) => {
+        const suffix = QUADRATIC_IMPORTANT.exec(value)
+        const text = (suffix === null ? value : value.slice(0, suffix.index)).trim()
+        const rule: RuleV1 =
+          suffix === null
+            ? { userAgent: true, selector: 'button' }
+            : { userAgent: true, selector: 'button', important: true }
+        expect(recorded(value)).toEqual([
+          text === '' ? { prop: 'color', rule } : { prop: 'color', rule, value: text },
+        ])
+      }),
+      { numRuns: 2000 }
+    )
+  })
+
+  it('reads a long run of spaces and tabs in linear time', () => {
+    const value = `${' \t'.repeat(25_000)}x`
+    const start = performance.now()
+    const uses = recorded(value)
+    expect(performance.now() - start).toBeLessThan(LINEAR_MS)
+    expect(uses).toEqual([
+      { prop: 'color', rule: { userAgent: true, selector: 'button' }, value: 'x' },
     ])
   })
 })
