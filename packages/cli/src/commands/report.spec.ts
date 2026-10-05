@@ -80,6 +80,22 @@ describe('mergeReports', () => {
     expect(parseReport(serializeReport(merged))).toEqual(merged)
   })
 
+  it("orders a cause's members, and picks its example among equals, by project, file and title as the reporter's screen keys do, not by line", () => {
+    const lines: Readonly<Record<string, number>> = { s4udgzc: 30, s4udft9: 20 }
+    const moved = (report: ReportV1): ReportV1 => ({
+      ...report,
+      screenshots: report.screenshots.map((s) => {
+        const line = lines[s.id]
+        return line === undefined ? s : { ...s, line }
+      }),
+    })
+    const merged = mergeReports([moved(shard(['s4udft9'])), moved(shard(['s4udgzc']))])
+    expect(merged.screenshots.map((s) => s.id)).toEqual(['s4udft9', 's4udgzc'])
+    const cause = merged.causes.find((c) => c.id === 'c3ln8mq')
+    expect(cause?.members.map((m) => m.screenshot)).toEqual(['s4udgzc', 's4udft9'])
+    expect(cause?.example.screenshot).toBe('s4udgzc')
+  })
+
   it('is the identity on one shard that holds the whole run, up to the screenshot order', () => {
     const merged = mergeReports([fixture])
     expect({ ...merged, screenshots: [] }).toEqual({ ...fixture, screenshots: [] })

@@ -281,6 +281,7 @@ function identityOf(testInfo: TestInfo, name: string): PairIdentity {
       titles: testInfo.titlePath.slice(1),
       file: relativeTo(testInfo.config.rootDir, testInfo.file),
       line: testInfo.line,
+      repeat: testInfo.repeatEachIndex,
     },
     name
   )

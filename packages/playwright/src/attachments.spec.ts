@@ -125,6 +125,7 @@ const test = (titles: string[], line: number, project = 'chromium') => ({
   titles,
   file: 'card.spec.ts',
   line,
+  repeat: 0,
 })
 
 describe('listScreenshots', () => {
@@ -153,10 +154,10 @@ describe('listScreenshots', () => {
     expect(
       listed.map((l) => [l.identity.screen, l.identity.title, l.ordinal, l.files?.name])
     ).toEqual([
-      ['chromium|chromium-card-renders|b', 'card > renders > b', 0, 'b'],
-      ['chromium|chromium-card-renders|a', 'card > renders > a', 1, 'a'],
-      ['chromium|chromium-card-renders|#2', 'card > renders', 2, undefined],
-      ['chromium|chromium-card-renders|#3', 'card > renders', 3, undefined],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders > b', 'card > renders > b', 0, 'b'],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders > a', 'card > renders > a', 1, 'a'],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders\x1e#2', 'card > renders', 2, undefined],
+      ['chromium\x1ecard.spec.ts\x1ecard > renders\x1e#3', 'card > renders', 3, undefined],
     ])
   })
 
@@ -197,17 +198,17 @@ describe('listScreenshots', () => {
         l.notExplained,
       ])
     ).toEqual([
-      ['chromium|chromium-card|b', 'card > b', 0, 'b', null],
-      ['chromium|chromium-card|a', 'card > a', 1, undefined, 'ENOENT: no file'],
-      ['chromium|chromium-card|gone', 'card > gone', 2, undefined, 'gone failed'],
+      ['chromium\x1ecard.spec.ts\x1ecard > b', 'card > b', 0, 'b', null],
+      ['chromium\x1ecard.spec.ts\x1ecard > a', 'card > a', 1, undefined, 'ENOENT: no file'],
+      ['chromium\x1ecard.spec.ts\x1ecard > gone', 'card > gone', 2, undefined, 'gone failed'],
       [
-        'chromium|chromium-card|#3',
+        'chromium\x1ecard.spec.ts\x1ecard\x1e#3',
         'card',
         3,
         undefined,
         "A snapshot doesn't exist at /fresh.png.",
       ],
-      ['chromium|chromium-card|#4', 'card', 4, undefined, null],
+      ['chromium\x1ecard.spec.ts\x1ecard\x1e#4', 'card', 4, undefined, null],
     ])
   })
 

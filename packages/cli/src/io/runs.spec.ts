@@ -171,6 +171,7 @@ describe('listTestResults', () => {
         titles: ['bare'],
         file: 'tests/matcher.spec.ts',
         line: 34,
+        repeat: 0,
       },
       {
         project: 'matcher',
@@ -178,6 +179,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
       {
         project: 'matcher',
@@ -185,6 +187,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
     ])
     const first = runs[1]
@@ -224,6 +227,43 @@ describe('listTestResults', () => {
     )
   })
 
+  it('folds the retries of a test into it and keeps each repeat a test of its own, as Playwright names their directories', async () => {
+    for (const suffix of ['', '-retry1', '-repeat1', '-retry1-repeat1']) {
+      await testDir(dir, `matcher-card-matcher${suffix}`, { 'card-whydiff.md': MARKDOWN })
+    }
+    const { runs } = await listTestResults(dir)
+    expect(runs.map((r) => [r.identity.testId, r.identity.repeat])).toEqual([
+      ['matcher-card-matcher', 0],
+      ['matcher-card-matcher-repeat1', 1],
+      ['matcher-card-matcher', 0],
+      ['matcher-card-matcher-repeat1', 1],
+    ])
+  })
+
+  it("finds the project of a repeat's error context past its suffixes, and counts a skipped test once however often it ran", async () => {
+    const context = [
+      '# Test info',
+      '',
+      '- Name: tests/matcher.spec.ts >> past the limit >> capped one',
+      '- Location: tests/matcher.spec.ts:41:3',
+      '',
+    ].join('\n')
+    await testDir(dir, 'matcher-named-failure-matcher', { 'card-whydiff.md': MARKDOWN })
+    await testDir(dir, 'matcher-capped-one-matcher-retry1-repeat2', {
+      'card-whydiff.md': POINTER,
+      'error-context.md': context,
+    })
+    for (const suffix of ['', '-retry1']) {
+      await testDir(dir, `matcher-off-matcher${suffix}`, { 'card-diff.png': '' })
+    }
+    const { runs, skipped } = await listTestResults(dir)
+    expect(runs.map((r) => [r.identity.project, r.identity.testId, r.identity.repeat])).toEqual([
+      ['matcher', 'matcher-named-failure-matcher', 0],
+      ['matcher', 'matcher-capped-one-matcher-repeat2', 2],
+    ])
+    expect(skipped).toBe(1)
+  })
+
   it('reads a title and a file out of the code spans that keep their markup', async () => {
     await testDir(dir, 'matcher-marked-matcher', {
       'card-whydiff.md': [
@@ -242,6 +282,7 @@ describe('listTestResults', () => {
         titles: ['renders <ui-card>'],
         file: 'tests/__main__/card.spec.ts',
         line: 7,
+        repeat: 0,
       },
     ])
   })
@@ -308,6 +349,7 @@ describe('listTestResults', () => {
         titles: ['past the limit', 'capped one'],
         file: 'tests/matcher.spec.ts',
         line: 41,
+        repeat: 0,
       },
     ])
     expect(runs[1]?.attachments.map((a) => a.name)).toEqual([
@@ -339,6 +381,7 @@ describe('listTestResults', () => {
         titles: ['without attachments > named failure'],
         file: 'tests/matcher.spec.ts',
         line: 20,
+        repeat: 0,
       },
       {
         project: '',
@@ -346,6 +389,7 @@ describe('listTestResults', () => {
         titles: ['past the limit', 'capped one'],
         file: 'tests/matcher.spec.ts',
         line: 41,
+        repeat: 0,
       },
     ])
     expect(skipped).toBe(0)

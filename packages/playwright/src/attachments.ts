@@ -1,7 +1,7 @@
 import { stripVTControlCharacters } from 'node:util'
 
 import { ATTACHMENT_PREFIX } from './constants.js'
-import { pairIdentity, type PairIdentity, type TestIdentity } from './pair.js'
+import { pairIdentity, screenKey, type PairIdentity, type TestIdentity } from './pair.js'
 
 export type { TestIdentity }
 
@@ -291,9 +291,10 @@ function imagesName(attachments: readonly AttachmentLike[]): string | null {
 }
 
 function titleIdentity(test: TestIdentity, ordinal: number): PairIdentity {
+  const title = test.titles.join(' > ')
   return {
-    screen: `${test.project}|${test.testId}|#${String(ordinal)}`,
-    title: test.titles.join(' > '),
+    screen: screenKey(test, title, `#${String(ordinal)}`),
+    title,
     file: test.file,
     line: test.line,
     project: test.project,

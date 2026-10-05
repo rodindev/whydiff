@@ -162,7 +162,7 @@
         ],
         "properties": {
           "id": {
-            "description": "s plus six base36 digits of a hash of the pair's key (under Playwright: project, test id and screenshot name), the same in every report over the same screenshot.",
+            "description": "s plus six base36 digits of a hash of the pair's key (under Playwright: project, test file, title path, repeat index and screenshot name), the same in every report over the same screenshot, a run's reporter and report --from alike.",
             "type": "string"
           },
           "title": {

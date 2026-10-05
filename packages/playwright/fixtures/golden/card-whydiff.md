@@ -3,7 +3,7 @@ What changed on this screen:
 
 # whydiff: named failure > card | 1 cause | 0 unexplained regions
 compared: expected -> actual
-source: matcher.spec.ts:20 | matcher | 800x600 px, 1,920 changed pixels | s1eeet9
+source: matcher.spec.ts:20 | matcher | 800x600 px, 1,920 changed pixels | s28l9le
 
 ## a `<div>` is 24 px wider (was 200, now 224), on the changed screenshot, 100% of changed pixels (`#card`, c61lcoz)
 - at `locator('#card')`

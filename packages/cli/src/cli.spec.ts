@@ -130,25 +130,6 @@ function playwrightTests(
   return report.suites.flatMap(visit)
 }
 
-/** Screenshot ids and the cause's example depend on the run; this strips them. */
-function normalized(markdown: string, report: ReportJson): string {
-  return report.screenshots
-    .reduce((text, s) => text.split(s.id).join('SID'), markdown)
-    .split('\n')
-    .filter((line) => !line.startsWith('- for example, '))
-    .join('\n')
-}
-
-function sortedMembers(report: ReportJson): ReportJson {
-  return {
-    ...report,
-    causes: report.causes.map((cause) => ({
-      ...cause,
-      members: [...cause.members].sort((a, b) => (a.screenshot < b.screenshot ? -1 : 1)),
-    })),
-  }
-}
-
 beforeAll(() => {
   if (!existsSync(dist)) throw new Error('build whydiff first: pnpm build')
 })
@@ -349,10 +330,10 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     )
     const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
     const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
-    // The passed screenshot, Playwright's test ids and the error of the test whydiff was off in exist
-    // only inside the reporter; test-results name that test in Playwright's error context.
-    expect(normalized(result.stdout, rebuilt)).toBe(
-      normalized(full, reported)
+    // The passed screenshot and the error of the test whydiff was off in exist only inside the
+    // reporter; test-results name that test in Playwright's error context.
+    expect(result.stdout).toBe(
+      full
         .replace('2 of 3 screenshots changed', '2 of 2 screenshots changed')
         .replace('Unchanged: 1 screenshot is pixel-identical and not listed.\n', '')
         .replace(
@@ -421,14 +402,13 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
     const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
     expect(result.stdout).toBe(full)
     expect(await readFile(join(tmp, 'merged', 'report.md'), 'utf8')).toBe(full)
-    // Members of one cause follow the screenshot order; the reporter orders them by its private screen key.
-    expect(
-      sortedMembers(readJson(await readFile(join(tmp, 'merged', 'report.json'), 'utf8')))
-    ).toEqual(sortedMembers(readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))))
+    expect(await readFile(join(tmp, 'merged', 'report.json'), 'utf8')).toBe(
+      await readFile(join(tmp, 'full', 'report.json'), 'utf8')
+    )
   })
 })
 
-describe('report --from over a run whose tests are retried', { timeout: 300_000 }, () => {
+describe('report --from over retried and repeated tests', { timeout: 300_000 }, () => {
   let tmp: string
   let result: Run
   const at = (name: string): string => join(tmp, name)
@@ -440,7 +420,7 @@ describe('report --from over a run whose tests are retried', { timeout: 300_000 
       WHYDIFF_FIXTURE_OUTPUT: at('out-a'),
       WHYDIFF_FIXTURE_REPORT: at('a.json'),
     })
-    await playwright(['test', '--project', 'retries'], {
+    await playwright(['test', '--project', 'retries', '--repeat-each', '2'], {
       WHYDIFF_FIXTURE_VARIANT: 'changed',
       WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
       WHYDIFF_FIXTURE_OUTPUT: at('test-results'),
@@ -454,13 +434,19 @@ describe('report --from over a run whose tests are retried', { timeout: 300_000 
     await rm(tmp, { recursive: true, force: true })
   })
 
-  it('takes each screenshot from the same attempt as the reporter did', async () => {
+  it('takes each screenshot from the same attempt as the reporter did, under the same id', async () => {
     expect(result.code).toBe(0)
     const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
-    expect(full).toMatch(/^# whydiff: 5 of 5 screenshots changed \| /)
+    expect(full).toMatch(/^# whydiff: 10 of 10 screenshots changed \| /)
+    expect(result.stdout).toBe(full)
     const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
     const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
-    expect(normalized(result.stdout, rebuilt)).toBe(normalized(full, reported))
+    expect(rebuilt.screenshots).toEqual(reported.screenshots)
+  })
+
+  it('counts the tests it rebuilds, each repeat one and its retries none', () => {
+    expect(result.stderr).toContain('rebuilding the report of 8 tests\n')
+    expect(result.stderr).toContain('8 tests read from test-results\n')
   })
 })
 

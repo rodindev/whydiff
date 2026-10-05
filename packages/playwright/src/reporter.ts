@@ -135,6 +135,7 @@ export default class WhydiffReporter implements Reporter {
       titles: test.titlePath().slice(3),
       file: relativeTo(rootDir, test.location.file),
       line: test.location.line,
+      repeat: test.repeatEachIndex,
     }
     this.tests.set(test.id, {
       identity,

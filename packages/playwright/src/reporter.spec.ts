@@ -45,6 +45,7 @@ describe('WhydiffReporter', () => {
       id: title,
       titlePath: () => ['', 'chromium', 'card.spec.ts', title],
       location: { file: '/repo/tests/card.spec.ts', line, column: 1 },
+      repeatEachIndex: 0,
       parent: { project: () => ({ name: 'chromium' }) },
     } as unknown as TestCase // only these fields are read
   }
