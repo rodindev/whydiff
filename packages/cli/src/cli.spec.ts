@@ -236,6 +236,26 @@ describe('snap, diff and explain on a page', { timeout: 120_000 }, () => {
     expect(bad.stderr).toMatch(/^opening http:\/\/127\.0\.0\.1:1\/\nwhydiff: [^\n]+\n$/)
     expect(bad.stdout).toBe('')
   })
+
+  it('fails with one line that says what to do when a selector names several elements or the Chromium named is not there', async () => {
+    const url = `${server.url}/card-before.html`
+    const several = await whydiff(['snap', url, '--name', 'y', '--selector', 'div'], tmp)
+    expect(several.code).toBe(2)
+    expect(several.stderr).toBe(
+      `opening ${url}\nwhydiff: --selector div matches 2 elements and snap captures one. Narrow it to one, for example --selector "div >> nth=0" for the first.\n`
+    )
+    const missing = '/nonexistent/chromium'
+    const flag = await whydiff(['snap', url, '--name', 'y', '--executable', missing], tmp)
+    expect([flag.code, flag.stderr]).toEqual([
+      2,
+      `whydiff: --executable names ${missing}, which does not exist. Point it at a Chromium binary, or leave it out to use Playwright's headless shell.\n`,
+    ])
+    const env = await whydiff(['snap', url, '--name', 'y'], tmp, { WHYDIFF_CHROMIUM: missing })
+    expect([env.code, env.stderr]).toEqual([
+      2,
+      `whydiff: WHYDIFF_CHROMIUM names ${missing}, which does not exist. Point it at a Chromium binary, or leave it out to use Playwright's headless shell.\n`,
+    ])
+  })
 })
 
 describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
