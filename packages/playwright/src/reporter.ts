@@ -21,6 +21,7 @@ import {
 } from '@whydiff/core'
 
 import {
+  acrossAttempts,
   compareListed,
   listScreenshots,
   readImageAttachment,
@@ -69,7 +70,13 @@ interface MissingBaseline {
 
 interface Ended {
   readonly identity: TestIdentity
+  /** Every attempt, in the order Playwright ran them. */
+  readonly results: readonly TestResult[]
+}
+
+interface Attempt {
   readonly result: TestResult
+  readonly listed: readonly Listed[]
 }
 
 interface NotExplained {
@@ -85,7 +92,7 @@ const HTML_FIRST = `the html reporter runs before this one, so Playwright's HTML
 const HTML_FIRST_MARKDOWN = `the html reporter runs before this one, so Playwright's HTML report keeps each test's own page; list ${code(REPORTER_NAME)} before ${code('html')} (${code('npx whydiff init')} does it)`
 
 const NOT_EXPLAINED =
-  'Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion.'
+  "Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion, or the test's own when the test timed out during it."
 
 const BLANK: SnapshotV1 = {
   formatVersion: SNAPSHOT_FORMAT_VERSION,
@@ -129,7 +136,10 @@ export default class WhydiffReporter implements Reporter {
       file: relativeTo(rootDir, test.location.file),
       line: test.location.line,
     }
-    this.tests.set(test.id, { identity, result })
+    this.tests.set(test.id, {
+      identity,
+      results: [...(this.tests.get(test.id)?.results ?? []), result],
+    })
   }
 
   async onEnd(): Promise<void> {
@@ -151,15 +161,23 @@ export default class WhydiffReporter implements Reporter {
   private async write(config: FullConfig): Promise<void> {
     const dir = reportDir(config, this.outputDir)
     const suffix = shardSuffix(config.shard)
-    const tests = [...this.tests.values()].map((test) => ({
-      ...test,
-      listed: listScreenshots(
-        test.identity,
-        test.result.attachments,
-        test.result.steps,
-        test.result.annotations
-      ),
-    }))
+    const tests = [...this.tests.values()].map(({ identity, results }) => {
+      const attempts: Attempt[] = results.map((result) => ({
+        result,
+        listed: listScreenshots(
+          identity,
+          result.attachments,
+          result.steps,
+          result.annotations,
+          result.status === 'timedOut' ? (result.errors[0]?.message ?? null) : null
+        ),
+      }))
+      const listed = acrossAttempts(
+        identity,
+        attempts.map((a) => a.listed)
+      )
+      return { identity, attempts, listed }
+    })
     const listed = tests.flatMap((test) => test.listed).sort(compareListed)
     const screens: ScreenInput[] = []
     const missing: MissingBaseline[] = []
@@ -197,13 +215,22 @@ export default class WhydiffReporter implements Reporter {
     await writeScreenshots(report, join(dir, `screenshots${suffix}`))
     const explain = explanations(report, screens, missing)
     let later = 0
-    for (const test of tests) later += await writeBack(test, explain)
+    for (const test of tests) {
+      for (const { result, listed } of test.attempts) {
+        // A failed screenshot gets the run's page in the one attempt the report took it from.
+        const taken = listed.filter((l) => test.listed.includes(l)).map((l) => l.identity.screen)
+        later += await writeBack(test.identity, result, (screen) =>
+          taken.includes(screen) ? explain(screen) : undefined
+        )
+      }
+    }
     const page = join(dir, `report${suffix}.html`)
     await writeFile(page, renderRunPage(report, { failed }))
     attachRunPage(
       tests
-        .filter((test) => test.listed.some((l) => l.files !== null || l.notExplained !== null))
-        .map((test) => test.result),
+        .flatMap((test) => test.attempts)
+        .filter((a) => a.listed.some((l) => l.files !== null || l.notExplained !== null))
+        .map((a) => a.result),
       page
     )
     const { summary } = report
@@ -283,7 +310,8 @@ function explanations(
 // report.json and annot: finds every test of a cause. Changed in place, before the html
 // reporter reads them in its own onEnd: it finds a step's attachments in the result's by identity.
 async function writeBack(
-  { identity, result }: Ended,
+  identity: TestIdentity,
+  result: TestResult,
   explain: (screen: string) => Explained | undefined
 ): Promise<number> {
   let pointers = 0

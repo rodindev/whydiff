@@ -428,6 +428,42 @@ describe('whydiff over a Playwright run', { timeout: 300_000 }, () => {
   })
 })
 
+describe('report --from over a run whose tests are retried', { timeout: 300_000 }, () => {
+  let tmp: string
+  let result: Run
+  const at = (name: string): string => join(tmp, name)
+
+  beforeAll(async () => {
+    tmp = await mkdtemp(join(tmpdir(), 'whydiff-cli-retries-'))
+    await playwright(['test', '--project', 'retries', '--update-snapshots'], {
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_OUTPUT: at('out-a'),
+      WHYDIFF_FIXTURE_REPORT: at('a.json'),
+    })
+    await playwright(['test', '--project', 'retries'], {
+      WHYDIFF_FIXTURE_VARIANT: 'changed',
+      WHYDIFF_FIXTURE_SNAPSHOTS: at('snapshots'),
+      WHYDIFF_FIXTURE_OUTPUT: at('test-results'),
+      WHYDIFF_FIXTURE_REPORT: at('full.json'),
+      WHYDIFF_FIXTURE_WHYDIFF_REPORT: at('full'),
+    })
+    result = await whydiff(['report', '--from', 'test-results', '--out', 'from'], tmp)
+  }, 300_000)
+
+  afterAll(async () => {
+    await rm(tmp, { recursive: true, force: true })
+  })
+
+  it('takes each screenshot from the same attempt as the reporter did', async () => {
+    expect(result.code).toBe(0)
+    const full = await readFile(join(tmp, 'full', 'report.md'), 'utf8')
+    expect(full).toMatch(/^# whydiff: 5 of 5 screenshots changed \| /)
+    const rebuilt = readJson(await readFile(join(tmp, 'from', 'report.json'), 'utf8'))
+    const reported = readJson(await readFile(join(tmp, 'full', 'report.json'), 'utf8'))
+    expect(normalized(result.stdout, rebuilt)).toBe(normalized(full, reported))
+  })
+})
+
 describe('whydiff diff over two run directories on their own', { timeout: 300_000 }, () => {
   let tmp: string
 

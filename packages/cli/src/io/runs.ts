@@ -9,6 +9,8 @@ const MANIFEST = 'manifest.jsonl'
 const SIDECAR = '.whydiff.json'
 const PNG = /\.png$/i
 const ATTEMPT_SUFFIX = /-(?:retry|repeat)\d+$/
+// Playwright names a retry's directory after its test with `-retry<n>`, before any `-repeat<n>`.
+const RETRY = /-retry(\d+)(?:-repeat\d+)?$/
 const WHYDIFF_COPY = /^whydiff-(.+)-(snapshot-(?:actual|expected))-[0-9a-f]{40}\.json$/
 const MARKDOWN = /^(.+)-whydiff\.md$/
 const IMAGE = /^(.+)-(?:expected|actual|diff)\.png$/
@@ -117,12 +119,12 @@ interface Unnamed {
   readonly annotations: TestRun['annotations']
 }
 
-/** Every test attempt of a `test-results` directory with its attachments, rebuilt from the files Playwright copied there and the Markdown whydiff wrote next to them; a test whose pages only point to the run report, as past `use.whydiff.maxExplained`, from Playwright's error context. */
+/** Every test attempt of a `test-results` directory with its attachments, each test's in the order they ran, rebuilt from the files Playwright copied there and the Markdown whydiff wrote next to them; a test whose pages only point to the run report, as past `use.whydiff.maxExplained`, from Playwright's error context. */
 export async function listTestResults(dir: string): Promise<TestResults> {
   const entries = (await readdir(dir, { withFileTypes: true }))
     .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
     .map((entry) => entry.name)
-    .sort()
+    .sort((a, b) => retryOf(a) - retryOf(b) || (a < b ? -1 : a > b ? 1 : 0))
   const read: (TestRun | Unnamed)[] = []
   for (const name of entries) {
     const test = await readTestDir(join(dir, name), name)
@@ -188,6 +190,10 @@ async function readTestDir(dir: string, name: string): Promise<TestRun | Unnamed
     ? await readFile(join(dir, ERROR_CONTEXT), 'utf8')
     : ''
   return { testId: name.replace(ATTEMPT_SUFFIX, ''), context, attachments, annotations }
+}
+
+function retryOf(dirName: string): number {
+  return Number(RETRY.exec(dirName)?.[1] ?? 0)
 }
 
 /** Who a test is by its error context: the file and titles of its title path, its line, and the project of the run whose name ends the directory's name, the longest that does, else the run's unnamed project; null when the context says no title or no project fits. */

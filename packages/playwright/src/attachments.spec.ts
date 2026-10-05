@@ -1,4 +1,5 @@
 import {
+  acrossAttempts,
   attachedImages,
   attachmentName,
   collectPairs,
@@ -10,6 +11,7 @@ import {
   notExplainedReason,
   readImageAttachment,
   readWhydiffAttachment,
+  type Listed,
   type ReportedAttachment,
   type StepLike,
 } from './attachments.js'
@@ -209,6 +211,26 @@ describe('listScreenshots', () => {
     ])
   })
 
+  it("gives a failed assertion that attached no image its attempt's timeout as the reason when the attempt timed out", () => {
+    const actual: ReportedAttachment = {
+      name: 'a-actual.png',
+      contentType: 'image/png',
+      path: '/a-actual.png',
+    }
+    const closed = 'Error: screencast.showOverlays: Target page, context or browser has been closed'
+    const steps = [
+      step('Expect "toHaveScreenshot(slow.png)"', [], closed),
+      step('Expect "toHaveScreenshot(a.png)"', [], 'Error: a failed', [actual]),
+    ]
+    const reasons = (timedOut?: string): (string | null)[] =>
+      listScreenshots(test(['card'], 3), [], steps, [], timedOut).map((l) => l.notExplained)
+    expect(reasons('Test timeout of 30000ms exceeded.')).toEqual([
+      'Test timeout of 30000ms exceeded.',
+      'a failed',
+    ])
+    expect(reasons()).toEqual([closed.replace(/^Error: /, ''), 'a failed'])
+  })
+
   it('lists a diff no step names with the fixed reason, as a run rebuilt without steps has it', () => {
     const attachments: ReportedAttachment[] = [
       { name: 'card-actual.png', contentType: 'image/png', path: '/card-actual.png' },
@@ -236,6 +258,71 @@ describe('listScreenshots', () => {
         .sort(compareListed)
         .map((e) => `${e.identity.project} ${e.identity.title} ${String(e.ordinal)}`)
     ).toEqual(['chromium a 0', 'chromium b 0', 'chromium b 1', 'chromium z 0', 'firefox a 0'])
+  })
+})
+
+describe('acrossAttempts', () => {
+  const card = test(['card'], 3)
+
+  /** One attempt of the card test: a pair for each failed name, its Markdown under the attempt's directory, then the passed names. */
+  const attempt = (retry: number, failed: string[], passed: string[] = []): Listed[] =>
+    listScreenshots(
+      card,
+      failed.map((name) => ({
+        name: `whydiff/${name}/markdown`,
+        contentType: 'text/markdown',
+        path: `/retry${String(retry)}/${name}.md`,
+      })),
+      [
+        ...failed.map((name) =>
+          step(`Expect "toHaveScreenshot(${name}.png)"`, [], 'Error: x', [
+            { name: `${name}-actual.png`, contentType: 'image/png', path: `/${name}-actual.png` },
+          ])
+        ),
+        ...passed.map((name) => step(`Expect "toHaveScreenshot(${name}.png)"`)),
+      ],
+      []
+    )
+
+  const taken = (attempts: Listed[][]): (string | null)[][] =>
+    acrossAttempts(card, attempts).map((l) => [
+      l.files?.name ?? `#${String(l.ordinal)}`,
+      l.files?.whydiff.markdown?.path ?? null,
+    ])
+
+  it('is the attempt itself for a test that ran once', () => {
+    expect(acrossAttempts(card, [attempt(0, ['a'], ['b', 'c'])])).toEqual(
+      attempt(0, ['a'], ['b', 'c'])
+    )
+  })
+
+  it('keeps a screenshot the retry never reached, as the attempt that failed it lists it', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, [])])).toEqual([['a', '/retry0/a.md']])
+    expect(taken([attempt(0, ['a', 'b']), attempt(1, ['a'])])).toEqual([
+      ['b', '/retry0/b.md'],
+      ['a', '/retry1/a.md'],
+    ])
+  })
+
+  it('keeps a screenshot that failed and then passed on retry as failed, and counts it once', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, [], ['a'])])).toEqual([['a', '/retry0/a.md']])
+    expect(taken([attempt(0, ['a'], ['b']), attempt(1, [], ['a', 'b'])])).toEqual([
+      ['a', '/retry0/a.md'],
+      ['#1', null],
+    ])
+  })
+
+  it('takes a screenshot that failed again from the retry', () => {
+    expect(taken([attempt(0, ['a']), attempt(1, ['a']), attempt(2, [])])).toEqual([
+      ['a', '/retry1/a.md'],
+    ])
+  })
+
+  it('keeps the passed screenshots of the attempt that reached the most, as a serial retry that skips the test leaves them', () => {
+    expect(taken([attempt(0, [], ['a', 'b']), attempt(1, [])])).toEqual([
+      ['#0', null],
+      ['#1', null],
+    ])
   })
 })
 

@@ -147,16 +147,17 @@ export function collectPairs<A extends AttachmentLike>(attachments: readonly A[]
   return pairs.map((pair) => ({ ...pair, images: images.get(pair.name) ?? {} }))
 }
 
-/** The screenshots of one attempt: pairs whydiff attached to, failed ones without a pair, then one title-only entry per passed assertion. */
+/** The screenshots of one attempt: pairs whydiff attached to, failed ones without a pair, then one title-only entry per passed assertion. `timedOut` is the attempt's first error when the attempt timed out: the reason of a failed assertion that attached no image, which the timeout cut. */
 export function listScreenshots(
   test: TestIdentity,
   attachments: readonly ReportedAttachment[],
   steps: readonly StepLike[],
-  annotations: readonly AnnotationLike[]
+  annotations: readonly AnnotationLike[],
+  timedOut: string | null = null
 ): Listed[] {
   const pairs = collectPairs(attachments)
   const shots = screenshotSteps(steps)
-  const failed = failedScreenshots(shots, attachments).filter(
+  const failed = failedScreenshots(shots, attachments, timedOut).filter(
     ({ name }) => name === null || !pairs.some((p) => p.name === name)
   )
   const passed = shots.filter((step) => step.error === undefined).length
@@ -186,6 +187,30 @@ export function listScreenshots(
     })
   }
   return listed
+}
+
+/** The screenshots of a test across its attempts, oldest first: each failed one as the last attempt that failed it lists it, then title-only entries for the passed ones, as many as the attempt that reached the most screenshots has beyond the failed ones. */
+export function acrossAttempts(
+  test: TestIdentity,
+  attempts: readonly (readonly Listed[])[]
+): Listed[] {
+  let failed: Listed[] = []
+  for (const listed of attempts) {
+    const own = listed.filter((entry) => entry.files !== null || entry.notExplained !== null)
+    failed = [
+      ...failed.filter((entry) => !own.some((o) => o.identity.screen === entry.identity.screen)),
+      ...own,
+    ]
+  }
+  const reached = Math.max(0, ...attempts.map((listed) => listed.length))
+  const first = Math.max(failed.length, ...failed.map((entry) => entry.ordinal + 1))
+  const passed = Array.from({ length: Math.max(0, reached - failed.length) }, (_, n) => ({
+    identity: titleIdentity(test, first + n),
+    ordinal: first + n,
+    files: null,
+    notExplained: null,
+  }))
+  return [...failed, ...passed]
 }
 
 /** Why whydiff attached nothing to a failed screenshot, as its test's annotations say: the one about another browser, else the first line of the one that starts with the screenshot's attachment name; null when none does. */
@@ -235,15 +260,19 @@ interface Failed {
 // A failed step is named by the images the built-in attached to it, and by nothing when it attached
 // none. The built-in attaches a diff only for a comparison that failed, so a diff no step names is
 // a failed screenshot too: all that a run rebuilt from test-results, without steps, can go on.
+// Playwright records a timeout as the attempt's first error; an assertion the timeout cut ends while
+// the page is torn down, with the error that teardown throws, so it takes the timeout's.
 function failedScreenshots(
   steps: readonly StepLike[],
-  attachments: readonly AttachmentLike[]
+  attachments: readonly AttachmentLike[],
+  timedOut: string | null
 ): Failed[] {
-  const failed: Failed[] = steps.flatMap((step) =>
-    step.error === undefined
-      ? []
-      : [{ name: imagesName(step.attachments), error: step.error.message ?? null }]
-  )
+  const failed: Failed[] = steps.flatMap((step) => {
+    if (step.error === undefined) return []
+    const name = imagesName(step.attachments)
+    const error = name === null && timedOut !== null ? timedOut : (step.error.message ?? null)
+    return [{ name, error }]
+  })
   for (const attachment of attachments) {
     const image = readImageAttachment(attachment)
     if (image?.kind === 'diff' && !failed.some((f) => f.name === image.name)) {

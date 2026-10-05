@@ -213,6 +213,17 @@ describe('listTestResults', () => {
     ])
   })
 
+  it('lists the attempts of a test in the order they ran, the tenth retry after the second', async () => {
+    const attempts = ['', '-retry1', '-retry10', '-retry2'].map((suffix) => `matcher-card${suffix}`)
+    for (const name of attempts) await testDir(dir, name, { 'card-whydiff.md': MARKDOWN })
+    const { runs } = await listTestResults(dir)
+    expect(runs.map((r) => r.attachments[0]?.path)).toEqual(
+      ['', '-retry1', '-retry2', '-retry10'].map((suffix) =>
+        join(dir, `matcher-card${suffix}`, 'card-whydiff.md')
+      )
+    )
+  })
+
   it('reads a title and a file out of the code spans that keep their markup', async () => {
     await testDir(dir, 'matcher-marked-matcher', {
       'card-whydiff.md': [

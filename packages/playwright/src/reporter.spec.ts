@@ -102,17 +102,7 @@ describe('WhydiffReporter', () => {
         },
       ])
     )
-    reporter.onTestEnd(
-      testCase('flaky card', 40),
-      result([
-        ...images('flaky'),
-        {
-          name: 'whydiff/flaky/snapshot-actual',
-          contentType: 'application/json',
-          path: '/missing',
-        },
-      ])
-    )
+    reporter.onTestEnd(testCase('flaky card', 40), result([]))
     reporter.onTestEnd(
       testCase('flaky card', 40),
       result([], [step('Expect "toHaveScreenshot(flaky.png)"')])
@@ -237,7 +227,7 @@ describe('WhydiffReporter', () => {
     expect(markdown.slice(markdown.indexOf('\n## Not explained')).split('\n')).toEqual([
       '',
       '## Not explained (5)',
-      'Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion.',
+      "Failed screenshots that neither their test nor this report could explain, each with the reason its whydiff annotation gives, else the error of its assertion, or the test's own when the test timed out during it.",
       expect.stringMatching(
         /^- broken card > broken \| card\.spec\.ts:50 \| chromium \| its files could not be read: ENOENT/
       ),
@@ -461,6 +451,65 @@ describe('WhydiffReporter', () => {
     expect(page).toMatch(/^What changed on this screen:\n/)
     expect(await readFile(copy, 'utf8')).toBe(page)
     expect(existsSync(join(dir, 'other-whydiff.md'))).toBe(false)
+  })
+
+  it('takes each failed screenshot from the last attempt that failed it, and gives the run page to that attempt only', async () => {
+    const expected = await png('e.png', false)
+    const actual = await png('a.png', true)
+    const pair = (name: string): ReportedAttachment[] => [
+      { name: `${name}-expected.png`, contentType: 'image/png', path: expected },
+      { name: `${name}-actual.png`, contentType: 'image/png', path: actual },
+      { name: `whydiff/${name}/markdown`, contentType: 'text/markdown', body: Buffer.from('#') },
+      {
+        name: `whydiff/${name}/snapshot-actual`,
+        contentType: 'application/json',
+        path: causes('after.whydiff.json').pathname,
+      },
+      {
+        name: `whydiff/${name}/snapshot-expected`,
+        contentType: 'application/json',
+        path: causes('before.whydiff.json').pathname,
+      },
+    ]
+    const timedOut = [result(pair('timed')), result([])]
+    const flaky = [
+      result(pair('flaky')),
+      result([], [step('Expect "toHaveScreenshot(flaky.png)"')]),
+    ]
+    const partial = [result([...pair('one'), ...pair('two')]), result(pair('one'))]
+    const reporter = new WhydiffReporter({ outputDir: 'report' })
+    reporter.onBegin({ rootDir: dir, shard: null, reporter: NO_REPORTERS } as FullConfig) // only these fields are read
+    for (const [title, line, attempts] of [
+      ['timed out card', 10, timedOut],
+      ['flaky card', 20, flaky],
+      ['partial card', 30, partial],
+    ] as const) {
+      for (const attempt of attempts) reporter.onTestEnd(testCase(title, line), attempt)
+    }
+    await reporter.onEnd()
+    const report = JSON.parse(await readFile(join(dir, 'report', 'report.json'), 'utf8')) as {
+      screenshots: { title: string; status: string }[]
+    } // the report format
+    expect(report.screenshots.map((s) => [s.title, s.status])).toEqual([
+      ['timed out card > timed', 'changed'],
+      ['flaky card > flaky', 'changed'],
+      ['partial card > one', 'changed'],
+      ['partial card > two', 'changed'],
+    ])
+    const own = (attempt: TestResult | undefined, name: string): boolean =>
+      attempt?.attachments.find((a) => a.name === `whydiff/${name}/markdown`)?.body?.toString() ===
+      '#'
+    expect([
+      own(timedOut[0], 'timed'),
+      own(flaky[0], 'flaky'),
+      own(partial[0], 'one'),
+      own(partial[0], 'two'),
+      own(partial[1], 'one'),
+    ]).toEqual([false, false, true, false, false])
+    expect(timedOut.map((attempt) => attempt.attachments[0]?.name)).toEqual([
+      'whydiff/run',
+      undefined,
+    ])
   })
 
   it('warns on the console and in the job summary when html runs before it, and not when it runs first', async () => {
