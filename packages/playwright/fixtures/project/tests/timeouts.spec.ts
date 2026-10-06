@@ -17,8 +17,9 @@ const BOXES = `
 const ROW = changed ? '.ui-missing' : '.ui-row'
 const SCREENSHOT_MS = 10_000
 const TEST_MS = 2000
-// A soft failure of its own, well within the test's time.
-const SOFT_MS = 500
+// A soft failure of its own, well within the test's time. Short only in the changed run: writing
+// the baseline takes two equal screenshots 100 ms apart, more than 500 ms on a slow machine.
+const SOFT_MS = changed ? 500 : 5000
 
 test.beforeEach(() => {
   if (changed) test.setTimeout(TEST_MS)
