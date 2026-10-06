@@ -813,6 +813,16 @@ describe('a run whose tests are retried or time out', () => {
     ])
   })
 
+  it('writes every baseline of the timeouts project in the first run, as the fixture means to', async () => {
+    const written = await readdir(at('snapshots', 'timeouts.spec.ts'))
+    expect(written.filter((file) => file.endsWith('.png')).sort()).toEqual([
+      'explicit-slow.png',
+      'later.png',
+      'own.png',
+      'slow.png',
+    ])
+  })
+
   it('keeps every screenshot as the last attempt that failed it left it, those a retry passed or never reached included', () => {
     expect(report).toMatch(/^# whydiff: 5 of 5 screenshots changed \| 1 cause \| /)
     expect(output).toContain(
