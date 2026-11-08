@@ -2,7 +2,7 @@
   "name": "whydiff-monorepo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@11.28.2",
+  "packageManager": "pnpm@11.28.11",
   "engines": {
     "node": ">=22.18.0"
   },
